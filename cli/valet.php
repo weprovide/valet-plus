@@ -36,11 +36,14 @@ if (is_dir(VALET_HOME_PATH)) {
  */
 $app->command('install', function () {
     Nginx::stop();
+    PhpFpm::stop();
+    Mysql::stop();
 
     Configuration::install();
     Nginx::install();
     PhpFpm::install();
     DnsMasq::install();
+    Mysql::install();
     Nginx::restart();
     Valet::symlinkToUsersBin();
 
