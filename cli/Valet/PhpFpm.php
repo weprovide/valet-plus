@@ -41,9 +41,8 @@ class PhpFpm
         }
 
         $this->files->ensureDirExists('/usr/local/var/log', user());
-
         $this->updateConfiguration();
-
+        $this->installExtensions();
         $this->restart();
     }
 
@@ -68,11 +67,11 @@ class PhpFpm
         $this->files->put($this->fpmConfigPath(), $contents);
 
 
-        $contents = $this->files->get(__DIR__.'/../stubs/php-memory-limits.ini');
+        $contents = $this->files->get(__DIR__.'/../stubs/z-performance.ini');
 
         $destFile = dirname($this->fpmConfigPath());
         $destFile = str_replace('/php-fpm.d', '', $destFile);
-        $destFile .= '/conf.d/php-memory-limits.ini';
+        $destFile .= '/conf.d/z-performance.ini';
         $this->files->ensureDirExists(dirname($destFile), user());
 
         $this->files->putAsUser($destFile, $contents);
@@ -114,6 +113,19 @@ class PhpFpm
         return $confLookup[$this->brew->linkedPhp()];
     }
 
+    function installExtensions() {
+        $extensions = ['apcu', 'intl', 'mcrypt', 'opcache'];
+        $currentVersion = $this->brew->linkedPhp();
+        info('Install PHP extensions...');
+
+        foreach($extensions as $extension) {
+            if($this->brew->installed($currentVersion.'-'.$extension)) {
+                info($currentVersion.'-'.$extension.' already installed');
+            } else {
+                $this->brew->ensureInstalled($currentVersion.'-'.$extension, [], $this->taps);
+            }
+        }
+    }
 
     /**
      * Switch between versions of installed PHP
