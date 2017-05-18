@@ -41,13 +41,13 @@ class Mysql
      */
     function install()
     {
+        $this->removeConfiguration();
         if (!$this->brew->installed('mysql')) {
             $this->brew->installOrFail('mysql');
         }
 
         if (!$this->brew->installed('mysql-utilities')) {
             $this->brew->installOrFail('mysql-utilities');
-
         }
 
         $this->cli->quietly('brew services stop mysql');
@@ -76,6 +76,13 @@ class Mysql
             static::MYSQL_CONF,
             str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents)
         );
+    }
+
+    function removeConfiguration() {
+        info('Removing Mysql configuration...');
+
+        $this->files->unlink(static::MYSQL_CONF);
+        $this->files->unlink(static::MYSQL_CONF.'.default');
     }
 
     /**
