@@ -213,6 +213,8 @@ if (is_dir(VALET_HOME_PATH)) {
 
         Nginx::restart();
 
+        Mysql::restart();
+
         info('Valet services have been started.');
     })->descriptions('Start the Valet services');
 
@@ -223,6 +225,8 @@ if (is_dir(VALET_HOME_PATH)) {
         PhpFpm::restart();
 
         Nginx::restart();
+
+        Mysql::restart();
 
         info('Valet services have been restarted.');
     })->descriptions('Restart the Valet services');
@@ -235,6 +239,8 @@ if (is_dir(VALET_HOME_PATH)) {
 
         Nginx::stop();
 
+        Mysql::stop();
+
         info('Valet services have been stopped.');
     })->descriptions('Stop the Valet services');
 
@@ -243,6 +249,7 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app->command('uninstall', function () {
         Nginx::uninstall();
+        Mysql::uninstall();
 
         info('Valet has been uninstalled.');
     })->descriptions('Uninstall the Valet services');
@@ -257,24 +264,50 @@ if (is_dir(VALET_HOME_PATH)) {
             output('NO');
         }
     })->descriptions('Determine if this is the latest version of Valet');
+
+
+    /**
+     * Switch between versions of PHP
+     */
+    $app->command('use [phpVersion]', function ($phpVersion) {
+        PhpFpm::stop();
+        Nginx::stop();
+        $switched = PhpFpm::switchTo($phpVersion);
+
+        PhpFpm::restart();
+        Nginx::restart();
+        if(!$switched) {
+            info('Already on this version');
+            return;
+        }
+        info('Valet is now using php'.$phpVersion.'.');
+    })->descriptions('Switch between versions of PHP');
+
+    /**
+     * Create database
+     */
+    $app->command('db create [name]', function ($name) {
+        $name = $name ?: basename(getcwd());
+
+        $created = Mysql::createDatabase($name);
+
+        if(!$created) {
+            return warning('Error creating database');
+        }
+
+        info('Database created successfully');
+    })->descriptions('Create database');
+
+    /**
+     * Open database
+     */
+    $app->command('db open [name]', function ($name = '') {
+        info('Opening database...');
+
+        Mysql::openSequelPro($name);
+
+    })->descriptions('Create database');
 }
-
-/**
- * Switch between versions of PHP
- */
-$app->command('use [phpVersion]', function ($phpVersion) {
-    PhpFpm::stop();
-    Nginx::stop();
-    $switched = PhpFpm::switchTo($phpVersion);
-
-    PhpFpm::restart();
-    Nginx::restart();
-    if(!$switched) {
-        info('Already on this version');
-        return;
-    }
-    info('Valet is now using php'.$phpVersion.'.');
-})->descriptions('Switch between versions of PHP');
 
 /**
  * Load all of the Valet extensions.

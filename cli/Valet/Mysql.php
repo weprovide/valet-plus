@@ -3,6 +3,7 @@
 namespace Valet;
 
 use DomainException;
+use mysqli;
 
 class Mysql
 {
@@ -35,7 +36,7 @@ class Mysql
     }
 
     /**
-     * Install the configuration files for Nginx.
+     * Install the configuration files for Mysql.
      *
      * @return void
      */
@@ -120,5 +121,47 @@ class Mysql
     function uninstall()
     {
         $this->stop();
+    }
+
+    /**
+     * Return Mysql connection
+     *
+     * @return void
+     */
+    function getConnection() {
+        // Create connection
+        $link = new mysqli('localhost', 'root', 'root');
+        // Check connection
+        if ($link->connect_error) {
+            warning('Failed to connect to database');
+            return false;
+        }
+
+        return $link;
+    }
+
+    /**
+     * Create Mysql database
+     *
+     * @param string $name
+     * @return void
+     */
+    function createDatabase($name) {
+        $link = $this->getConnection();
+        $sql = mysqli_real_escape_string($link, 'CREATE DATABASE ' . $name);
+        return $link->query($sql);
+    }
+
+    function openSequelPro($name = '') {
+        $tmpName = tempnam(sys_get_temp_dir(), 'sequelpro').'.spf';
+
+        $contents = $this->files->get(__DIR__.'/../stubs/sequelpro.spf');
+
+        $this->files->putAsUser(
+            $tmpName,
+            str_replace(['DB_NAME', 'DB_HOST', 'DB_USER', 'DB_PASS', 'DB_PORT'], [$name, '127.0.0.1', 'root', 'root', '3306'], $contents)
+        );
+
+        $this->cli->quietly('open ' . $tmpName);
     }
 }
