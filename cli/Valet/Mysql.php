@@ -14,6 +14,7 @@ class Mysql
     var $site;
     const MYSQL_CONF_DIR = '/usr/local/etc';
     const MYSQL_CONF = '/usr/local/etc/my.cnf';
+    const MAX_FILES_CONF = '/Library/LaunchDaemons/limit.maxfiles.plist';
 
     /**
      * Create a new Nginx instance.
@@ -43,6 +44,7 @@ class Mysql
     function install()
     {
         $this->removeConfiguration();
+        $this->files->copy(__DIR__.'/../stubs/limit.maxfiles.plist', static::MAX_FILES_CONF);
         if (!$this->brew->installed('mysql')) {
             $this->brew->installOrFail('mysql');
         }
