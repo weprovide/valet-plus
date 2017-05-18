@@ -38,5 +38,6 @@ class DnsMasq extends Facade {}
 class Filesystem extends Facade {}
 class Ngrok extends Facade {}
 class PhpFpm extends Facade {}
+class DevTools extends Facade {}
 class Site extends Facade {}
 class Valet extends Facade {}

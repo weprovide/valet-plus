@@ -45,6 +45,7 @@ class Mysql
     {
         $this->removeConfiguration();
         $this->files->copy(__DIR__.'/../stubs/limit.maxfiles.plist', static::MAX_FILES_CONF);
+
         if (!$this->brew->installed('mysql')) {
             $this->brew->installOrFail('mysql');
         }

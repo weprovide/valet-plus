@@ -38,6 +38,7 @@ $app->command('install', function () {
     Nginx::stop();
     PhpFpm::stop();
     Mysql::stop();
+    DevTools::install();
 
     Configuration::install();
     Nginx::install();
