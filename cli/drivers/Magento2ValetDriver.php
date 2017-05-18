@@ -33,7 +33,7 @@ public function isStaticFile($sitePath, $siteName, $uri)
     }
 
     if (strpos($uri, '/static/') === 0) {
-        $_GET['resource'] = preg_replace('#static/#', '', $uri, 1);
+        $_GET['resource'] = preg_replace('#static(/version[0-9]+)?/#', '', $uri, 1);
         include($sitePath.DIRECTORY_SEPARATOR.'pub'.DIRECTORY_SEPARATOR.'static.php');
         exit;
     }
