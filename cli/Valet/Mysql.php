@@ -109,7 +109,7 @@ class Mysql
     {
         info('Stopping Mysql....');
 
-        $this->cli->quietly('sudo brew services stop mysql');
+        $this->cli->quietly('brew services stop mysql');
     }
 
     function setRootPassword() {
