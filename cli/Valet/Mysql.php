@@ -54,7 +54,7 @@ class Mysql
             $this->brew->installOrFail('mysql-utilities');
         }
 
-        $this->cli->quietly('brew services stop mysql');
+        $this->cli->quietly('sudo brew services stop mysql');
         $this->stop();
         $this->installConfiguration();
         $this->restart();
