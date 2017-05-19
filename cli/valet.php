@@ -287,27 +287,24 @@ if (is_dir(VALET_HOME_PATH)) {
     /**
      * Create database
      */
-    $app->command('db create [name]', function ($name) {
-        $name = $name ?: basename(getcwd());
+    $app->command('db [run] [name]', function ($run, $name) {
+        if($run === 'create') {
+            $name = $name ?: basename(getcwd());
 
-        $created = Mysql::createDatabase($name);
+            $created = Mysql::createDatabase($name);
 
-        if(!$created) {
-            return warning('Error creating database');
+            if(!$created) {
+                return warning('Error creating database');
+            }
+
+            info('Database created successfully');
+        } else if($run === 'open') {
+            info('Opening database...');
+
+            Mysql::openSequelPro($name);
         }
 
-        info('Database created successfully');
-    })->descriptions('Create database');
-
-    /**
-     * Open database
-     */
-    $app->command('db open [name]', function ($name = '') {
-        info('Opening database...');
-
-        Mysql::openSequelPro($name);
-
-    })->descriptions('Create database');
+    })->descriptions('Database commands (create, open)');
 }
 
 /**
