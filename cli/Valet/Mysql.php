@@ -114,7 +114,7 @@ class Mysql
     }
 
     function setRootPassword() {
-        $this->cli->quietly("mysqladmin -u root --password='' password root");
+        $this->cli->quietlyAsUser("mysqladmin -u root --password='' password root");
     }
 
     /**
