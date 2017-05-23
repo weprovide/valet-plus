@@ -48,13 +48,13 @@ class Mysql
 
         if (!$this->brew->installed('mysql')) {
             $this->brew->installOrFail('mysql');
+            $this->cli->quietly('sudo brew services stop mysql');
         }
 
         if (!$this->brew->installed('mysql-utilities')) {
             $this->brew->installOrFail('mysql-utilities');
         }
 
-        $this->cli->quietly('sudo brew services stop mysql');
         $this->stop();
         $this->installConfiguration();
         $this->restart();
@@ -97,7 +97,7 @@ class Mysql
     function restart()
     {
         info('Restarting Mysql...');
-        $this->cli->quietly('brew services restart mysql');
+        $this->cli->quietlyAsUser('brew services restart mysql');
     }
 
     /**
@@ -109,7 +109,8 @@ class Mysql
     {
         info('Stopping Mysql....');
 
-        $this->cli->quietly('brew services stop mysql');
+        $this->cli->quietly('sudo brew services stop mysql');
+        $this->cli->quietlyAsUser('brew services stop mysql');
     }
 
     function setRootPassword() {
