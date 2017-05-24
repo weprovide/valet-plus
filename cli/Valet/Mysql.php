@@ -15,6 +15,7 @@ class Mysql
     const MYSQL_CONF_DIR = '/usr/local/etc';
     const MYSQL_CONF = '/usr/local/etc/my.cnf';
     const MAX_FILES_CONF = '/Library/LaunchDaemons/limit.maxfiles.plist';
+    const MYSQL_DIR = '/usr/local/var/mysql';
 
     /**
      * Create a new Nginx instance.
@@ -69,6 +70,9 @@ class Mysql
     function installConfiguration()
     {
         info('Installing Mysql configuration...');
+
+        // TODO: Fix this, currently needed because MySQL will crash otherwise
+        $this->files->chmodPath(static::MYSQL_DIR, 777);
 
         if (! $this->files->isDir($directory = static::MYSQL_CONF_DIR)) {
             $this->files->mkdirAsUser($directory);

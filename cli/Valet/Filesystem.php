@@ -254,6 +254,18 @@ class Filesystem
         chown($path, $user);
     }
 
+    function chmod($filename, $mode) {
+        chmod($filename , $mode);
+    }
+
+    function chmodPath($pathname, $filemode) {
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($pathname));
+
+        foreach($iterator as $item) {
+            chmod($item, $filemode);
+        }
+    }
+
     /**
      * Change the group of the given path.
      *
