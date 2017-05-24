@@ -299,6 +299,10 @@ if (is_dir(VALET_HOME_PATH)) {
 
             info('Database created successfully');
         } else if($run === 'open') {
+            if($name === '.') {
+                $name = basename(getcwd());
+            }
+
             info('Opening database...');
 
             Mysql::openSequelPro($name);
