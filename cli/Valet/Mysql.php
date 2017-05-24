@@ -72,7 +72,7 @@ class Mysql
         info('Installing Mysql configuration...');
 
         // TODO: Fix this, currently needed because MySQL will crash otherwise
-        $this->files->chmodPath(static::MYSQL_DIR, 777);
+        $this->files->chmodPath(static::MYSQL_DIR, 0777);
 
         if (! $this->files->isDir($directory = static::MYSQL_CONF_DIR)) {
             $this->files->mkdirAsUser($directory);

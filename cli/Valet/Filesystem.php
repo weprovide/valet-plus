@@ -259,7 +259,7 @@ class Filesystem
     }
 
     function chmodPath($pathname, $filemode) {
-        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($pathname));
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($pathname));
 
         foreach($iterator as $item) {
             chmod($item, $filemode);
