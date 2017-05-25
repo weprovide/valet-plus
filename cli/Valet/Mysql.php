@@ -148,19 +148,39 @@ class Mysql
         return $link;
     }
 
+    function getDirName($name = '') {
+        if($name) {
+            return $name;
+        }
+
+        if($name === '.') {
+            return trim(basename(getcwd()));
+        }
+        
+        $gitDir = $this->cli->runAsUser('git rev-parse --show-toplevel 2>/dev/null');
+
+        if($gitDir) {
+            return trim(basename($gitDir));
+        }
+
+        return '';
+    }
+
     /**
      * Create Mysql database
      *
      * @param string $name
      * @return void
      */
-    function createDatabase($name) {
+    function createDatabase($name = '') {
+        $name = $this->getDirName($name);
         $link = $this->getConnection();
         $sql = mysqli_real_escape_string($link, 'CREATE DATABASE ' . $name);
         return $link->query($sql);
     }
 
     function openSequelPro($name = '') {
+        $name = $this->getDirName($name);
         $tmpName = tempnam(sys_get_temp_dir(), 'sequelpro').'.spf';
 
         $contents = $this->files->get(__DIR__.'/../stubs/sequelpro.spf');
