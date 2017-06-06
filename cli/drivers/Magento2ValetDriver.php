@@ -27,13 +27,13 @@ public function serves($sitePath, $siteName, $uri)
  */
 public function isStaticFile($sitePath, $siteName, $uri)
 {
-    header('Cache-Control: private, max-age=365000000');
-    if (file_exists($staticFilePath = $sitePath.'/pub'.$uri)) {
+    $url = preg_replace('#static(/version[0-9]+)?/#', 'static/', $uri, 1);
+    if (file_exists($staticFilePath = $sitePath.'/pub'.$url)) {
         return $staticFilePath;
     }
 
     if (strpos($uri, '/static/') === 0) {
-        $_GET['resource'] = preg_replace('#static(/version[0-9]+)?/#', '', $uri, 1);
+        $_GET['resource'] = $url;
         include($sitePath.DIRECTORY_SEPARATOR.'pub'.DIRECTORY_SEPARATOR.'static.php');
         exit;
     }
