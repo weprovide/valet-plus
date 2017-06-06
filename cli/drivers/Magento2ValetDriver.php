@@ -32,12 +32,12 @@ public function isStaticFile($sitePath, $siteName, $uri)
     }
 
     $url = preg_replace('#static(/version[0-9]+)?/#', 'static/', $uri, 1);
-    if (file_exists($staticFilePath = $sitePath.'/pub'.$url)) {
+    if (file_exists($staticFilePath = $sitePath.'/pub'.$uri)) {
         return $staticFilePath;
     }
 
     if (strpos($uri, '/static/') === 0) {
-        $_GET['resource'] = $url;
+        $_GET['resource'] = preg_replace('#static(/version[0-9]+)?/#', '', $uri, 1);
         include($sitePath.DIRECTORY_SEPARATOR.'pub'.DIRECTORY_SEPARATOR.'static.php');
         exit;
     }
