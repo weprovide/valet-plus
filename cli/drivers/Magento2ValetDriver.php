@@ -27,6 +27,10 @@ public function serves($sitePath, $siteName, $uri)
  */
 public function isStaticFile($sitePath, $siteName, $uri)
 {
+    if(strpos($uri, '/static/') === false && strpos($uri, '/media/') === false) {
+        return false;
+    }
+
     $url = preg_replace('#static(/version[0-9]+)?/#', 'static/', $uri, 1);
     if (file_exists($staticFilePath = $sitePath.'/pub'.$url)) {
         return $staticFilePath;
