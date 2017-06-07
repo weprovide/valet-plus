@@ -69,7 +69,7 @@ class Mysql
      */
     function installConfiguration()
     {
-        info('Installing Mysql configuration...');
+        info('Installing mysql configuration...');
 
         // TODO: Fix this, currently needed because MySQL will crash otherwise
         $this->files->chmodPath(static::MYSQL_DIR, 0777);
@@ -87,7 +87,7 @@ class Mysql
     }
 
     function removeConfiguration() {
-        info('Removing Mysql configuration...');
+        info('Removing mysql configuration...');
 
         $this->files->unlink(static::MYSQL_CONF);
         $this->files->unlink(static::MYSQL_CONF.'.default');
@@ -100,7 +100,7 @@ class Mysql
      */
     function restart()
     {
-        info('Restarting Mysql...');
+        info('Restarting mysql...');
         $this->cli->quietlyAsUser('brew services restart mysql');
     }
 
@@ -111,7 +111,7 @@ class Mysql
      */
     function stop()
     {
-        info('Stopping Mysql....');
+        info('Stopping mysql....');
 
         $this->cli->quietly('sudo brew services stop mysql');
         $this->cli->quietlyAsUser('brew services stop mysql');
@@ -177,6 +177,23 @@ class Mysql
         $link = $this->getConnection();
         $sql = mysqli_real_escape_string($link, 'CREATE DATABASE ' . $name);
         return $link->query($sql);
+    }
+
+    function joinPaths() {
+        $args = func_get_args();
+        $paths = array();
+        foreach ($args as $arg) {
+            $paths = array_merge($paths, (array)$arg);
+        }
+
+        $paths = array_map(create_function('$p', 'return trim($p, "/");'), $paths);
+        $paths = array_filter($paths);
+        return join('/', $paths);
+    }
+
+    function importDatabase($file) {
+        $database = $this->getDirName();
+        $this->cli->passthru('pv ' . escapeshellarg($file) . ' | mysql ' . escapeshellarg($database));
     }
 
     function openSequelPro($name = '') {

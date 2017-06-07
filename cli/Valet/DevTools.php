@@ -37,8 +37,7 @@ class DevTools
      */
     function install()
     {
-        $tools = ['wp-cli', 'n98-magerun', 'n98-magerun2'];
-        $currentVersion = $this->brew->linkedPhp();
+        $tools = ['wp-cli', 'n98-magerun', 'n98-magerun2', 'pv'];
         info('Installing developer tools...');
 
         foreach($tools as $tool) {

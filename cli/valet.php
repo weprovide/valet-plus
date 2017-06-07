@@ -38,6 +38,7 @@ $app->command('install', function () {
     Nginx::stop();
     PhpFpm::stop();
     Mysql::stop();
+    Redis::stop();
     DevTools::install();
 
     Configuration::install();
@@ -45,6 +46,7 @@ $app->command('install', function () {
     PhpFpm::install();
     DnsMasq::install();
     Mysql::install();
+    Redis::install();
     Nginx::restart();
     Valet::symlinkToUsersBin();
 
@@ -216,6 +218,8 @@ if (is_dir(VALET_HOME_PATH)) {
 
         Mysql::restart();
 
+        Redis::restart();
+
         info('Valet services have been started.');
     })->descriptions('Start the Valet services');
 
@@ -241,6 +245,8 @@ if (is_dir(VALET_HOME_PATH)) {
         Nginx::stop();
 
         Mysql::stop();
+
+        Redis::stop();
 
         info('Valet services have been stopped.');
     })->descriptions('Stop the Valet services');
@@ -297,7 +303,7 @@ if (is_dir(VALET_HOME_PATH)) {
                 return warning('Error creating database');
             }
 
-            info('Database created successfully');
+            info('Database "' . $name . '" created successfully');
         } else if($run === 'open') {
             if($name === '.') {
                 $name = basename(getcwd());
@@ -306,6 +312,14 @@ if (is_dir(VALET_HOME_PATH)) {
             info('Opening database...');
 
             Mysql::openSequelPro($name);
+        } else if($run === 'import') {
+            info('Importing database...');
+            if(!$name) {
+                throw new Exception('Please provide a dump file');
+            }
+            Mysql::importDatabase($name);
+        } else {
+            throw new Exception('Command not found');
         }
 
     })->descriptions('Database commands (create, open)');
