@@ -10,10 +10,10 @@ define('VALET_STATIC_PREFIX', '41c270e4-5535-4daa-b23e-c269744c2f45');
 /**
  * Show the Valet 404 "Not Found" page.
  */
-function show_valet_404()
+function show_valet_404($paths, $siteName)
 {
     http_response_code(404);
-    require __DIR__.'/cli/templates/404.html';
+    require __DIR__.'/cli/templates/404.php';
     exit;
 }
 
@@ -78,7 +78,7 @@ foreach ($valetConfig['paths'] as $path) {
 }
 
 if (is_null($valetSitePath)) {
-    show_valet_404();
+    show_valet_404($valetConfig['paths'], $siteName);
 }
 
 $valetSitePath = realpath($valetSitePath);
