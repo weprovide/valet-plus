@@ -7,15 +7,6 @@
 define('VALET_HOME_PATH', posix_getpwuid(fileowner(__FILE__))['dir'].'/.valet');
 define('VALET_STATIC_PREFIX', '41c270e4-5535-4daa-b23e-c269744c2f45');
 
-/**
- * Show the Valet 404 "Not Found" page.
- */
-function show_valet_404($paths, $siteName)
-{
-    http_response_code(404);
-    require __DIR__.'/cli/templates/404.php';
-    exit;
-}
 
 /**
  * @param $domain string Domain to filter
@@ -78,7 +69,9 @@ foreach ($valetConfig['paths'] as $path) {
 }
 
 if (is_null($valetSitePath)) {
-    show_valet_404($valetConfig['paths'], $siteName);
+    http_response_code(404);
+    require __DIR__.'/cli/templates/404.php';
+    exit;
 }
 
 $valetSitePath = realpath($valetSitePath);
@@ -125,7 +118,9 @@ $frontControllerPath = $valetDriver->frontControllerPath(
 );
 
 if (! $frontControllerPath) {
-    show_valet_404();
+    http_response_code(404);
+    echo 'Did not get front controller from driver. Please return a front controller to be executed.';
+    exit;
 }
 
 chdir(dirname($frontControllerPath));

@@ -41,13 +41,13 @@
         <div>
             <h1>Valet could not find directory <span><?php echo htmlspecialchars($siteName); ?></span></h1>
             <h2>Available sites:</h2>
-            <?php foreach($paths as $path): ?>
+            <?php foreach($valetConfig['paths'] as $path): ?>
                 <?php foreach(glob(htmlspecialchars($path) . '/*', GLOB_ONLYDIR) as $site): ?>
-                    <p><span><a href="http://<?php echo basename($site) . '.dev'; ?>"><?php echo basename($site) . '.dev'; ?></a></span></p>
+                    <p><span><a href="http://<?php echo htmlspecialchars(basename($site) . '.' . $valetConfig['domain']); ?>"><?php echo htmlspecialchars(basename($site) . '.' . $valetConfig['domain']); ?></a></span></p>
                 <?php endforeach; ?>
             <?php endforeach; ?>
             <h2>Checked paths:</h2>
-            <?php foreach($paths as $path): ?>
+            <?php foreach($valetConfig['paths'] as $path): ?>
                 <p><span><?php echo htmlspecialchars($path); ?></span></p>
             <?php endforeach; ?>
         </div>
