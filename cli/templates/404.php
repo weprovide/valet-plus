@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Valet - Not Found</title>
+        <title>Valet - Not Found - <?php echo htmlspecialchars($siteName . '.' . $valetConfig['domain']); ?></title>
 
         <style>
             body {
@@ -10,7 +10,7 @@
                 justify-content: center;
                 text-align: center;
                 font-size: 25px;
-                font-weight: 200;                           
+                font-weight: 200;
             }
 
             h1 {
