@@ -137,12 +137,6 @@ By default these are included:
 
 A full list can be found [here](cli/drivers)
 
-## What Valet+ provides
-
-- Installation of mysql with default username `root` and password `root`
-- Automatic configuration of mysql which allows you to run `mysql` on the command line without providing username and password
-- 
-
 ## Valet Documentation
 
 Documentation for Valet can be found on the [Laravel website](https://laravel.com/docs/valet).
