@@ -117,7 +117,7 @@ valet unsecure example
 ```
 
 ## Valet drivers
-Valet uses drivers to handle requests. You can read more about those here: https://laravel.com/docs/5.4/valet#custom-valet-drivers
+Valet uses drivers to handle requests. You can read more about those [here](https://laravel.com/docs/5.4/valet#custom-valet-drivers).
 
 By default these are included:
 
