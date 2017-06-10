@@ -6,6 +6,30 @@ Valet+ is a development environment for macOS. No Vagrant, no Docker, no `/etc/h
 
 Valet+ configures your Mac to always run Nginx in the background when your machine starts. Then, using [DnsMasq](https://en.wikipedia.org/wiki/Dnsmasq), Valet proxies all requests on the `*.dev` domain to point to sites installed on your local machine.
 
+## Table of contents
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Introduction](#introduction)
+- [Installation](#installation)
+  - [Serving sites](#serving-sites)
+- [Switching PHP version](#switching-php-version)
+- [Database](#database)
+  - [Creating databases](#creating-databases)
+  - [Importing databases](#importing-databases)
+  - [Open database in Sequel Pro](#open-database-in-sequel-pro)
+- [Redis](#redis)
+- [Open project in browser](#open-project-in-browser)
+- [Securing Sites With TLS](#securing-sites-with-tls)
+- [Valet drivers](#valet-drivers)
+- [Valet Documentation](#valet-documentation)
+- [Credits](#credits)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+
 In other words, a blazing fast development environment. Valet provides a great alternative if you want flexible basics or prefer extreme speed.
 
 ## Installation
