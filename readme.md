@@ -94,6 +94,10 @@ When no name is given it'll try to find the closest git repository directory nam
 valet db open
 ```
 
+## Redis
+
+Redis is automatically installed and listens on the default port `6379`. The redis socket is located at `/tmp/redis.sock`
+
 ## Open project in browser
 
 To open the current project in your default browser:
