@@ -11,9 +11,12 @@ Valet+ configures your Mac to always run Nginx in the background when your machi
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 - [Introduction](#introduction)
+
 - [Installation](#installation)
   - [Serving sites](#serving-sites)
 - [Switching PHP version](#switching-php-version)
+- [Xdebug](#xdebug)
+  - [PHPstorm](#phpstorm)
 - [Database](#database)
   - [Creating databases](#creating-databases)
   - [Importing databases](#importing-databases)
@@ -76,6 +79,31 @@ valet use 7.0
 ```
 valet use 7.1
 ```
+
+## Xdebug
+
+Xdebug can make your environment slower. That's why we allow to fully enable / disable it. It works on port `9000`.
+
+Enable Xdebug:
+
+```
+valet xdebug on
+```
+
+Disable Xdebug:
+
+```
+valet xdebug off
+```
+
+### PHPstorm
+
+To use Xdebug with PHPstorm you don't have to configure anything. Just run `valet xdebug on` and click the Xdebug button on the top right:
+
+![xdebug-phpstorm](images/xdebug-phpstorm.png)
+
+Then install [Xdebug helper](https://chrome.google.com/webstore/detail/xdebug-helper/eadndfjplgieldjbigjakmdgkmoaaaoc) for Chrome and enable it when viewing the page you want to use Xdebug on.
+
 
 ## Database
 Valet+ automatically installs mysql 5.7 with 5.6 compatibility mode included. It includes a tweaked my.cnf which is aimed at improving speed.
