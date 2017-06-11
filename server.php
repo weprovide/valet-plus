@@ -7,25 +7,6 @@
 define('VALET_HOME_PATH', posix_getpwuid(fileowner(__FILE__))['dir'].'/.valet');
 define('VALET_STATIC_PREFIX', '41c270e4-5535-4daa-b23e-c269744c2f45');
 
-
-/**
- * @param $domain string Domain to filter
- *
- * @return string Filtered domain (without xip.io feature)
- */
-function valet_support_xip_io($domain)
-{
-    if (substr($domain, -7) === '.xip.io') {
-        // support only ip v4 for now
-        $domainPart = explode('.', $domain);
-        if (count($domainPart) > 6) {
-            $domain = implode('.', array_reverse(array_slice(array_reverse($domainPart), 6)));
-        }
-    }
-
-    return $domain;
-}
-
 /**
  * Load the Valet configuration.
  */
@@ -42,7 +23,7 @@ $uri = urldecode(
 
 $siteName = basename(
     // Filter host to support xip.io feature
-    valet_support_xip_io($_SERVER['HTTP_HOST']),
+    $_SERVER['HTTP_HOST'],
     '.'.$valetConfig['domain']
 );
 
@@ -86,7 +67,9 @@ require __DIR__.'/cli/drivers/require.php';
 $valetDriver = ValetDriver::assign($valetSitePath, $siteName, $uri);
 
 if (! $valetDriver) {
-    show_valet_404();
+    http_response_code(404);
+    echo 'Could not find suitable driver for your project.';
+    exit;
 }
 
 /**
@@ -124,5 +107,7 @@ if (! $frontControllerPath) {
 }
 
 chdir(dirname($frontControllerPath));
+
+unset($domain, $path, $siteName, $uri, $valetConfig, $valetDriver, $valetSitePath);
 
 require $frontControllerPath;
