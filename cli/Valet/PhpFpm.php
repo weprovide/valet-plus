@@ -69,12 +69,17 @@ class PhpFpm
 
         $contents = $this->files->get(__DIR__.'/../stubs/z-performance.ini');
 
+        $iniPath = $this->iniPath();
+        $this->files->ensureDirExists($iniPath, user());
+        $this->files->putAsUser($this->iniPath().'z-performance.ini', $contents);
+    }
+
+    function iniPath() {
         $destFile = dirname($this->fpmConfigPath());
         $destFile = str_replace('/php-fpm.d', '', $destFile);
-        $destFile .= '/conf.d/z-performance.ini';
-        $this->files->ensureDirExists(dirname($destFile), user());
+        $destFile = $destFile . '/conf.d/';
 
-        $this->files->putAsUser($destFile, $contents);
+        return $destFile;
     }
 
     /**
@@ -154,6 +159,46 @@ class PhpFpm
 
         $this->cli->passthru('brew link php'.$version);
         $this->cli->passthru('valet install');
+        return true;
+    }
+
+    function enableXdebug() {
+        $currentPhpVersion = $this->brew->linkedPhp();
+        if(!$this->brew->installed($currentPhpVersion.'-xdebug')) {
+            $this->brew->ensureInstalled($currentPhpVersion.'-xdebug');
+        }
+
+        $iniPath = $this->iniPath();
+
+        if($this->files->exists($iniPath.'ext-xdebug.ini')) {
+            info('xdebug was already enabled.');
+            return true;
+        }
+
+        if($this->files->exists($iniPath.'ext-xdebug.ini.disabled')) {
+            $this->files->move($iniPath.'ext-xdebug.ini.disabled', $iniPath.'ext-xdebug.ini');
+        }
+
+        $this->restart();
+
+        info('Enabled xdebug');
+        return true;
+    }
+
+    function disableXdebug() {
+        $iniPath = $this->iniPath();
+        if($this->files->exists($iniPath.'ext-xdebug.ini.disabled')) {
+            info('xdebug was already disabled.');
+            return true;
+        }
+
+        if($this->files->exists($iniPath.'ext-xdebug.ini')) {
+            $this->files->move($iniPath.'ext-xdebug.ini', $iniPath.'ext-xdebug.ini.disabled');
+        }
+
+        $this->restart();
+
+        info('Disabled xdebug');
         return true;
     }
 }

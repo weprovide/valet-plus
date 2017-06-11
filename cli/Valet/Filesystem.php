@@ -182,6 +182,10 @@ class Filesystem
         copy($from, $to);
     }
 
+    function move($from, $to) {
+        rename($from, $to);
+    }
+
     /**
      * Copy the given file to a new location for the non-root user.
      *

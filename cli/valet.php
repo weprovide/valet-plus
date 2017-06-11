@@ -304,7 +304,10 @@ if (is_dir(VALET_HOME_PATH)) {
             }
 
             info('Database "' . $name . '" created successfully');
-        } else if($run === 'open') {
+            return;
+        }
+        
+        if($run === 'open') {
             if($name === '.') {
                 $name = basename(getcwd());
             }
@@ -312,16 +315,33 @@ if (is_dir(VALET_HOME_PATH)) {
             info('Opening database...');
 
             Mysql::openSequelPro($name);
-        } else if($run === 'import') {
+            return;
+        }
+        
+        if($run === 'import') {
             info('Importing database...');
             if(!$name) {
                 throw new Exception('Please provide a dump file');
             }
             Mysql::importDatabase($name);
-        } else {
-            throw new Exception('Command not found');
+            return;
+        }
+        
+        throw new Exception('Command not found');
+    })->descriptions('Database commands (create, open)');
+
+    $app->command('xdebug [mode]', function ($mode) {
+        if($mode === 'on' || $mode === 'disable') {
+            PhpFpm::enableXdebug();
+            return;
+        }
+        
+        if($mode === 'off' || $mode === 'disable') {
+            PhpFpm::disableXdebug();            
+            return;
         }
 
+        throw new Exception('Mode not found. Available modes: on / off');
     })->descriptions('Database commands (create, open)');
 }
 
