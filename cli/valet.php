@@ -342,7 +342,15 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         throw new Exception('Mode not found. Available modes: on / off');
-    })->descriptions('Database commands (create, open)');
+    })->descriptions('Enable / disable Xdebug');
+
+    $app->command('tower', function () {
+        DevTools::tower();
+    })->descriptions('Open closest git project in tower');
+
+    $app->command('phpstorm', function () {
+        DevTools::phpstorm();
+    })->descriptions('Open closest git project in tower');
 }
 
 /**
