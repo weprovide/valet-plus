@@ -148,6 +148,30 @@ valet db open
 
 Redis is automatically installed and listens on the default port `6379`. The redis socket is located at `/tmp/redis.sock`
 
+## Git Tower
+
+Open current git project in [Tower](https://www.git-tower.com/mac/)
+
+```
+valet tower
+```
+
+## PHPstorm
+
+Open current git project in [PHPstorm](https://www.jetbrains.com/phpstorm/)
+
+```
+valet phpstorm
+```
+
+## VScode
+
+Open current git project in [Visual Studio Code](https://code.visualstudio.com/)
+
+```
+valet vscode
+```
+
 ## Open project in browser
 
 To open the current project in your default browser:

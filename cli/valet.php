@@ -346,11 +346,15 @@ if (is_dir(VALET_HOME_PATH)) {
 
     $app->command('tower', function () {
         DevTools::tower();
-    })->descriptions('Open closest git project in tower');
+    })->descriptions('Open closest git project in Tower');
 
     $app->command('phpstorm', function () {
         DevTools::phpstorm();
-    })->descriptions('Open closest git project in tower');
+    })->descriptions('Open closest git project in PHPstorm');
+
+    $app->command('vscode', function () {
+        DevTools::vscode();
+    })->descriptions('Open closest git project in Visual Studio Code');
 }
 
 /**
