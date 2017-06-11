@@ -80,7 +80,7 @@ valet use 7.1
 
 ## Xdebug
 
-Xdebug can make your environment slower. That's why we allow to fully enable / disable it. It works on port `9000`.
+Xdebug support is build in. It works on port `9000` after you enable it.
 
 Enable Xdebug:
 
@@ -93,6 +93,8 @@ Disable Xdebug:
 ```
 valet xdebug off
 ```
+
+> :warning: Xdebug makes your environment slower. That's why we allow to fully enable / disable it. When not debugging it's best to disable it by running `valet xdebug off`.
 
 ### PHPstorm
 
