@@ -184,6 +184,12 @@ To open the current project in your default browser:
 valet open
 ```
 
+## Copy ssh key
+
+```
+valet ssh-key
+```
+
 ## Securing Sites With TLS
 
 By default, Valet serves sites over plain HTTP. However, if you would like to serve a site over encrypted TLS using HTTP/2, use the secure command. For example, if your site is being served by Valet on the example.dev domain, you should run the following command to secure it:

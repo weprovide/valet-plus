@@ -51,6 +51,11 @@ class DevTools
         }
     }
 
+    function sshkey() {
+        $this->cli->passthru('pbcopy < ~/.ssh/id_rsa.pub');
+        info('Copied ssh key to your clipboard');
+    }
+
     function phpstorm() {
         info('Opening PHPstorm...');
         $command = false;
