@@ -144,6 +144,10 @@ When no name is given it'll try to find the closest git repository directory nam
 valet db open
 ```
 
+## Mailhog
+
+Mailhog is used to catch emails send from php. You can access the panel at [http://localhost:8025](http://localhost:8025).
+
 ## Redis
 
 Redis is automatically installed and listens on the default port `6379`. The redis socket is located at `/tmp/redis.sock`
