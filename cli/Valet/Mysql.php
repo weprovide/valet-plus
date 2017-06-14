@@ -58,7 +58,6 @@ class Mysql
         $this->stop();
         $this->installConfiguration();
         $this->restart();
-        $this->setRootPassword();
     }
 
     /**

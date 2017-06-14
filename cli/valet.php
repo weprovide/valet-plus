@@ -49,6 +49,7 @@ $app->command('install', function () {
     Redis::install();
     Nginx::restart();
     Valet::symlinkToUsersBin();
+    Mysql::setRootPassword();
 
     output(PHP_EOL.'<info>Valet installed successfully!</info>');
 })->descriptions('Install the Valet services');
