@@ -27,17 +27,28 @@ public function serves($sitePath, $siteName, $uri)
  */
 public function isStaticFile($sitePath, $siteName, $uri)
 {
-    if(strpos($uri, '/static/') === false && strpos($uri, '/media/') === false) {
+    $isMagentoStatic = false;
+    $resource = $uri;
+
+    if(strpos($uri, '/static/') !== false) {
+        $isMagentoStatic = true;
+    }
+
+    if(!$isMagentoStatic && strpos($uri, '/media/') === false) {
         return false;
     }
 
-    $url = preg_replace('#static(/version[0-9]+)?/#', 'static/', $uri, 1);
+    if($isMagentoStatic) {
+        $resource = preg_replace('#static(/version[0-9]+)?/#', '', $uri, 1);
+        $uri = '/static' . $resource;
+    }
+
     if (file_exists($staticFilePath = $sitePath.'/pub'.$uri)) {
         return $staticFilePath;
     }
 
     if (strpos($uri, '/static/') === 0) {
-        $_GET['resource'] = preg_replace('#static(/version[0-9]+)?/#', '', $uri, 1);
+        $_GET['resource'] = $resource;
         include($sitePath.DIRECTORY_SEPARATOR.'pub'.DIRECTORY_SEPARATOR.'static.php');
         exit;
     }
