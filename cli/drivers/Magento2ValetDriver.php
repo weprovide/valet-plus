@@ -43,9 +43,6 @@ public function isStaticFile($sitePath, $siteName, $uri)
     }
 
     if (strpos($uri, '/media/') === 0) {
-        http_response_code(204);
-        header('Content-Type: text/plain');
-        exit;
         include($sitePath.DIRECTORY_SEPARATOR.'pub'.DIRECTORY_SEPARATOR.'get.php');
         exit;
     }
