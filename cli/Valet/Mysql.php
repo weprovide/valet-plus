@@ -49,7 +49,6 @@ class Mysql
 
         if (!$this->brew->installed('mysql')) {
             $this->brew->installOrFail('mysql');
-            $this->cli->quietly('sudo brew services stop mysql');
         }
 
         if (!$this->brew->installed('mysql-utilities')) {
