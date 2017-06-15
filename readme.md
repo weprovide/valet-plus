@@ -1,4 +1,4 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-valet.svg"></p>
+<p align="center"><img src="images/logo.png"></p>
 
 ## Introduction
 
