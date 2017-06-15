@@ -221,6 +221,8 @@ if (is_dir(VALET_HOME_PATH)) {
 
         Redis::restart();
 
+        Elasticsearch::start();
+
         info('Valet services have been started.');
     })->descriptions('Start the Valet services');
 
@@ -248,6 +250,8 @@ if (is_dir(VALET_HOME_PATH)) {
         Mysql::stop();
 
         Redis::stop();
+
+        Elasticsearch::stop();
 
         info('Valet services have been stopped.');
     })->descriptions('Stop the Valet services');
@@ -343,6 +347,15 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         throw new Exception('Mode not found. Available modes: on / off');
+    })->descriptions('Enable / disable Xdebug');
+
+    $app->command('elasticsearch [mode]', function ($mode) {
+        if($mode === 'install' || $mode === 'on') {
+            Elasticsearch::install();
+            return;
+        }
+
+        throw new Exception('Sub-command not found. Available: install');
     })->descriptions('Enable / disable Xdebug');
 
     $app->command('tower', function () {

@@ -2,17 +2,16 @@
 
 namespace Valet;
 
-class Redis
+class Elasticsearch
 {
     var $brew;
     var $cli;
     var $files;
     var $configuration;
     var $site;
-    const REDIS_CONF = '/usr/local/etc/redis.conf';
 
     /**
-     * Create a new Nginx instance.
+     * Create a new instance.
      *
      * @param  Brew $brew
      * @param  CommandLine $cli
@@ -37,24 +36,17 @@ class Redis
      */
     function install()
     {
-        if (!$this->brew->installed('redis')) {
-            $this->brew->installOrFail('redis');
-            $this->cli->quietly('sudo brew services stop redis');
+        if ($this->installed()) {
+            info('Elasticsearch was already installed');
+            return;
         }
 
-        $this->installConfiguration();
-        $this->restart();
+        $this->cli->quietlyAsUser('brew cask install java');
+        $this->brew->installOrFail('elasticsearch@2.4');
     }
 
-    /**
-     * Install the configuration file.
-     *
-     * @return void
-     */
-    function installConfiguration()
-    {
-        info('Installing redis configuration...');
-        $this->files->copy(__DIR__.'/../stubs/redis.conf', static::REDIS_CONF);
+    function installed() {
+        return $this->brew->installed('elasticsearch@2.4');
     }
 
     /**
@@ -64,24 +56,32 @@ class Redis
      */
     function restart()
     {
-        info('Restarting redis...');
-        $this->cli->quietlyAsUser('brew services restart redis');
+        if (!$this->installed()) {
+            return;
+        }
+
+        info('Restarting elasticsearch...');
+        $this->cli->quietlyAsUser('brew services restart elasticsearch@2.4');
     }
 
     /**
-     * Stop the Nginx service.
+     * Stop the service.
      *
      * @return void
      */
     function stop()
     {
-        info('Stopping redis....');
-        $this->cli->quietly('sudo brew services stop redis');
-        $this->cli->quietlyAsUser('brew services stop redis');
+        if (!$this->installed()) {
+            return;
+        }
+
+        info('Stopping elasticsearch....');
+        $this->cli->quietly('sudo brew services stop elasticsearch@2.4');
+        $this->cli->quietlyAsUser('brew services stop elasticsearch@2.4');
     }
 
     /**
-     * Prepare Redis for uninstallation.
+     * Prepare for uninstallation.
      *
      * @return void
      */

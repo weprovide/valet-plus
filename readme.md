@@ -152,6 +152,16 @@ Mailhog is used to catch emails send from php. You can access the panel at [http
 
 Redis is automatically installed and listens on the default port `6379`. The redis socket is located at `/tmp/redis.sock`
 
+## Elasticsearch
+
+Elasticsearch can be installed using:
+
+```
+valet elasticsearch install
+```
+
+It will run on the default port `9200`.
+
 ## Git Tower
 
 Open current git project in [Tower](https://www.git-tower.com/mac/)
