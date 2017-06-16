@@ -356,7 +356,7 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         throw new Exception('Sub-command not found. Available: install');
-    })->descriptions('Enable / disable Xdebug');
+    })->descriptions('Enable / disable Elasticsearch');
 
     $app->command('tower', function () {
         DevTools::tower();
