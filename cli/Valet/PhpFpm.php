@@ -37,7 +37,7 @@ class PhpFpm
     function install()
     {
         if (! $this->brew->hasInstalledPhp()) {
-            $this->brew->ensureInstalled('php71', [], $this->taps);
+            $this->brew->ensureInstalled('php70', [], $this->taps);
         }
 
         $this->files->ensureDirExists('/usr/local/var/log', user());
