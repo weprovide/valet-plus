@@ -221,7 +221,7 @@ if (is_dir(VALET_HOME_PATH)) {
 
         Redis::restart();
 
-        Elasticsearch::start();
+        Elasticsearch::restart();
 
         info('Valet services have been started.');
     })->descriptions('Start the Valet services');
