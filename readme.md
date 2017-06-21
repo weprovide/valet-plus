@@ -8,6 +8,17 @@ Valet+ configures your Mac to always run Nginx in the background when your machi
 
 In other words, a blazing fast development environment. Valet+ provides a great alternative if you want flexible basics or prefer extreme speed.
 
+Some key differences compared to Valet:
+
+- PHP version switch
+- Xdebug (on/off mode)
+- PHP extensions (mcrypt, intl, opcache, apcu)
+- Optimized PHP configuration using opcache
+- Mysql (with optimized configuration)
+- Redis
+- Elasticsearch (optional)
+- Many more features outlined below...
+
 ## Table of contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
