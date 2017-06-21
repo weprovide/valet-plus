@@ -4,9 +4,9 @@
 
 Valet+ is a development environment for macOS. No Vagrant, no Docker, no `/etc/hosts` file. _Yeah, we like it too._
 
-Valet+ configures your Mac to always run Nginx in the background when your machine starts. Then, using [DnsMasq](https://en.wikipedia.org/wiki/Dnsmasq), Valet proxies all requests on the `*.dev` domain to point to sites installed on your local machine.
+Valet+ configures your Mac to always run Nginx in the background when your machine starts. Then, using [DnsMasq](https://en.wikipedia.org/wiki/Dnsmasq), Valet+ proxies all requests on the `*.dev` domain to point to sites installed on your local machine.
 
-In other words, a blazing fast development environment. Valet provides a great alternative if you want flexible basics or prefer extreme speed.
+In other words, a blazing fast development environment. Valet+ provides a great alternative if you want flexible basics or prefer extreme speed.
 
 ## Table of contents
 
@@ -37,7 +37,7 @@ In other words, a blazing fast development environment. Valet provides a great a
 
 1. Install or update [Homebrew](https://brew.sh/) to the latest version using brew update.
 2. Install PHP 7.1 using Homebrew via `brew install homebrew/php/php71`.
-3. Install Valet+ with Composer via `composer global require timneutkens/valet-plus`. Make sure the  `~/.composer/vendor/bin` directory is in your system's "PATH".
+3. Install Valet+ with Composer via `composer global require weprovide/valet-plus`. Make sure the  `~/.composer/vendor/bin` directory is in your system's "PATH".
 4. Run the `valet install` command. This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
 5. Once Valet is installed, try pinging any *.dev domain on your terminal using a command such as `ping foobar.dev`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
 
@@ -242,3 +242,7 @@ Documentation for Valet can be found on the [Laravel website](https://laravel.co
 ## Credits
 
 This project is an improved fork of [laravel/valet](https://github.com/laravel/valet). Thanks to everyone who contributed to this project.
+
+## Authors
+
+- Tim Neutkens ([@timneutkens](https://github.com/timneutkens))

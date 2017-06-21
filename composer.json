@@ -1,16 +1,11 @@
 {
-    "name": "laravel/valet",
-    "description": "A more enjoyable local development experience for Mac.",
-    "keywords": ["laravel", "zonda", "wwdhhd"],
+    "name": "weprovide/valet-plus",
+    "description": "Blazing fast macOS PHP development environment",
     "license": "MIT",
     "authors": [
         {
-            "name": "Taylor Otwell",
-            "email": "taylor@laravel.com"
-        },
-        {
-            "name": "Adam Wathan",
-            "email": "adam.wathan@gmail.com"
+            "name": "Tim Neutkens",
+            "email": "tim@weprovide.com"
         }
     ],
     "autoload": {
