@@ -119,6 +119,9 @@ Then install [Xdebug helper](https://chrome.google.com/webstore/detail/xdebug-he
 ## Database
 Valet+ automatically installs mysql 5.7 with 5.6 compatibility mode included. It includes a tweaked my.cnf which is aimed at improving speed.
 
+Username: `root`
+Password: `root`
+
 ### Creating databases
 
 Create databases using:
