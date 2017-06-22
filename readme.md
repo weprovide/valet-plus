@@ -142,8 +142,10 @@ valet db create
 Import a database with progress bar
 
 ```
-valet db import <filename>.sql
+valet db import <filename>.sql <name>
 ```
+
+When no name is given it'll try to find the closest git repository directory name. When it can't find one it'll use the current working directory name.
 
 ### Open database in Sequel Pro
 

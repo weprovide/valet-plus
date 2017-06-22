@@ -189,8 +189,8 @@ class Mysql
         return join('/', $paths);
     }
 
-    function importDatabase($file) {
-        $database = $this->getDirName();
+    function importDatabase($file, $database) {
+        $database = $database ?: $this->getDirName();
         $this->cli->passthru('pv ' . escapeshellarg($file) . ' | mysql ' . escapeshellarg($database));
     }
 

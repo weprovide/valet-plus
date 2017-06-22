@@ -298,7 +298,7 @@ if (is_dir(VALET_HOME_PATH)) {
     /**
      * Create database
      */
-    $app->command('db [run] [name]', function ($run, $name) {
+    $app->command('db [run] [name] [optional]', function ($run, $name, $optional) {
         if($run === 'create') {
             $name = $name ?: basename(getcwd());
 
@@ -328,7 +328,7 @@ if (is_dir(VALET_HOME_PATH)) {
             if(!$name) {
                 throw new Exception('Please provide a dump file');
             }
-            Mysql::importDatabase($name);
+            Mysql::importDatabase($name, $optional);
             return;
         }
         
