@@ -47,6 +47,7 @@ $app->command('install', function () {
     DnsMasq::install();
     Mysql::install();
     Redis::install();
+    Mailhog::install();
     Nginx::restart();
     Valet::symlinkToUsersBin();
     Mysql::setRootPassword();
@@ -214,13 +215,10 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app->command('start', function () {
         PhpFpm::restart();
-
         Nginx::restart();
-
         Mysql::restart();
-
         Redis::restart();
-
+        Mailhog::restart();
         Elasticsearch::restart();
 
         info('Valet services have been started.');
@@ -231,10 +229,11 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app->command('restart', function () {
         PhpFpm::restart();
-
         Nginx::restart();
-
         Mysql::restart();
+        Redis::restart();
+        Mailhog::restart();
+        Elasticsearch::restart();
 
         info('Valet services have been restarted.');
     })->descriptions('Restart the Valet services');
@@ -244,13 +243,10 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app->command('stop', function () {
         PhpFpm::stop();
-
         Nginx::stop();
-
         Mysql::stop();
-
         Redis::stop();
-
+        Mailhog::stop();
         Elasticsearch::stop();
 
         info('Valet services have been stopped.');
@@ -262,6 +258,9 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('uninstall', function () {
         Nginx::uninstall();
         Mysql::uninstall();
+        Redis::uninstall();
+        Mailhog::uninstall();
+        Elasticsearch::uninstall();
 
         info('Valet has been uninstalled.');
     })->descriptions('Uninstall the Valet services');
@@ -276,7 +275,6 @@ if (is_dir(VALET_HOME_PATH)) {
             output('NO');
         }
     })->descriptions('Determine if this is the latest version of Valet');
-
 
     /**
      * Switch between versions of PHP

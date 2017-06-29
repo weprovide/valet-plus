@@ -39,7 +39,7 @@ class DevTools
      */
     function install()
     {
-        $tools = ['mailhog', 'wp-cli', 'n98-magerun', 'n98-magerun2', 'pv'];
+        $tools = ['wp-cli', 'n98-magerun', 'n98-magerun2', 'pv'];
         info('Installing developer tools...');
 
         foreach($tools as $tool) {
