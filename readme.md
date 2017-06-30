@@ -137,6 +137,34 @@ When no name is given it'll try to find the closest git repository directory nam
 valet db create
 ```
 
+### Dropping databases
+
+Drop a database using:
+
+```
+valet db drop <name>
+```
+
+When no name is given it'll try to find the closest git repository directory name. When it can't find one it'll use the current working directory name.
+
+```
+valet db drop
+```
+
+### Resetting databases
+
+Drop and create a database using:
+
+```
+valet db reset <name>
+```
+
+When no name is given it'll try to find the closest git repository directory name. When it can't find one it'll use the current working directory name.
+
+```
+valet db reset
+```
+
 ### Exporting databases
 
 Export a database:
