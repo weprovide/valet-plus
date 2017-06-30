@@ -329,6 +329,12 @@ if (is_dir(VALET_HOME_PATH)) {
             Mysql::importDatabase($name, $optional);
             return;
         }
+
+        if($run === 'export' || $run === 'dump') {
+            $data = Mysql::exportDatabase($name, $optional);
+            info('Database "' . $data['database'] . '" exported into file "' . $data['filename'] . '"');
+            return;
+        }
         
         throw new Exception('Command not found');
     })->descriptions('Database commands (create, open)');

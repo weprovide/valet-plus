@@ -194,6 +194,16 @@ class Mysql
         $this->cli->passthru('pv ' . escapeshellarg($file) . ' | mysql ' . escapeshellarg($database));
     }
 
+    function exportDatabase($database, $filename) {
+        $database = $database ?: $this->getDirName();
+        $this->cli->passthru('mysqldump ' . escapeshellarg($database) . ' > ' . escapeshellarg($filename ?: $database) . '.sql');
+
+        return [
+            'database' => $database,
+            'filename' => ($filename ?: $database).'.sql'
+            ];
+    }
+
     function openSequelPro($name = '') {
         $name = $this->getDirName($name);
         $tmpName = tempnam(sys_get_temp_dir(), 'sequelpro').'.spf';
