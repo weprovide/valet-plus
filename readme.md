@@ -137,6 +137,18 @@ When no name is given it'll try to find the closest git repository directory nam
 valet db create
 ```
 
+### Exporting databases
+
+Export a database:
+
+```
+valet db export <database> <filename>
+```
+
+When no database is given it'll try to find the closest git repository directory name. When it can't find one it'll use the current working directory name.
+
+When no filename is given it will use `<database>.sql`.
+
 ### Importing databases
 
 Import a database with progress bar
