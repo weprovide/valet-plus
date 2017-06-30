@@ -298,15 +298,41 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app->command('db [run] [name] [optional]', function ($run, $name, $optional) {
         if($run === 'create') {
-            $name = $name ?: basename(getcwd());
+            $databaseName = Mysql::createDatabase($name);
 
-            $created = Mysql::createDatabase($name);
-
-            if(!$created) {
+            if(!$databaseName) {
                 return warning('Error creating database');
             }
 
-            info('Database "' . $name . '" created successfully');
+            info('Database "' . $databaseName . '" created successfully');
+            return;
+        }
+
+        if($run === 'drop') {
+            $databaseName = Mysql::dropDatabase($name);
+
+            if(!$databaseName) {
+                return warning('Error dropping database');
+            }
+
+            info('Database "' . $databaseName . '" dropped successfully');
+            return;
+        }
+
+        if($run === 'reset') {
+            $dropped = Mysql::dropDatabase($name);
+
+            if(!$dropped) {
+                return warning('Error creating database');
+            }
+
+            $databaseName = Mysql::createDatabase($name);
+            
+            if(!$databaseName) {
+                return warning('Error creating database');
+            }
+
+            info('Database "' . $databaseName . '" reset successfully');
             return;
         }
         

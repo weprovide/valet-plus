@@ -170,11 +170,33 @@ class Mysql
      * @param string $name
      * @return void
      */
-    function createDatabase($name = '') {
+    function createDatabase($name) {
         $name = $this->getDirName($name);
         $link = $this->getConnection();
-        $sql = mysqli_real_escape_string($link, 'CREATE DATABASE ' . $name);
-        return $link->query($sql);
+        $sql = mysqli_real_escape_string($link, 'CREATE DATABASE `' . $name . '`');
+
+        if(!$link->query($sql)) {
+            return false;
+        }
+
+        return $name;
+    }
+
+    /**
+     * Create Mysql database
+     *
+     * @param string $name
+     * @return void
+     */
+    function dropDatabase($name) {
+        $name = $this->getDirName($name);
+        $link = $this->getConnection();
+        $sql = mysqli_real_escape_string($link, 'DROP DATABASE `' . $name . '`');
+        if(!$link->query($sql)) {
+            return false;
+        }
+
+        return $name;
     }
 
     function joinPaths() {
