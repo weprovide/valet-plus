@@ -331,6 +331,7 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($run === 'export' || $run === 'dump') {
+            info('Exporting database...');
             $data = Mysql::exportDatabase($name, $optional);
             info('Database "' . $data['database'] . '" exported into file "' . $data['filename'] . '"');
             return;
