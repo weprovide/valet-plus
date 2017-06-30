@@ -12,6 +12,10 @@ class DevTools
     var $configuration;
     var $site;
 
+    var $taps = [
+        'homebrew/homebrew-php'
+    ];
+
     /**
      * Create a new Nginx instance.
      *
@@ -46,7 +50,7 @@ class DevTools
             if($this->brew->installed($tool)) {
                 info($tool.' already installed');
             } else {
-                $this->brew->ensureInstalled($tool);
+                $this->brew->ensureInstalled($tool, [], $this->taps);
             }
         }
     }
