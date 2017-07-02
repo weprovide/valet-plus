@@ -366,6 +366,10 @@ if (is_dir(VALET_HOME_PATH)) {
         throw new Exception('Command not found');
     })->descriptions('Database commands (create, open)');
 
+    $app->command('configure', function () {
+        DevTools::configure();
+    })->descriptions('Configure application connection settings');
+
     $app->command('xdebug [mode]', function ($mode) {
         if($mode === 'on' || $mode === 'disable') {
             PhpFpm::enableXdebug();

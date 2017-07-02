@@ -3,6 +3,7 @@
 namespace Valet;
 
 use Exception;
+use ValetDriver;
 
 class DevTools
 {
@@ -117,5 +118,28 @@ class DevTools
         if(strpos($output, 'fatal: Not a git repository') !== false) {
             throw new Exception('Could not find git directory');
         }
+    }
+
+    function configure() {
+        require realpath(__DIR__.'/../drivers/require.php');
+
+        $driver = ValetDriver::assign(getcwd(), basename(getcwd()), '/');
+
+        $secured = $this->site->secured();
+        $domain = $this->site->host(getcwd()).'.'.$this->configuration->read()['domain'];
+        $isSecure = in_array($domain, $secured);
+        $url = ($isSecure ? 'https://' : 'http://') . $domain;
+
+        if(get_class($driver) === 'Magento2ValetDriver') {
+            info('Configuring Magento 2...');
+            
+            $this->cli->passthru('n98-magerun2 config:set web/unsecure/base_url ' . $url . '/');
+            $this->cli->passthru('n98-magerun2 config:set web/secure/base_url ' . $url . '/');
+            $this->cli->passthru('n98-magerun2 config:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
+
+            return info('Configured Magento 2');
+        }
+
+        info('No configuration settings found.');
     }
 }
