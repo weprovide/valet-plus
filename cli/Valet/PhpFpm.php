@@ -172,6 +172,7 @@ class PhpFpm
 
         if($this->files->exists($iniPath.'ext-xdebug.ini')) {
             info('xdebug was already enabled.');
+            $this->restart();
             return true;
         }
 
