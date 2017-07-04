@@ -141,7 +141,7 @@ class PhpFpm
     function switchTo($version)
     {
         $version = preg_replace('/[.]/','',$version);
-        $versions = ['71', '70', '56'];
+        $versions = ['72', '71', '70', '56'];
         $currentVersion = $this->brew->linkedPhp();
 
         if('php'.$version === $currentVersion) {
