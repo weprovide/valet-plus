@@ -120,7 +120,7 @@ class PhpFpm
     }
 
     function installExtensions() {
-        $extensions = ['apcu', 'intl', 'mcrypt', 'opcache'];
+        $extensions = ['apcu', 'intl', 'mcrypt', 'opcache', 'geoip'];
         $currentVersion = $this->brew->linkedPhp();
         info('Install PHP extensions...');
 
