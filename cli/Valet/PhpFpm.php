@@ -66,8 +66,10 @@ class PhpFpm
 
         $this->files->put($this->fpmConfigPath(), $contents);
 
-
+        $systemZoneName = readlink('/etc/localtime');
+        $systemZoneName = str_replace('/usr/share/zoneinfo/', '', $systemZoneName);
         $contents = $this->files->get(__DIR__.'/../stubs/z-performance.ini');
+        $contents = str_replace('TIMEZONE', $systemZoneName, $contents);
 
         $iniPath = $this->iniPath();
         $this->files->ensureDirExists($iniPath, user());
