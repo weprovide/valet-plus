@@ -47,7 +47,7 @@ Some key differences compared to Valet:
 > :warning: Valet requires macOS and [Homebrew](https://brew.sh/). Before installation, you should make sure that no other programs such as Apache or Nginx are binding to your local machine's port 80.
 
 1. Install or update [Homebrew](https://brew.sh/) to the latest version using brew update.
-2. Install PHP 7.1 using Homebrew via `brew install homebrew/php/php71`.
+2. Install PHP 7.0 using Homebrew via `brew install homebrew/php/php70`.
 3. Install Valet+ with Composer via `composer global require weprovide/valet-plus`. Make sure the  `~/.composer/vendor/bin` directory is in your system's "PATH".
 4. Run the `valet install` command. This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
 5. Once Valet is installed, try pinging any *.dev domain on your terminal using a command such as `ping foobar.dev`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
