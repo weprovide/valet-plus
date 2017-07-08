@@ -285,6 +285,12 @@ To "unsecure" a site and revert back to serving its traffic over plain HTTP, use
 valet unsecure example
 ```
 
+## Log locations
+
+The `nginx-error.log` and `mysql.log` are located at `~/.valet/Log`.
+
+Other logs, including the PHP error log, are located at `/usr/local/var/log`
+
 ## Valet drivers
 Valet uses drivers to handle requests. You can read more about those [here](https://laravel.com/docs/5.4/valet#custom-valet-drivers).
 
