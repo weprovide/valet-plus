@@ -150,10 +150,6 @@ class Mysql
         if($name) {
             return $name;
         }
-
-        if($name === '.') {
-            return trim(basename(getcwd()));
-        }
         
         $gitDir = $this->cli->runAsUser('git rev-parse --show-toplevel 2>/dev/null');
 
@@ -161,7 +157,7 @@ class Mysql
             return trim(basename($gitDir));
         }
 
-        return '';
+        return trim(basename(getcwd()));
     }
 
     /**
