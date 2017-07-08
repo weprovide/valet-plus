@@ -93,6 +93,14 @@ class Magento2ValetDriver extends ValetDriver
             return $sitePath.'/setup/index.php';
         }
 
+        if(!file_exists($sitePath.'/app/etc/env.php') || !file_exists($sitePath.'/app/etc/config.php')) {
+            http_response_code(404);
+            require __DIR__.'/../templates/magento2.php';
+            exit;
+        }
+
+        $_SERVER['DOCUMENT_ROOT'] = $sitePath;
+
         return $sitePath . '/pub/index.php';
     }
 }
