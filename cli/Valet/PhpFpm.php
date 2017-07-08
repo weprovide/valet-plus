@@ -2,9 +2,7 @@
 
 namespace Valet;
 
-use Exception;
 use DomainException;
-use Symfony\Component\Process\Process;
 
 class PhpFpm
 {
@@ -121,13 +119,18 @@ class PhpFpm
         return $confLookup[$this->brew->linkedPhp()];
     }
 
+    function getExtensions() {
+        return ['apcu', 'intl', 'mcrypt', 'opcache', 'geoip'];
+    }
+
     function installExtensions() {
-        $extensions = ['apcu', 'intl', 'mcrypt', 'opcache', 'geoip'];
+        $extensions = $this->getExtensions();
         $currentVersion = $this->brew->linkedPhp();
         info('Install PHP extensions...');
 
         foreach($extensions as $extension) {
             if($this->brew->installed($currentVersion.'-'.$extension)) {
+                $this->cli->runAsUser('brew link '. $currentVersion . '-' . $extension);
                 info($currentVersion.'-'.$extension.' already installed');
             } else {
                 $this->brew->ensureInstalled($currentVersion.'-'.$extension, [], $this->taps);
@@ -138,12 +141,13 @@ class PhpFpm
     /**
      * Switch between versions of installed PHP
      *
-     * @return void
+     * @return bool
      */
     function switchTo($version)
     {
         $version = preg_replace('/[.]/','',$version);
-        $versions = ['72', '71', '70', '56'];
+        $versions = ['71', '70', '56'];
+        $extensions = $this->getExtensions();
         $currentVersion = $this->brew->linkedPhp();
 
         if('php'.$version === $currentVersion) {
@@ -156,12 +160,19 @@ class PhpFpm
 
         $this->cli->passthru('brew unlink '. $currentVersion);
 
+        foreach($versions as $phpversion) {
+            foreach($extensions as $extension) {
+                $this->cli->runAsUser('brew unlink php'.$phpversion.'-'.$extension);
+            }
+        }
+
         if (!$this->brew->installed('php'.$version)) {
             $this->brew->ensureInstalled('php'.$version);
         }
 
         $this->cli->passthru('brew link php'.$version);
-        $this->cli->passthru('valet install');
+        $this->stop();
+        $this->install();
         return true;
     }
 
