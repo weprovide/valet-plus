@@ -85,6 +85,11 @@ class Nginx
         );
 
         $this->files->putAsUser(
+            '/usr/local/etc/nginx/valet/mailhog.conf',
+            $this->files->get(__DIR__.'/../stubs/mailhog.conf')
+        );
+
+        $this->files->putAsUser(
             '/usr/local/etc/nginx/fastcgi_params',
             $this->files->get(__DIR__.'/../stubs/fastcgi_params')
         );

@@ -203,7 +203,7 @@ valet db open
 
 ## Mailhog
 
-Mailhog is used to catch emails send from php. You can access the panel at [http://localhost:8025](http://localhost:8025).
+Mailhog is used to catch emails send from php. You can access the panel at [http://mailhog.dev](http://mailhog.dev).
 
 ## Redis
 
