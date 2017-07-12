@@ -318,7 +318,7 @@ By default these are included:
 - Statamic
 - Zend Framework
 
-A full list can be found [here](cli/drivers)
+A full list can be found [here](cli/drivers).
 
 ## Valet Documentation
 
