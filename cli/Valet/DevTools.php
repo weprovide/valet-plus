@@ -53,6 +53,14 @@ class DevTools
             } else {
                 $this->brew->ensureInstalled($tool, [], $this->taps);
             }
+
+            if($tool === 'n98-magerun') {
+                $this->files->symlinkAsUser('/usr/local/bin/n98-magerun', '/usr/local/bin/magerun');
+            }
+
+            if($tool === 'n98-magerun') {
+                $this->files->symlinkAsUser('/usr/local/bin/n98-magerun2', '/usr/local/bin/magerun2');
+            }
         }
     }
 

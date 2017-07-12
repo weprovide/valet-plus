@@ -219,6 +219,14 @@ valet elasticsearch install
 
 It will run on the default port `9200`, and is accessible at [http://elasticsearch.dev/](http://elasticsearch.dev/).
 
+## Framework specific development tools
+
+Valet+ will automatically install framework specific development tools for you:
+
+- [wp-cli](http://wp-cli.org/) available as `wp`
+- [n98-magerun](https://github.com/netz98/n98-magerun) available as `magerun`
+- [n98-magerun2](https://github.com/netz98/n98-magerun2) available as `magerun2` for you.
+
 ## Git Tower
 
 Open current git project in [Tower](https://www.git-tower.com/mac/)
