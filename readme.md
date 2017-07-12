@@ -322,7 +322,7 @@ A full list can be found [here](cli/drivers).
 
 ## Valet Documentation
 
-Documentation for Valet can be found on the [Laravel website](https://laravel.com/docs/valet)
+Documentation for Valet can be found on the [Laravel website](https://laravel.com/docs/valet).
 
 ## Credits
 
