@@ -90,6 +90,11 @@ class Nginx
         );
 
         $this->files->putAsUser(
+            '/usr/local/etc/nginx/valet/elasticsearch.conf',
+            $this->files->get(__DIR__.'/../stubs/elasticsearch.conf')
+        );
+
+        $this->files->putAsUser(
             '/usr/local/etc/nginx/fastcgi_params',
             $this->files->get(__DIR__.'/../stubs/fastcgi_params')
         );

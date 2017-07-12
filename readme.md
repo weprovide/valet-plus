@@ -217,7 +217,7 @@ Elasticsearch can be installed using:
 valet elasticsearch install
 ```
 
-It will run on the default port `9200`.
+It will run on the default port `9200`, and is accessible at [http://elasticsearch.dev/](http://elasticsearch.dev/).
 
 ## Git Tower
 
