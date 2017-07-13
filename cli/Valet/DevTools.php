@@ -3,6 +3,7 @@
 namespace Valet;
 
 use Exception;
+use DomainException;
 use ValetDriver;
 
 class DevTools
@@ -140,10 +141,14 @@ class DevTools
 
         if(get_class($driver) === 'Magento2ValetDriver') {
             info('Configuring Magento 2...');
-            
+            if(!$driver->installed(getcwd())) {
+                throw new DomainException('Magento was not installed. Please add app/etc/env.php and app/etc/config.php');
+            }
+
             $this->cli->passthru('n98-magerun2 config:set web/unsecure/base_url ' . $url . '/');
             $this->cli->passthru('n98-magerun2 config:set web/secure/base_url ' . $url . '/');
             $this->cli->passthru('n98-magerun2 config:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
+            $this->cli->passthru('n98-magerun2 cache:flush');
 
             return info('Configured Magento 2');
         }
