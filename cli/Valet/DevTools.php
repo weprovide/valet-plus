@@ -13,6 +13,7 @@ class DevTools
     var $files;
     var $configuration;
     var $site;
+    var $mysql;
 
     var $taps = [
         'homebrew/homebrew-php'
@@ -29,13 +30,14 @@ class DevTools
      * @return void
      */
     function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
-                         Configuration $configuration, Site $site)
+                         Configuration $configuration, Site $site, Mysql $mysql)
     {
         $this->cli = $cli;
         $this->brew = $brew;
         $this->site = $site;
         $this->files = $files;
         $this->configuration = $configuration;
+        $this->mysql = $mysql;
     }
 
     /**
@@ -138,19 +140,9 @@ class DevTools
         $domain = $this->site->host(getcwd()).'.'.$this->configuration->read()['domain'];
         $isSecure = in_array($domain, $secured);
         $url = ($isSecure ? 'https://' : 'http://') . $domain;
-
-        if(get_class($driver) === 'Magento2ValetDriver') {
-            info('Configuring Magento 2...');
-            if(!$driver->installed(getcwd())) {
-                throw new DomainException('Magento was not installed. Please add app/etc/env.php and app/etc/config.php');
-            }
-
-            $this->cli->passthru('n98-magerun2 config:set web/unsecure/base_url ' . $url . '/');
-            $this->cli->passthru('n98-magerun2 config:set web/secure/base_url ' . $url . '/');
-            $this->cli->passthru('n98-magerun2 config:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
-            $this->cli->passthru('n98-magerun2 cache:flush');
-
-            return info('Configured Magento 2');
+        
+        if(method_exists($driver, 'configure')) {
+            return $driver->configure($this, $url);
         }
 
         info('No configuration settings found.');

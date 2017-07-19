@@ -2,6 +2,40 @@
 
 class Magento2ValetDriver extends ValetDriver
 {
+    public function configure($devtools, $url) {
+        info('Configuring Magento 2...');
+
+        $sitePath = getcwd();
+
+        if(!$this->envExists($sitePath)) {
+            info('env.php missing. Installing default env.php...');
+            $devtools->files->putAsUser(
+                $sitePath.'/app/etc/env.php',
+                str_replace(
+                    'DBNAME',
+                    $devtools->mysql->getDirName(),
+                    $devtools->files->get(__DIR__.'/../stubs/magento2/env.php')
+                )
+            );
+        }
+
+        if(!$this->moduleConfigExists($sitePath)) {
+            info('config.php missing. Enabling all modules...');
+            $devtools->cli->quietlyAsUser('bin/magento module:enable --all');
+        }
+
+        info('Setting base url...');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:set web/unsecure/base_url ' . $url . '/');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:set web/secure/base_url ' . $url . '/');
+
+        info('Setting elastic search hostname...');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
+        
+        info('Flushing cache...');
+        $devtools->cli->quietlyAsUser('n98-magerun2 cache:flush');
+
+        info('Configured Magento 2');
+    }
 
     /**
      * Determine if the driver serves the request.
@@ -17,8 +51,16 @@ class Magento2ValetDriver extends ValetDriver
             file_exists($sitePath . '/bin/magento');
     }
 
+    public function envExists($sitePath) {
+        return file_exists($sitePath.'/app/etc/env.php');
+    }
+
+    public function moduleConfigExists($sitePath) {
+        return file_exists($sitePath.'/app/etc/config.php');
+    }
+
     public function installed($sitePath) {
-        return file_exists($sitePath.'/app/etc/env.php') && file_exists($sitePath.'/app/etc/config.php');
+        return $this->envExists($sitePath) && $this->moduleConfigExists($sitePath);
     }
 
     /**
