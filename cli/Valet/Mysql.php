@@ -20,12 +20,11 @@ class Mysql
     /**
      * Create a new Nginx instance.
      *
-     * @param  Brew  $brew
-     * @param  CommandLine  $cli
-     * @param  Filesystem  $files
-     * @param  Configuration  $configuration
-     * @param  Site  $site
-     * @return void
+     * @param  Brew $brew
+     * @param  CommandLine $cli
+     * @param  Filesystem $files
+     * @param  Configuration $configuration
+     * @param  Site $site
      */
     function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
                          Configuration $configuration, Site $site)
@@ -132,7 +131,7 @@ class Mysql
     /**
      * Return Mysql connection
      *
-     * @return void
+     * @return boolean|mysqli
      */
     function getConnection() {
         // Create connection
@@ -164,7 +163,7 @@ class Mysql
      * Create Mysql database
      *
      * @param string $name
-     * @return void
+     * @return boolean|string
      */
     function createDatabase($name) {
         $name = $this->getDirName($name);
@@ -209,7 +208,16 @@ class Mysql
 
     function importDatabase($file, $database) {
         $database = $database ?: $this->getDirName();
+        $this->createDatabase($database);
         $this->cli->passthru('pv ' . escapeshellarg($file) . ' | mysql ' . escapeshellarg($database));
+    }
+
+    function reimportDatabase($file, $database) {
+        $database = $database ?: $this->getDirName();
+        $this->dropDatabase($database);
+        $this->createDatabase($database);
+
+        $this->importDatabase($file, $database);
     }
 
     function exportDatabase($database, $filename) {
@@ -219,7 +227,7 @@ class Mysql
         return [
             'database' => $database,
             'filename' => ($filename ?: $database).'.sql'
-            ];
+        ];
     }
 
     function openSequelPro($name = '') {

@@ -352,6 +352,15 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
+        if($run === 'reimport') {
+            info('Resetting database, importing database...');
+            if(!$name) {
+                throw new Exception('Please provide a dump file');
+            }
+            Mysql::reimportDatabase($name, $optional);
+            return;
+        }
+
         if($run === 'export' || $run === 'dump') {
             info('Exporting database...');
             $data = Mysql::exportDatabase($name, $optional);
