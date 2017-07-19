@@ -278,7 +278,12 @@ valet configure
 
 #### Magento 2
 
-Automatically configure the base url / elastic search configuration in the database for Magento 2.
+Automatically configure the `env.php`, `config.php` base url and elastic search configuration in the database for Magento 2.
+
+#### Magento 1
+
+Automatically configure the `local.xml` and base url in the database for Magento 1.
+
 
 ## Securing Sites With TLS
 
@@ -320,6 +325,119 @@ By default these are included:
 - Zend Framework
 
 A full list can be found [here](cli/drivers).
+
+## Custom Valet Drivers
+
+You can write your own Valet "driver" to serve PHP applications running on another framework or CMS that is not natively supported by Valet. When you install Valet, a `~/.valet/Drivers` directory is created which contains a `SampleValetDriver.php` file. This file contains a sample driver implementation to demonstrate how to write a custom driver. Writing a driver only requires you to implement three methods: `serves`, `isStaticFile`, and `frontControllerPath`.
+
+All three methods receive the `$sitePath`, `$siteName`, and `$uri` values as their arguments. The `$sitePath` is the fully qualified path to the site being served on your machine, such as `/Users/Lisa/Sites/my-project`. The `$siteName` is the "host" / "site name" portion of the domain (`my-project`). The `$uri` is the incoming request URI (`/foo/bar`).
+
+Once you have completed your custom Valet driver, place it in the `~/.valet/Drivers` directory using the `FrameworkValetDriver.php` naming convention. For example, if you are writing a custom valet driver for WordPress, your file name should be `WordPressValetDriver.php`.
+
+Let's take a look at a sample implementation of each method your custom Valet driver should implement.
+
+#### The `serves` Method
+
+The `serves` method should return `true` if your driver should handle the incoming request. Otherwise, the method should return `false`. So, within this method you should attempt to determine if the given `$sitePath` contains a project of the type you are trying to serve.
+
+For example, let's pretend we are writing a `WordPressValetDriver`. Our serve method might look something like this:
+
+```
+/**
+ * Determine if the driver serves the request.
+ *
+ * @param  string  $sitePath
+ * @param  string  $siteName
+ * @param  string  $uri
+ * @return bool
+ */
+public function serves($sitePath, $siteName, $uri)
+{
+    return is_dir($sitePath.'/wp-admin');
+}
+
+```
+
+#### The `isStaticFile` Method
+
+The `isStaticFile` should determine if the incoming request is for a file that is "static", such as an image or a stylesheet. If the file is static, the method should return the fully qualified path to the static file on disk. If the incoming request is not for a static file, the method should return `false`:
+
+```
+/**
+ * Determine if the incoming request is for a static file.
+ *
+ * @param  string  $sitePath
+ * @param  string  $siteName
+ * @param  string  $uri
+ * @return string|false
+ */
+public function isStaticFile($sitePath, $siteName, $uri)
+{
+    if (file_exists($staticFilePath = $sitePath.'/public/'.$uri)) {
+        return $staticFilePath;
+    }
+
+    return false;
+}
+
+```
+
+> {note} The `isStaticFile` method will only be called if the `serves` method returns `true` for the incoming request and the request URI is not `/`.
+
+#### The `frontControllerPath` Method
+
+The `frontControllerPath` method should return the fully qualified path to your application's "front controller", which is typically your "index.php" file or equivalent:
+
+```
+/**
+ * Get the fully resolved path to the application's front controller.
+ *
+ * @param  string  $sitePath
+ * @param  string  $siteName
+ * @param  string  $uri
+ * @return string
+ */
+public function frontControllerPath($sitePath, $siteName, $uri)
+{
+    return $sitePath.'/public/index.php';
+}
+
+```
+
+### Local Drivers
+
+If you would like to define a custom Valet driver for a single application, create a `LocalValetDriver.php` in the application's root directory. Your custom driver may extend the base `ValetDriver` class or extend an existing application specific driver such as the `LaravelValetDriver`:
+
+```
+class LocalValetDriver extends LaravelValetDriver
+{
+    /**
+     * Determine if the driver serves the request.
+     *
+     * @param  string  $sitePath
+     * @param  string  $siteName
+     * @param  string  $uri
+     * @return bool
+     */
+    public function serves($sitePath, $siteName, $uri)
+    {
+        return true;
+    }
+
+    /**
+     * Get the fully resolved path to the application's front controller.
+     *
+     * @param  string  $sitePath
+     * @param  string  $siteName
+     * @param  string  $uri
+     * @return string
+     */
+    public function frontControllerPath($sitePath, $siteName, $uri)
+    {
+        return $sitePath.'/public_html/index.php';
+    }
+}
+```
 
 ## Valet Documentation
 
