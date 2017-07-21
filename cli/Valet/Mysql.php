@@ -222,11 +222,20 @@ class Mysql
 
     function exportDatabase($database, $filename) {
         $database = $database ?: $this->getDirName();
+
+        if(!$filename) {
+            $filename = $database;
+        }
+
+        if(!stristr($filename, '.sql')) {
+            $filename = $filename.'.sql';
+        }
+
         $this->cli->passthru('mysqldump ' . escapeshellarg($database) . ' > ' . escapeshellarg($filename ?: $database));
 
         return [
             'database' => $database,
-            'filename' => ($filename ?: $database)
+            'filename' => $filename
         ];
     }
 
