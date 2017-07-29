@@ -109,6 +109,20 @@ valet xdebug off
 
 > :warning: Xdebug makes your environment slower. That's why we allow to fully enable / disable it. When not debugging it's best to disable it by running `valet xdebug off`.
 
+## Ioncube
+
+Enable Ioncube:
+
+```
+valet ioncube on
+```
+
+Disable Ioncube:
+
+```
+valet ioncube off
+```
+
 ### PHPstorm
 
 To use Xdebug with PHPstorm you don't have to configure anything. Just run `valet xdebug on` and click the Xdebug button on the top right:
