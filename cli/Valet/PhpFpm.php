@@ -176,44 +176,45 @@ class PhpFpm
         return true;
     }
 
-    function enableXdebug() {
+    function enableExtension($extension) {
         $currentPhpVersion = $this->brew->linkedPhp();
-        if(!$this->brew->installed($currentPhpVersion.'-xdebug')) {
-            $this->brew->ensureInstalled($currentPhpVersion.'-xdebug');
+        
+        if(!$this->brew->installed($currentPhpVersion.'-'.$extension)) {
+            $this->brew->ensureInstalled($currentPhpVersion.'-'.$extension);
         }
 
         $iniPath = $this->iniPath();
 
-        if($this->files->exists($iniPath.'ext-xdebug.ini')) {
-            info('xdebug was already enabled.');
+        if($this->files->exists($iniPath.'ext-'.$extension.'.ini')) {
+            info($extension.' was already enabled.');
             $this->restart();
             return true;
         }
 
-        if($this->files->exists($iniPath.'ext-xdebug.ini.disabled')) {
-            $this->files->move($iniPath.'ext-xdebug.ini.disabled', $iniPath.'ext-xdebug.ini');
+        if($this->files->exists($iniPath.'ext-'.$extension.'.ini.disabled')) {
+            $this->files->move($iniPath.'ext-'.$extension.'.ini.disabled', $iniPath.'ext-'.$extension.'.ini');
         }
 
         $this->restart();
 
-        info('Enabled xdebug');
+        info('Enabled '.$extension);
         return true;
     }
 
-    function disableXdebug() {
+    function disableExtension($extension) {
         $iniPath = $this->iniPath();
-        if($this->files->exists($iniPath.'ext-xdebug.ini.disabled')) {
-            info('xdebug was already disabled.');
+        if($this->files->exists($iniPath.'ext-'.$extension.'.ini.disabled')) {
+            info($extension.' was already disabled.');
             return true;
         }
 
-        if($this->files->exists($iniPath.'ext-xdebug.ini')) {
-            $this->files->move($iniPath.'ext-xdebug.ini', $iniPath.'ext-xdebug.ini.disabled');
+        if($this->files->exists($iniPath.'ext-'.$extension.'.ini')) {
+            $this->files->move($iniPath.'ext-'.$extension.'.ini', $iniPath.'ext-'.$extension.'.ini.disabled');
         }
 
         $this->restart();
 
-        info('Disabled xdebug');
+        info('Disabled '.$extension);
         return true;
     }
 }

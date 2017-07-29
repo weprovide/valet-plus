@@ -377,17 +377,31 @@ if (is_dir(VALET_HOME_PATH)) {
 
     $app->command('xdebug [mode]', function ($mode) {
         if($mode === 'on' || $mode === 'disable') {
-            PhpFpm::enableXdebug();
+            PhpFpm::enableExtension('xdebug');
             return;
         }
         
         if($mode === 'off' || $mode === 'disable') {
-            PhpFpm::disableXdebug();            
+            PhpFpm::disableExtension('xdebug');            
             return;
         }
 
         throw new Exception('Mode not found. Available modes: on / off');
     })->descriptions('Enable / disable Xdebug');
+
+    $app->command('ioncube [mode]', function ($mode) {
+        if($mode === 'on' || $mode === 'disable') {
+            PhpFpm::enableExtension('ioncubeloader');
+            return;
+        }
+        
+        if($mode === 'off' || $mode === 'disable') {
+            PhpFpm::disableExtension('ioncubeloader');            
+            return;
+        }
+
+        throw new Exception('Mode not found. Available modes: on / off');
+    })->descriptions('Enable / disable ioncube');
 
     $app->command('elasticsearch [mode]', function ($mode) {
         if($mode === 'install' || $mode === 'on') {
