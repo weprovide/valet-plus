@@ -255,7 +255,7 @@ class Mysql
         $database = $database ?: $this->getDirName();
 
         if(!$filename) {
-            $filename = $database;
+            $filename = $database.'-'.date(DateTime::ATOM);
         }
 
         if(!stristr($filename, '.sql')) {
