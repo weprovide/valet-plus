@@ -192,12 +192,12 @@ valet db reset
 Export a database:
 
 ```
-valet db export <database> <filename>
+valet db export <filename> <database>
 ```
 
 When no database is given it'll try to find the closest git repository directory name. When it can't find one it'll use the current working directory name.
 
-When no filename is given it will use `<database>.sql`.
+When no filename is given it will use `<database>-<date>.sql`. Optionally you can use `valet db export - <database>` to automatically generate the filename for a custom database.
 
 ### Importing databases
 

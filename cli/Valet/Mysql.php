@@ -251,10 +251,10 @@ class Mysql
         $this->importDatabase($file, $database);
     }
 
-    function exportDatabase($database, $filename) {
+    function exportDatabase($filename, $database) {
         $database = $database ?: $this->getDirName();
 
-        if(!$filename) {
+        if(!$filename || $filename === '-') {
             $filename = $database.'-'.date(DateTime::ATOM);
         }
 
