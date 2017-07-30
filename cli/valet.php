@@ -18,7 +18,7 @@ use Illuminate\Container\Container;
  */
 Container::setInstance(new Container);
 
-$version = '0.5.0';
+$version = '0.5.1';
 
 $app = new Application('Laravel Valet', $version);
 
