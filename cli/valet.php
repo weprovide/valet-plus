@@ -12,6 +12,7 @@ if (file_exists(__DIR__.'/../vendor/autoload.php')) {
 
 use Silly\Application;
 use Illuminate\Container\Container;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 /**
  * Create the application.
@@ -292,7 +293,9 @@ if (is_dir(VALET_HOME_PATH)) {
     /**
      * Create database
      */
-    $app->command('db [run] [name] [optional]', function ($run, $name, $optional) {
+    $app->command('db [run] [name] [optional]', function ($input, $output, $run, $name, $optional) {
+        $helper = $this->getHelperSet()->get('question');
+
         if($run === 'list' || $run === 'ls') {
             Mysql::listDatabases();
             return;
@@ -310,6 +313,11 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($run === 'drop') {
+            $question = new ConfirmationQuestion('Are you sure you want to delete the database?', false);            
+            if (!$helper->ask($input, $output, $question)) {
+                warning('Aborted');
+                return;
+            }
             $databaseName = Mysql::dropDatabase($name);
 
             if(!$databaseName) {
@@ -321,6 +329,12 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($run === 'reset') {
+            $question = new ConfirmationQuestion('Are you sure you want to reset the database?', false);            
+            if (!$helper->ask($input, $output, $question)) {
+                warning('Aborted');
+                return;
+            }
+
             $dropped = Mysql::dropDatabase($name);
 
             if(!$dropped) {
@@ -358,6 +372,11 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($run === 'reimport') {
+            $question = new ConfirmationQuestion('Are you sure you want to reimport the database?', false);            
+            if (!$helper->ask($input, $output, $question)) {
+                warning('Aborted');
+                return;
+            }
             info('Resetting database, importing database...');
             if(!$name) {
                 throw new Exception('Please provide a dump file');
