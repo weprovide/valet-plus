@@ -293,6 +293,11 @@ if (is_dir(VALET_HOME_PATH)) {
      * Create database
      */
     $app->command('db [run] [name] [optional]', function ($run, $name, $optional) {
+        if($run === 'list' || $run === 'ls') {
+            Mysql::listDatabases();
+            return;
+        }
+
         if($run === 'create') {
             $databaseName = Mysql::createDatabase($name);
 

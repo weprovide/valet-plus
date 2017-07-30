@@ -2,6 +2,8 @@
 
 namespace Valet;
 
+use DateTime;
+use MYSQLI_ASSOC;
 use DomainException;
 use mysqli;
 
@@ -204,6 +206,35 @@ class Mysql
         $paths = array_map(create_function('$p', 'return trim($p, "/");'), $paths);
         $paths = array_filter($paths);
         return join('/', $paths);
+    }
+
+    function getDatabases() {
+        $link = $this->getConnection();
+        $sql = mysqli_real_escape_string($link, 'SHOW DATABASES');
+        $result = $link->query($sql);
+
+        if(!$result) {
+            return false;
+        }
+
+        $databases = [];
+
+        foreach($result->fetch_all(MYSQLI_ASSOC) as $row) {
+            if($row['Database'] === 'sys' || $row['Database'] === 'performance_schema' || $row['Database'] === 'information_schema' || $row['Database'] === 'mysql') {
+                continue;
+            }
+            
+            $databases[] = [$row['Database']];
+        }
+
+        $result->free();
+
+        return $databases;
+    }
+
+    function listDatabases() {
+        $databases = $this->getDatabases();
+        table(['Database'], $databases);
     }
 
     function importDatabase($file, $database) {
