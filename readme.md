@@ -139,6 +139,12 @@ Username: `root`
 
 Password: `root`
 
+## List databases
+
+```
+valet db ls
+```
+
 ### Creating databases
 
 Create databases using:
