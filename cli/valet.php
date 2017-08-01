@@ -21,7 +21,7 @@ Container::setInstance(new Container);
 
 $version = '0.5.2';
 
-$app = new Application('Laravel Valet', $version);
+$app = new Application('Valet+', $version);
 
 /**
  * Prune missing directories and symbolic links on every command.
