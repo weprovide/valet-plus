@@ -43,6 +43,7 @@ class Elasticsearch
 
         $this->cli->quietlyAsUser('brew cask install java');
         $this->brew->installOrFail('elasticsearch@2.4');
+        $this->restart();
     }
 
     function installed() {
