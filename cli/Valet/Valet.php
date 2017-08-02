@@ -61,8 +61,8 @@ class Valet
      */
     function onLatestVersion($currentVersion)
     {
-        $response = \Httpful\Request::get('https://api.github.com/repos/laravel/valet/releases/latest')->send();
+        $response = \Httpful\Request::get('https://api.github.com/repos/weprovide/valet-plus/releases/latest')->send();
 
-        return version_compare($currentVersion, trim($response->body->tag_name, 'v'), '>=');
+        return version_compare($currentVersion, $response->body->tag_name, '>=');
     }
 }
