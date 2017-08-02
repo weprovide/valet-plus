@@ -214,43 +214,133 @@ if (is_dir(VALET_HOME_PATH)) {
     /**
      * Start the daemon services.
      */
-    $app->command('start', function () {
-        PhpFpm::restart();
-        Nginx::restart();
-        Mysql::restart();
-        Redis::restart();
-        Mailhog::restart();
-        Elasticsearch::restart();
+    $app->command('start [services]*', function ($services) {
+        if(empty($services)) {
+            PhpFpm::restart();
+            Nginx::restart();
+            Mysql::restart();
+            Redis::restart();
+            Mailhog::restart();
+            Elasticsearch::restart();
+            info('Valet services have been started.');
+            return;
+        }
 
-        info('Valet services have been started.');
+        foreach($services as $service) {
+            switch($service) {
+                case 'nginx': {
+                    Nginx::restart();
+                    break;
+                }
+                case 'mysql': {
+                    Mysql::restart();
+                    break;
+                }
+                case 'php': {
+                    PhpFpm::restart();
+                    break;
+                }
+                case 'mailhog': {
+                    Mailhog::restart();
+                    break;
+                }
+                case 'elasticsearch': {
+                    Elasticsearch::restart();
+                    break;
+                }
+            }
+        }
+
+        info('Specified Valet services have been started.');
     })->descriptions('Start the Valet services');
 
     /**
      * Restart the daemon services.
      */
-    $app->command('restart', function () {
-        PhpFpm::restart();
-        Nginx::restart();
-        Mysql::restart();
-        Redis::restart();
-        Mailhog::restart();
-        Elasticsearch::restart();
+    $app->command('restart [services]*', function ($services) {
+        if(empty($services)) {
+            PhpFpm::restart();
+            Nginx::restart();
+            Mysql::restart();
+            Redis::restart();
+            Mailhog::restart();
+            Elasticsearch::restart();
+            info('Valet services have been started.');
+            return;
+        }
 
-        info('Valet services have been restarted.');
+        foreach($services as $service) {
+            switch($service) {
+                case 'nginx': {
+                    Nginx::restart();
+                    break;
+                }
+                case 'mysql': {
+                    Mysql::restart();
+                    break;
+                }
+                case 'php': {
+                    PhpFpm::restart();
+                    break;
+                }
+                case 'mailhog': {
+                    Mailhog::restart();
+                    break;
+                }
+                case 'elasticsearch': {
+                    Elasticsearch::restart();
+                    break;
+                }
+            }
+        }
+
+        info('Specified Valet services have been started.');
     })->descriptions('Restart the Valet services');
 
     /**
      * Stop the daemon services.
      */
-    $app->command('stop', function () {
-        PhpFpm::stop();
-        Nginx::stop();
-        Mysql::stop();
-        Redis::stop();
-        Mailhog::stop();
-        Elasticsearch::stop();
+    /**
+     * Start the daemon services.
+     */
+    $app->command('stop [services]*', function ($services) {
+        if(empty($services)) {
+            PhpFpm::stop();
+            Nginx::stop();
+            Mysql::stop();
+            Redis::stop();
+            Mailhog::stop();
+            Elasticsearch::stop();
+            info('Valet services have been stopped.');
+            return;
+        }
 
-        info('Valet services have been stopped.');
+        foreach($services as $service) {
+            switch($service) {
+                case 'nginx': {
+                    Nginx::stop();
+                    break;
+                }
+                case 'mysql': {
+                    Mysql::stop();
+                    break;
+                }
+                case 'php': {
+                    PhpFpm::stop();
+                    break;
+                }
+                case 'mailhog': {
+                    Mailhog::stop();
+                    break;
+                }
+                case 'elasticsearch': {
+                    Elasticsearch::stop();
+                    break;
+                }
+            }
+        }
+
+        info('Specified Valet services have been stopped.');
     })->descriptions('Stop the Valet services');
 
     /**
