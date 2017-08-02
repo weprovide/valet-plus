@@ -403,7 +403,7 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($run === 'drop') {
-            $question = new ConfirmationQuestion('Are you sure you want to delete the database?', false);            
+            $question = new ConfirmationQuestion('Are you sure you want to delete the database? [y/N] ', false);
             if (!$helper->ask($input, $output, $question)) {
                 warning('Aborted');
                 return;
@@ -419,7 +419,7 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($run === 'reset') {
-            $question = new ConfirmationQuestion('Are you sure you want to reset the database?', false);            
+            $question = new ConfirmationQuestion('Are you sure you want to reset the database? [y/N] ', false);
             if (!$helper->ask($input, $output, $question)) {
                 warning('Aborted');
                 return;
@@ -462,7 +462,7 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($run === 'reimport') {
-            $question = new ConfirmationQuestion('Are you sure you want to reimport the database?', false);            
+            $question = new ConfirmationQuestion('Are you sure you want to reimport the database? [y/N] ', false);
             if (!$helper->ask($input, $output, $question)) {
                 warning('Aborted');
                 return;
