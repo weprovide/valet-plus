@@ -217,4 +217,23 @@ class PhpFpm
         info('Disabled '.$extension);
         return true;
     }
+
+    function isExtensionEnabled($extension) {
+
+      $currentPhpVersion = $this->brew->linkedPhp();
+
+      if(!$this->brew->installed($currentPhpVersion.'-'.$extension)) {
+          $this->brew->ensureInstalled($currentPhpVersion.'-'.$extension);
+      }
+
+      $iniPath = $this->iniPath();
+
+      if($this->files->exists($iniPath.'ext-'.$extension.'.ini')) {
+          info($extension.' is enabled.');
+      } else {
+          info($extension.' is disabled.');
+      }
+
+      return true;
+    }
 }
