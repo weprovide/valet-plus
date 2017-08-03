@@ -490,7 +490,12 @@ if (is_dir(VALET_HOME_PATH)) {
     })->descriptions('Configure application connection settings');
 
     $app->command('xdebug [mode]', function ($mode) {
-        if($mode === 'on' || $mode === 'disable') {
+        if($mode == '' || $mode == 'status') {
+            PhpFpm::isExtensionEnabled('xdebug');
+            return;
+        }
+
+        if($mode === 'on' || $mode === 'enable') {
             PhpFpm::enableExtension('xdebug');
             return;
         }
@@ -504,11 +509,16 @@ if (is_dir(VALET_HOME_PATH)) {
     })->descriptions('Enable / disable Xdebug');
 
     $app->command('ioncube [mode]', function ($mode) {
-        if($mode === 'on' || $mode === 'disable') {
+        if($mode == '' || $mode == 'status') {
+            PhpFpm::isExtensionEnabled('ioncubeloader');
+            return;
+        }
+
+        if($mode === 'on' || $mode === 'enable') {
             PhpFpm::enableExtension('ioncubeloader');
             return;
         }
-        
+
         if($mode === 'off' || $mode === 'disable') {
             PhpFpm::disableExtension('ioncubeloader');            
             return;
