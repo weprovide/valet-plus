@@ -483,7 +483,7 @@ if (is_dir(VALET_HOME_PATH)) {
         }
         
         throw new Exception('Command not found');
-    })->descriptions('Database commands (create, open)');
+    })->descriptions('Database commands (list/ls, create, drop, reset, open, import, reimport, export/dump)');
 
     $app->command('configure', function () {
         DevTools::configure();
