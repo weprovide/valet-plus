@@ -223,6 +223,26 @@ When no name is given it'll try to find the closest git repository directory nam
 valet db open
 ```
 
+## Subdomains
+
+You can manage subdomains for the current working directory using:
+
+```
+valet subdomain list
+```
+
+```
+valet subdomain add <subdomain>
+```
+
+For example:
+
+```
+valet subdomain add welcome
+```
+
+Will create `welcome.yourproject.dev`.
+
 ## Mailhog
 
 Mailhog is used to catch emails send from php. You can access the panel at [http://mailhog.dev](http://mailhog.dev).

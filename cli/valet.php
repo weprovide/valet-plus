@@ -115,24 +115,27 @@ if (is_dir(VALET_HOME_PATH)) {
     /**
      * Register a subdomain link with Valet.
      */
-    $app->command('subdomain [name] [--secure]', function ($name, $secure) {
-        $domain = Site::link(getcwd(), $name.'.'.basename(getcwd()));
+    $app->command('subdomain [action] [name] [--secure]', function ($action, $name, $secure) {
+        if($action === 'list') {
+            $links = Site::links(basename(getcwd()));
 
-        if ($secure) {
-            $this->runCommand('secure '. $name);
+            table(['Site', 'SSL', 'URL', 'Path'], $links->all());
+            return;
         }
 
-        info('Current working directory linked to '.$domain);
-    })->descriptions('Link the current working directory to Valet');
+        if($action === 'add') {
+            $domain = Site::link(getcwd(), $name.'.'.basename(getcwd()));
 
-    /**
-     * Display all of the registered symbolic links.
-     */
-    $app->command('subdomains', function () {
-        $links = Site::links(basename(getcwd()));
+            if ($secure) {
+                $this->runCommand('secure '. $name);
+            }
 
-        table(['Site', 'SSL', 'URL', 'Path'], $links->all());
-    })->descriptions('Display all of the registered Valet links');
+            info('Current working directory linked to '.$domain);
+            return;
+        }
+
+        throw new DomainException('Specified command not found');
+    })->descriptions('Manage subdomains');
 
     /**
      * Display all of the registered symbolic links.
