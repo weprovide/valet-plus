@@ -106,13 +106,11 @@ class Brew
      */
     function installOrFail($formula, $options = [], $taps = [])
     {
-        info("Installing {$formula}...");
+        info('['.$formula.'] Installing');
 
         if (count($taps) > 0) {
             $this->tap($taps);
         }
-
-        output('<info>['.$formula.'] is not installed, installing it now via Brew...</info> 🍻');
 
         $this->cli->runAsUser(trim('brew install '.$formula.' '.implode(' ', $options)), function ($exitCode, $errorOutput) use ($formula) {
             output($errorOutput);
@@ -147,7 +145,7 @@ class Brew
 
         foreach ($services as $service) {
             if ($this->installed($service)) {
-                info("Restarting {$service}...");
+                info('['.$service.'] Restarting');
 
                 $this->cli->quietly('sudo brew services stop '.$service);
                 $this->cli->quietly('sudo brew services start '.$service);
@@ -166,7 +164,7 @@ class Brew
 
         foreach ($services as $service) {
             if ($this->installed($service)) {
-                info("Stopping {$service}...");
+                info('['.$service.'] Stopping');
 
                 $this->cli->quietly('sudo brew services stop '.$service);
             }

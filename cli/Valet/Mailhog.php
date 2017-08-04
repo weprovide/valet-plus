@@ -37,7 +37,7 @@ class Mailhog
     function install()
     {
         if ($this->installed()) {
-            info('Mailhog was already installed');
+            info('[mailhog] already installed');
             return;
         }
 
@@ -60,7 +60,7 @@ class Mailhog
             return;
         }
 
-        info('Restarting mailhog...');
+        info('[mailhog] Restarting');
         $this->cli->quietlyAsUser('brew services restart mailhog');
     }
 
@@ -75,7 +75,7 @@ class Mailhog
             return;
         }
 
-        info('Stopping mailhog....');
+        info('[mailhog] Stopping');
         $this->cli->quietlyAsUser('brew services stop mailhog');
     }
 

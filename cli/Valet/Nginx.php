@@ -56,8 +56,6 @@ class Nginx
      */
     function installConfiguration()
     {
-        info('Installing nginx configuration...');
-
         $contents = $this->files->get(__DIR__.'/../stubs/nginx.conf');
 
         $this->files->putAsUser(
@@ -109,8 +107,6 @@ class Nginx
      */
     function installNginxDirectory()
     {
-        info('Installing nginx directory...');
-
         if (! $this->files->isDir($nginxDirectory = VALET_HOME_PATH.'/Nginx')) {
             $this->files->mkdirAsUser($nginxDirectory);
         }
@@ -164,7 +160,7 @@ class Nginx
      */
     function stop()
     {
-        info('Stopping nginx....');
+        info('[nginx] Stopping');
 
         $this->cli->quietly('sudo brew services stop '. $this->brew->nginxServiceName());
     }

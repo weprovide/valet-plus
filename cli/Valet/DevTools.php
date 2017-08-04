@@ -48,11 +48,11 @@ class DevTools
     function install()
     {
         $tools = ['wp-cli', 'n98-magerun', 'n98-magerun2', 'pv'];
-        info('Installing developer tools...');
+        info('[devtools] Installing');
 
         foreach($tools as $tool) {
             if($this->brew->installed($tool)) {
-                info($tool.' already installed');
+                info('[devtools] '.$tool.' already installed');
             } else {
                 $this->brew->ensureInstalled($tool, [], $this->taps);
             }
@@ -73,7 +73,7 @@ class DevTools
     }
 
     function phpstorm() {
-        info('Opening PHPstorm...');
+        info('Opening PHPstorm');
         $command = false;
 
         if($this->files->exists('/usr/local/bin/pstorm')) {
@@ -96,7 +96,7 @@ class DevTools
     }
 
     function vscode() {
-        info('Opening Visual Studio Code...');
+        info('Opening Visual Studio Code');
         $command = false;
 
         if($this->files->exists('/usr/local/bin/code')) {
@@ -119,7 +119,7 @@ class DevTools
     }
 
     function tower() {
-        info('Opening git tower...');      
+        info('Opening git tower');
         if(!$this->files->exists('/Applications/Tower.app/Contents/MacOS/gittower')) {
             throw new Exception('gittower command not found. Please install gittower by following the instructions provided here: https://www.git-tower.com/help/mac/integration/cli-tool');
         }

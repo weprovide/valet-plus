@@ -38,18 +38,46 @@ class Mysql
         $this->configuration = $configuration;
     }
 
+    function supportedVersions() {
+        return ['mysql', 'mariadb'];
+    }
+
+    function verifyType($type) {
+        if(!in_array($type, $this->supportedVersions())) {
+            throw new DomainException('Invalid Mysql type given. Available: mysql/mariadb');
+        }
+    }
+
+    function installedVersion() {
+        $versions = $this->supportedVersions();
+        foreach($versions as $version) {
+            if($this->brew->installed($version)) {
+                return $version;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Install the configuration files for Mysql.
      *
+     * @param $type
      * @return void
      */
-    function install()
+    function install($type = 'mysql')
     {
-        $this->removeConfiguration();
+        $this->verifyType($type);
+        $currentlyInstalled = $this->installedVersion();
+        if($currentlyInstalled) {
+            $type = $currentlyInstalled;
+        }
+
+        $this->removeConfiguration($type);
         $this->files->copy(__DIR__.'/../stubs/limit.maxfiles.plist', static::MAX_FILES_CONF);
 
-        if (!$this->brew->installed('mysql')) {
-            $this->brew->installOrFail('mysql');
+        if (!$this->installedVersion()) {
+            $this->brew->installOrFail($type);
         }
 
         if (!$this->brew->installed('mysql-utilities')) {
@@ -57,18 +85,19 @@ class Mysql
         }
 
         $this->stop();
-        $this->installConfiguration();
+        $this->installConfiguration($type);
         $this->restart();
     }
 
     /**
      * Install the Mysql configuration file.
      *
+     * @param string $type
      * @return void
      */
-    function installConfiguration()
+    function installConfiguration($type = 'mysql')
     {
-        info('Installing mysql configuration...');
+        info('['.$type.'] Configuring');
 
         // TODO: Fix this, currently needed because MySQL will crash otherwise
         $this->files->chmodPath(static::MYSQL_DIR, 0777);
@@ -78,6 +107,9 @@ class Mysql
         }
 
         $contents = $this->files->get(__DIR__.'/../stubs/my.cnf');
+        if($type === 'mariadb') {
+            $contents = str_replace('show_compatibility_56=ON', '', $contents);
+        }
 
         $this->files->putAsUser(
             static::MYSQL_CONF,
@@ -85,9 +117,7 @@ class Mysql
         );
     }
 
-    function removeConfiguration() {
-        info('Removing mysql configuration...');
-
+    function removeConfiguration($type = 'mysql') {
         $this->files->unlink(static::MYSQL_CONF);
         $this->files->unlink(static::MYSQL_CONF.'.default');
     }
@@ -99,8 +129,9 @@ class Mysql
      */
     function restart()
     {
-        info('Restarting mysql...');
-        $this->cli->quietlyAsUser('brew services restart mysql');
+        $version = $this->installedVersion() ?: 'mysql';
+        info('['.$version.'] Restarting');
+        $this->cli->quietlyAsUser('brew services restart '.$version);
     }
 
     /**
@@ -110,10 +141,11 @@ class Mysql
      */
     function stop()
     {
-        info('Stopping mysql....');
+        $version = $this->installedVersion() ?: 'mysql';
+        info('['.$version.'] Stopping');
 
-        $this->cli->quietly('sudo brew services stop mysql');
-        $this->cli->quietlyAsUser('brew services stop mysql');
+        $this->cli->quietly('sudo brew services stop '.$version);
+        $this->cli->quietlyAsUser('brew services stop '.$version);
     }
 
     function setRootPassword() {

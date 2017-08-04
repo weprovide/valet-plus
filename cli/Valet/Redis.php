@@ -53,7 +53,6 @@ class Redis
      */
     function installConfiguration()
     {
-        info('Installing redis configuration...');
         $this->files->copy(__DIR__.'/../stubs/redis.conf', static::REDIS_CONF);
     }
 
@@ -64,7 +63,7 @@ class Redis
      */
     function restart()
     {
-        info('Restarting redis...');
+        info('[redis] Restarting');
         $this->cli->quietlyAsUser('brew services restart redis');
     }
 
@@ -75,7 +74,7 @@ class Redis
      */
     function stop()
     {
-        info('Stopping redis....');
+        info('[redis] Stopping');
         $this->cli->quietly('sudo brew services stop redis');
         $this->cli->quietlyAsUser('brew services stop redis');
     }

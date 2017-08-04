@@ -51,8 +51,6 @@ class PhpFpm
      */
     function updateConfiguration()
     {
-        info('Updating PHP configuration...');
-
         $contents = $this->files->get($this->fpmConfigPath());
 
         $contents = preg_replace('/^user = .+$/m', 'user = '.user(), $contents);
@@ -126,12 +124,12 @@ class PhpFpm
     function installExtensions() {
         $extensions = $this->getExtensions();
         $currentVersion = $this->brew->linkedPhp();
-        info('Install PHP extensions...');
+        info('['.$currentVersion.'] Installing extensions');
 
         foreach($extensions as $extension) {
             if($this->brew->installed($currentVersion.'-'.$extension)) {
                 $this->cli->runAsUser('brew link '. $currentVersion . '-' . $extension);
-                info($currentVersion.'-'.$extension.' already installed');
+                info('['.$currentVersion.'] '.$extension.' already installed');
             } else {
                 $this->brew->ensureInstalled($currentVersion.'-'.$extension, [], $this->taps);
             }
