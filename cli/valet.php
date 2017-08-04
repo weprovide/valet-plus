@@ -103,14 +103,36 @@ if (is_dir(VALET_HOME_PATH)) {
      * Register a symbolic link with Valet.
      */
     $app->command('link [name] [--secure]', function ($name, $secure) {
-        $linkPath = Site::link(getcwd(), $name = $name ?: basename(getcwd()));
-
-        info('A ['.$name.'] symbolic link has been created in ['.$linkPath.'].');
+        $domain = Site::link(getcwd(), $name = $name ?: basename(getcwd()));
 
         if ($secure) {
             $this->runCommand('secure '.$name);
         }
+
+        info('Current working directory linked to '.$domain);
     })->descriptions('Link the current working directory to Valet');
+
+    /**
+     * Register a subdomain link with Valet.
+     */
+    $app->command('subdomain [name] [--secure]', function ($name, $secure) {
+        $domain = Site::link(getcwd(), $name.'.'.basename(getcwd()));
+
+        if ($secure) {
+            $this->runCommand('secure '. $name);
+        }
+
+        info('Current working directory linked to '.$domain);
+    })->descriptions('Link the current working directory to Valet');
+
+    /**
+     * Display all of the registered symbolic links.
+     */
+    $app->command('subdomains', function () {
+        $links = Site::links(basename(getcwd()));
+
+        table(['Site', 'SSL', 'URL', 'Path'], $links->all());
+    })->descriptions('Display all of the registered Valet links');
 
     /**
      * Display all of the registered symbolic links.

@@ -42,12 +42,14 @@ class Site
     /**
      * Link the current working directory with the given name.
      *
-     * @param  string  $target
-     * @param  string  $link
+     * @param  string $target
+     * @param  string $link
      * @return string
      */
     function link($target, $link)
     {
+        $tld = $this->config->read()['domain'];
+        $link = str_replace('.'.$tld, '', $link);
         $this->files->ensureDirExists(
             $linkPath = $this->sitesPath(), user()
         );
@@ -56,22 +58,23 @@ class Site
 
         $this->files->symlinkAsUser($target, $linkPath.'/'.$link);
 
-        return $linkPath.'/'.$link;
+        return $link.'.'.$tld;
     }
 
     /**
      * Pretty print out all links in Valet.
      *
+     * @param string $filterName
      * @return \Illuminate\Support\Collection
      */
-    function links() {
+    function links($filterName = '') {
         $certsPath = VALET_HOME_PATH.'/Certificates';
 
         $this->files->ensureDirExists($certsPath, user());
 
         $certs = $this->getCertificates($certsPath);
 
-        return $this->getLinks(VALET_HOME_PATH.'/Sites', $certs);
+        return $this->getLinks(VALET_HOME_PATH.'/Sites', $certs, $filterName);
     }
 
     /**
@@ -94,19 +97,33 @@ class Site
      *
      * @param string $path
      * @param \Illuminate\Support\Collection $certs
+     * @param $filterName
      * @return \Illuminate\Support\Collection
      */
-    function getLinks($path, $certs)
+    function getLinks($path, $certs, $filterName = false)
     {
         $config = $this->config->read();
+        $tld = $config['domain'];
 
         return collect($this->files->scanDir($path))->mapWithKeys(function ($site) use ($path) {
             return [$site => $this->files->readLink($path.'/'.$site)];
-        })->map(function ($path, $site) use ($certs, $config) {
+        })->map(function ($path, $site) use ($certs, $config, $tld, $filterName) {
             $secured = $certs->has($site);
-            $url = ($secured ? 'https': 'http').'://'.$site.'.'.$config['domain'];
+            $url = ($secured ? 'https': 'http').'://'.$site.'.'.$tld;
+
+            if($filterName) {
+                $site = str_replace('.'.$filterName, '', $site);
+            } else {
+                $site = $site.'.'.$tld;
+            }
 
             return [$site, $secured ? ' X': '', $url, $path];
+        })->filter(function ($item) use ($filterName, $tld) {
+            if(!$filterName) {
+                return true;
+            }
+
+            return strstr($item[2], '.'.$filterName.'.'.$tld);
         });
     }
 
