@@ -4,6 +4,7 @@ class Magento2ValetDriver extends ValetDriver
 {
     public function configure($devtools, $url) {
         info('Configuring Magento 2...');
+        $devtools->cli->quietlyAsUser('chmod +x bin/magento');
 
         $sitePath = getcwd();
 
