@@ -158,6 +158,7 @@ class PhpFpm
         }
 
         $this->cli->passthru('brew unlink '. $currentVersion);
+        $this->cli->passthru('sudo ln -s /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib');
 
         foreach($versions as $phpversion) {
             foreach($extensions as $extension) {
