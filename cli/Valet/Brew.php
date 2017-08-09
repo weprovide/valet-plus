@@ -12,9 +12,8 @@ class Brew
     /**
      * Create a new Brew instance.
      *
-     * @param  CommandLine  $cli
-     * @param  Filesystem  $files
-     * @return void
+     * @param  CommandLine $cli
+     * @param  Filesystem $files
      */
     function __construct(CommandLine $cli, Filesystem $files)
     {

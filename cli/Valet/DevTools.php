@@ -3,7 +3,6 @@
 namespace Valet;
 
 use Exception;
-use DomainException;
 use ValetDriver;
 
 class DevTools
@@ -22,12 +21,12 @@ class DevTools
     /**
      * Create a new Nginx instance.
      *
-     * @param  Brew  $brew
-     * @param  CommandLine  $cli
-     * @param  Filesystem  $files
-     * @param  Configuration  $configuration
-     * @param  Site  $site
-     * @return void
+     * @param  Brew $brew
+     * @param  CommandLine $cli
+     * @param  Filesystem $files
+     * @param  Configuration $configuration
+     * @param  Site $site
+     * @param Mysql $mysql
      */
     function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
                          Configuration $configuration, Site $site, Mysql $mysql)

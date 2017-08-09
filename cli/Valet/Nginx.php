@@ -16,12 +16,11 @@ class Nginx
     /**
      * Create a new Nginx instance.
      *
-     * @param  Brew  $brew
-     * @param  CommandLine  $cli
-     * @param  Filesystem  $files
-     * @param  Configuration  $configuration
-     * @param  Site  $site
-     * @return void
+     * @param  Brew $brew
+     * @param  CommandLine $cli
+     * @param  Filesystem $files
+     * @param  Configuration $configuration
+     * @param  Site $site
      */
     function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
                          Configuration $configuration, Site $site)
@@ -34,7 +33,7 @@ class Nginx
     }
 
     /**
-     * Install the configuration files for Nginx.
+     * Install service.
      *
      * @return void
      */
@@ -50,7 +49,7 @@ class Nginx
     }
 
     /**
-     * Install the Nginx configuration file.
+     * Install the configuration files.
      *
      * @return void
      */
@@ -65,7 +64,7 @@ class Nginx
     }
 
     /**
-     * Install the Valet Nginx server configuration file.
+     * Install the Valet server configuration file.
      *
      * @return void
      */
@@ -99,7 +98,7 @@ class Nginx
     }
 
     /**
-     * Install the Nginx configuration directory to the ~/.valet directory.
+     * Install the configuration directory to the ~/.valet directory.
      *
      * This directory contains all site-specific Nginx servers.
      *
@@ -142,7 +141,7 @@ class Nginx
     }
 
     /**
-     * Restart the Nginx service.
+     * Restart the service.
      *
      * @return void
      */
@@ -154,7 +153,7 @@ class Nginx
     }
 
     /**
-     * Stop the Nginx service.
+     * Stop the service.
      *
      * @return void
      */
@@ -166,7 +165,7 @@ class Nginx
     }
 
     /**
-     * Prepare Nginx for uninstallation.
+     * Prepare for uninstallation.
      *
      * @return void
      */

@@ -2,9 +2,6 @@
 
 namespace Valet;
 
-use Exception;
-use Symfony\Component\Process\Process;
-
 class DnsMasq
 {
     var $brew, $cli, $files;
@@ -16,10 +13,9 @@ class DnsMasq
     /**
      * Create a new DnsMasq instance.
      *
-     * @param  Brew  $brew
-     * @param  CommandLine  $cli
-     * @param  Filesystem  $files
-     * @return void
+     * @param  Brew $brew
+     * @param  CommandLine $cli
+     * @param  Filesystem $files
      */
     function __construct(Brew $brew, CommandLine $cli, Filesystem $files)
     {

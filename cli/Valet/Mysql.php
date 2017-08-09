@@ -20,7 +20,7 @@ class Mysql
     const MYSQL_DIR = '/usr/local/var/mysql';
 
     /**
-     * Create a new Nginx instance.
+     * Create a new instance.
      *
      * @param  Brew $brew
      * @param  CommandLine $cli
@@ -60,7 +60,7 @@ class Mysql
     }
 
     /**
-     * Install the configuration files for Mysql.
+     * Install the service..
      *
      * @param $type
      * @return void
@@ -90,7 +90,7 @@ class Mysql
     }
 
     /**
-     * Install the Mysql configuration file.
+     * Install the configuration files.
      *
      * @param string $type
      * @return void
@@ -99,7 +99,6 @@ class Mysql
     {
         info('['.$type.'] Configuring');
 
-        // TODO: Fix this, currently needed because MySQL will crash otherwise
         $this->files->chmodPath(static::MYSQL_DIR, 0777);
 
         if (! $this->files->isDir($directory = static::MYSQL_CONF_DIR)) {
@@ -215,7 +214,7 @@ class Mysql
      * Create Mysql database
      *
      * @param string $name
-     * @return void
+     * @return bool|string
      */
     function dropDatabase($name) {
         $name = $this->getDirName($name);
@@ -226,18 +225,6 @@ class Mysql
         }
 
         return $name;
-    }
-
-    function joinPaths() {
-        $args = func_get_args();
-        $paths = array();
-        foreach ($args as $arg) {
-            $paths = array_merge($paths, (array)$arg);
-        }
-
-        $paths = array_map(create_function('$p', 'return trim($p, "/");'), $paths);
-        $paths = array_filter($paths);
-        return join('/', $paths);
     }
 
     function getDatabases() {

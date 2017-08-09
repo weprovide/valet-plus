@@ -12,7 +12,7 @@ class Redis
     const REDIS_CONF = '/usr/local/etc/redis.conf';
 
     /**
-     * Create a new Nginx instance.
+     * Create a new instance.
      *
      * @param  Brew $brew
      * @param  CommandLine $cli
@@ -68,7 +68,7 @@ class Redis
     }
 
     /**
-     * Stop the Nginx service.
+     * Stop the service.
      *
      * @return void
      */
@@ -80,7 +80,7 @@ class Redis
     }
 
     /**
-     * Prepare Redis for uninstallation.
+     * Prepare for uninstallation.
      *
      * @return void
      */
