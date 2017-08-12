@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Valet - Not Found - <?php echo htmlspecialchars($siteName . '.' . $valetConfig['domain']); ?></title>
+        <title>Squire - Not Found - <?php echo htmlspecialchars($siteName . '.' . $squireConfig['domain']); ?></title>
 
         <style>
             body {
@@ -39,15 +39,15 @@
     </head>
     <body>
         <div>
-            <h1>Valet could not find directory <span><?php echo htmlspecialchars($siteName); ?></span></h1>
+            <h1>Squire could not find directory <span><?php echo htmlspecialchars($siteName); ?></span></h1>
             <h2>Available sites:</h2>
-            <?php foreach($valetConfig['paths'] as $path): ?>
+            <?php foreach($squireConfig['paths'] as $path): ?>
                 <?php foreach(glob(htmlspecialchars($path) . '/*', GLOB_ONLYDIR) as $site): ?>
-                    <p><span><a href="http://<?php echo htmlspecialchars(basename($site) . '.' . $valetConfig['domain']); ?>"><?php echo htmlspecialchars(basename($site) . '.' . $valetConfig['domain']); ?></a></span></p>
+                    <p><span><a href="http://<?php echo htmlspecialchars(basename($site) . '.' . $squireConfig['domain']); ?>"><?php echo htmlspecialchars(basename($site) . '.' . $squireConfig['domain']); ?></a></span></p>
                 <?php endforeach; ?>
             <?php endforeach; ?>
             <h2>Checked paths:</h2>
-            <?php foreach($valetConfig['paths'] as $path): ?>
+            <?php foreach($squireConfig['paths'] as $path): ?>
                 <p><span><?php echo htmlspecialchars($path); ?></span></p>
             <?php endforeach; ?>
         </div>

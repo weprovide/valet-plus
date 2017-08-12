@@ -1,6 +1,6 @@
 <?php
 
-class JigsawValetDriver extends BasicValetDriver
+class JigsawSquireDriver extends BasicSquireDriver
 {
     /**
      * Mutate the incoming URI.

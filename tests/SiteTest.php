@@ -1,8 +1,8 @@
 <?php
 
-use Valet\Site;
-use Valet\Filesystem;
-use Valet\Configuration;
+use Squire\Site;
+use Squire\Filesystem;
+use Squire\Configuration;
 use Illuminate\Container\Container;
 
 class SiteTest extends PHPUnit_Framework_TestCase
@@ -28,16 +28,16 @@ class SiteTest extends PHPUnit_Framework_TestCase
     public function test_symlink_creates_symlink_to_given_path()
     {
         $files = Mockery::mock(Filesystem::class);
-        $files->shouldReceive('ensureDirExists')->once()->with(VALET_HOME_PATH.'/Sites', user());
+        $files->shouldReceive('ensureDirExists')->once()->with(SQUIRE_HOME_PATH.'/Sites', user());
         $config = Mockery::mock(Configuration::class);
-        $config->shouldReceive('prependPath')->once()->with(VALET_HOME_PATH.'/Sites');
-        $files->shouldReceive('symlinkAsUser')->once()->with('target', VALET_HOME_PATH.'/Sites/link');
+        $config->shouldReceive('prependPath')->once()->with(SQUIRE_HOME_PATH.'/Sites');
+        $files->shouldReceive('symlinkAsUser')->once()->with('target', SQUIRE_HOME_PATH.'/Sites/link');
 
         swap(Filesystem::class, $files);
         swap(Configuration::class, $config);
 
         $linkPath = resolve(Site::class)->link('target', 'link');
-        $this->assertSame(VALET_HOME_PATH.'/Sites/link', $linkPath);
+        $this->assertSame(SQUIRE_HOME_PATH.'/Sites/link', $linkPath);
     }
 
 

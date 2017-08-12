@@ -1,6 +1,6 @@
 <?php
 
-class SampleValetDriver extends ValetDriver
+class SampleSquireDriver extends SquireDriver
 {
     /**
      * Determine if the driver serves the request.

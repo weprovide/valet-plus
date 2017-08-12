@@ -1,6 +1,6 @@
 <?php
 
-class ContaoValetDriver extends ValetDriver
+class ContaoSquireDriver extends SquireDriver
 {
     /**
      * Determine if the driver serves the request.

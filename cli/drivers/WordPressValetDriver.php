@@ -1,6 +1,6 @@
 <?php
 
-class WordPressValetDriver extends BasicValetDriver
+class WordPressSquireDriver extends BasicSquireDriver
 {
     /**
      * Determine if the driver serves the request.

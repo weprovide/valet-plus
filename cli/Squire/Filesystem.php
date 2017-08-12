@@ -1,6 +1,6 @@
 <?php
 
-namespace Valet;
+namespace Squire;
 
 use CommandLine as CommandLineFacade;
 

@@ -1,6 +1,6 @@
 <?php
 
-class Concrete5ValetDriver extends BasicValetDriver
+class Concrete5SquireDriver extends BasicSquireDriver
 {
 
     /**
@@ -24,7 +24,7 @@ class Concrete5ValetDriver extends BasicValetDriver
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
         if (!getenv('CONCRETE5_ENV')) {
-            putenv('CONCRETE5_ENV=valet');
+            putenv('CONCRETE5_ENV=squire');
         }
 
         $matches = [];

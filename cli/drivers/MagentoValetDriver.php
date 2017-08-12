@@ -1,6 +1,6 @@
 <?php
 
-class MagentoValetDriver extends BasicValetDriver
+class MagentoSquireDriver extends BasicSquireDriver
 {
     /**
      * Determine if the driver serves the request.

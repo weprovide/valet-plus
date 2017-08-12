@@ -1,6 +1,6 @@
 <?php
 
-namespace Valet;
+namespace Squire;
 
 use Httpful\Request;
 use DomainException;

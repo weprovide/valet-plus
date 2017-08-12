@@ -1,6 +1,6 @@
 <?php
 
-class KatanaValetDriver extends BasicValetDriver
+class KatanaSquireDriver extends BasicSquireDriver
 {
     /**
      * Mutate the incoming URI.

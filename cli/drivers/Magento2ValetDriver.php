@@ -1,6 +1,6 @@
 <?php
 
-class Magento2ValetDriver extends ValetDriver
+class Magento2SquireDriver extends SquireDriver
 {
     public function configure($devtools, $url) {
         info('Configuring Magento 2...');
@@ -31,7 +31,7 @@ class Magento2ValetDriver extends ValetDriver
 
         info('Setting elastic search hostname...');
         $devtools->cli->quietlyAsUser('n98-magerun2 config:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
-        
+
         info('Flushing cache...');
         $devtools->cli->quietlyAsUser('n98-magerun2 cache:flush');
 

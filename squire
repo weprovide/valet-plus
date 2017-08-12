@@ -15,10 +15,10 @@ fi
 
 # If we are in the global Composer "bin" directory, we need to bump our
 # current directory up two, so that we will correctly proxy into the
-# Valet CLI script which is written in PHP. Will use PHP to do it.
-if [ ! -f "$DIR/cli/valet.php" ]
+# Squire CLI script which is written in PHP. Will use PHP to do it.
+if [ ! -f "$DIR/cli/squire.php" ]
 then
-    DIR=$(php -r "echo realpath('$DIR/../laravel/valet');")
+    DIR=$(php -r "echo realpath('$DIR/../laravel/squire');")
 fi
 
 # If the command is one of the commands that requires "sudo" privileges
@@ -39,9 +39,9 @@ fi
 if [[ "$1" = "share" ]]
 then
     HOST="${PWD##*/}"
-    DOMAIN=$(php "$DIR/cli/valet.php" domain)
+    DOMAIN=$(php "$DIR/cli/squire.php" domain)
 
-    for linkname in ~/.valet/Sites/*; do
+    for linkname in ~/.squire/Sites/*; do
         if [[ "$(readlink $linkname)" = "$PWD" ]]
         then
             HOST="${linkname##*/}"
@@ -57,5 +57,5 @@ then
 # and let it handle the request. These are commands which can be run
 # without sudo and don't require taking over terminals like Ngrok.
 else
-    php "$DIR/cli/valet.php" "$@"
+    php "$DIR/cli/squire.php" "$@"
 fi

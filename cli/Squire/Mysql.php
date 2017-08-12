@@ -1,6 +1,6 @@
 <?php
 
-namespace Valet;
+namespace Squire;
 
 use DateTime;
 use MYSQLI_ASSOC;
@@ -112,7 +112,7 @@ class Mysql
 
         $this->files->putAsUser(
             static::MYSQL_CONF,
-            str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents)
+            str_replace('SQUIRE_HOME_PATH', SQUIRE_HOME_PATH, $contents)
         );
     }
 
@@ -182,7 +182,7 @@ class Mysql
         if($name) {
             return $name;
         }
-        
+
         $gitDir = $this->cli->runAsUser('git rev-parse --show-toplevel 2>/dev/null');
 
         if($gitDir) {
@@ -242,7 +242,7 @@ class Mysql
             if($row['Database'] === 'sys' || $row['Database'] === 'performance_schema' || $row['Database'] === 'information_schema' || $row['Database'] === 'mysql') {
                 continue;
             }
-            
+
             $databases[] = [$row['Database']];
         }
 

@@ -1,7 +1,7 @@
 <?php
 
-use Valet\Filesystem;
-use Valet\Configuration;
+use Squire\Filesystem;
+use Squire\Configuration;
 use Illuminate\Container\Container;
 
 class ConfigurationTest extends PHPUnit_Framework_TestCase
@@ -23,7 +23,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     public function test_configuration_directory_is_created_if_it_doesnt_exist()
     {
         $files = Mockery::mock(Filesystem::class);
-        $files->shouldReceive('ensureDirExists')->once()->with(VALET_HOME_PATH, user());
+        $files->shouldReceive('ensureDirExists')->once()->with(SQUIRE_HOME_PATH, user());
         swap(Filesystem::class, $files);
         resolve(Configuration::class)->createConfigurationDirectory();
     }
@@ -32,8 +32,8 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     public function test_drivers_directory_is_created_with_sample_driver_if_it_doesnt_exist()
     {
         $files = Mockery::mock(Filesystem::class.'[isDir,mkdirAsUser,putAsUser]');
-        $files->shouldReceive('isDir')->with(VALET_HOME_PATH.'/Drivers')->andReturn(false);
-        $files->shouldReceive('mkdirAsUser')->with(VALET_HOME_PATH.'/Drivers');
+        $files->shouldReceive('isDir')->with(SQUIRE_HOME_PATH.'/Drivers')->andReturn(false);
+        $files->shouldReceive('mkdirAsUser')->with(SQUIRE_HOME_PATH.'/Drivers');
         $files->shouldReceive('putAsUser');
         swap(Filesystem::class, $files);
         resolve(Configuration::class)->createDriversDirectory();
@@ -42,7 +42,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     public function test_log_directory_is_created_with_log_files_if_it_doesnt_exist()
     {
         $files = Mockery::mock(Filesystem::class.'[ensureDirExists,touch]');
-        $files->shouldReceive('ensureDirExists')->with(VALET_HOME_PATH.'/Log', user());
+        $files->shouldReceive('ensureDirExists')->with(SQUIRE_HOME_PATH.'/Log', user());
         $files->shouldReceive('touch')->once();
         swap(Filesystem::class, $files);
         resolve(Configuration::class)->createLogDirectory();
@@ -87,7 +87,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     {
         $files = Mockery::mock(Filesystem::class.'[exists,isDir]');
         swap(Filesystem::class, $files);
-        $files->shouldReceive('exists')->with(VALET_HOME_PATH.'/config.json')->andReturn(true);
+        $files->shouldReceive('exists')->with(SQUIRE_HOME_PATH.'/config.json')->andReturn(true);
         $files->shouldReceive('isDir')->with('path-1')->andReturn(true);
         $files->shouldReceive('isDir')->with('path-2')->andReturn(false);
         $config = Mockery::mock(Configuration::class.'[read,write]', [$files]);
@@ -105,7 +105,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     {
         $files = Mockery::mock(Filesystem::class.'[exists]');
         swap(Filesystem::class, $files);
-        $files->shouldReceive('exists')->with(VALET_HOME_PATH.'/config.json')->andReturn(false);
+        $files->shouldReceive('exists')->with(SQUIRE_HOME_PATH.'/config.json')->andReturn(false);
         $config = Mockery::mock(Configuration::class.'[read,write]', [$files]);
         $config->shouldReceive('read')->never();
         $config->shouldReceive('write')->never();

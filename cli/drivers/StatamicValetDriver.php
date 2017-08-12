@@ -1,6 +1,6 @@
 <?php
 
-class StatamicValetDriver extends ValetDriver
+class StatamicSquireDriver extends SquireDriver
 {
     /**
      * Determine if the driver serves the request.

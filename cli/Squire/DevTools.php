@@ -1,9 +1,9 @@
 <?php
 
-namespace Valet;
+namespace Squire;
 
 use Exception;
-use ValetDriver;
+use SquireDriver;
 
 class DevTools
 {
@@ -88,7 +88,7 @@ class DevTools
         }
 
         $output = $this->cli->runAsUser($command.' $(git rev-parse --show-toplevel)');
-        
+
         if(strpos($output, 'fatal: Not a git repository') !== false) {
             throw new Exception('Could not find git directory');
         }
@@ -111,7 +111,7 @@ class DevTools
         }
 
         $output = $this->cli->runAsUser($command.' $(git rev-parse --show-toplevel)');
-        
+
         if(strpos($output, 'fatal: Not a git repository') !== false) {
             throw new Exception('Could not find git directory');
         }
@@ -124,7 +124,7 @@ class DevTools
         }
 
         $output = $this->cli->runAsUser('/Applications/Tower.app/Contents/MacOS/gittower $(git rev-parse --show-toplevel)');
-        
+
         if(strpos($output, 'fatal: Not a git repository') !== false) {
             throw new Exception('Could not find git directory');
         }
@@ -133,13 +133,13 @@ class DevTools
     function configure() {
         require realpath(__DIR__.'/../drivers/require.php');
 
-        $driver = ValetDriver::assign(getcwd(), basename(getcwd()), '/');
+        $driver = SquireDriver::assign(getcwd(), basename(getcwd()), '/');
 
         $secured = $this->site->secured();
         $domain = $this->site->host(getcwd()).'.'.$this->configuration->read()['domain'];
         $isSecure = in_array($domain, $secured);
         $url = ($isSecure ? 'https://' : 'http://') . $domain;
-        
+
         if(method_exists($driver, 'configure')) {
             return $driver->configure($this, $url);
         }

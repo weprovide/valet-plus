@@ -3,27 +3,27 @@
 /**
  * Basic drivers...
  */
-require_once __DIR__.'/ValetDriver.php';
-require_once __DIR__.'/BasicValetDriver.php';
+require_once __DIR__.'/SquireDriver.php';
+require_once __DIR__.'/BasicSquireDriver.php';
 
 /**
  * Specific drivers...
  */
-require_once __DIR__.'/CraftValetDriver.php';
-require_once __DIR__.'/JigsawValetDriver.php';
-require_once __DIR__.'/KirbyValetDriver.php';
-require_once __DIR__.'/LaravelValetDriver.php';
-require_once __DIR__.'/SculpinValetDriver.php';
-require_once __DIR__.'/StatamicValetDriver.php';
-require_once __DIR__.'/StatamicV1ValetDriver.php';
-require_once __DIR__.'/SymfonyValetDriver.php';
-require_once __DIR__.'/WordPressValetDriver.php';
-require_once __DIR__.'/BedrockValetDriver.php';
-require_once __DIR__.'/ContaoValetDriver.php';
-require_once __DIR__.'/KatanaValetDriver.php';
-require_once __DIR__.'/CakeValetDriver.php';
-require_once __DIR__.'/JoomlaValetDriver.php';
-require_once __DIR__.'/DrupalValetDriver.php';
-require_once __DIR__.'/Concrete5ValetDriver.php';
-require_once __DIR__.'/MagentoValetDriver.php';
-require_once __DIR__.'/Magento2ValetDriver.php';
+require_once __DIR__.'/CraftSquireDriver.php';
+require_once __DIR__.'/JigsawSquireDriver.php';
+require_once __DIR__.'/KirbySquireDriver.php';
+require_once __DIR__.'/LaravelSquireDriver.php';
+require_once __DIR__.'/SculpinSquireDriver.php';
+require_once __DIR__.'/StatamicSquireDriver.php';
+require_once __DIR__.'/StatamicV1SquireDriver.php';
+require_once __DIR__.'/SymfonySquireDriver.php';
+require_once __DIR__.'/WordPressSquireDriver.php';
+require_once __DIR__.'/BedrockSquireDriver.php';
+require_once __DIR__.'/ContaoSquireDriver.php';
+require_once __DIR__.'/KatanaSquireDriver.php';
+require_once __DIR__.'/CakeSquireDriver.php';
+require_once __DIR__.'/JoomlaSquireDriver.php';
+require_once __DIR__.'/DrupalSquireDriver.php';
+require_once __DIR__.'/Concrete5SquireDriver.php';
+require_once __DIR__.'/MagentoSquireDriver.php';
+require_once __DIR__.'/Magento2SquireDriver.php';
