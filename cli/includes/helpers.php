@@ -6,11 +6,11 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Helper\Table;
 
 /**
- * Define the ~/.valet path as a constant.
+ * Define the ~/.squire path as a constant.
  */
-define('VALET_HOME_PATH', $_SERVER['HOME'].'/.valet');
-define('VALET_SERVER_PATH', realpath(__DIR__ . '/../../server.php'));
-define('VALET_STATIC_PREFIX', '41c270e4-5535-4daa-b23e-c269744c2f45');
+define('SQUIRE_HOME_PATH', $_SERVER['HOME'].'/.squire');
+define('SQUIRE_SERVER_PATH', realpath(__DIR__ . '/../../server.php'));
+define('SQUIRE_STATIC_PREFIX', 'ec955b08-4b80-4524-a966-0098988dd98c');
 
 /**
  * Output the given text to the console.

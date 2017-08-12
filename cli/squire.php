@@ -21,19 +21,19 @@ Container::setInstance(new Container);
 
 $version = '1.0.0';
 
-$app = new Application('Valet+', $version);
+$app = new Application('Squire', $version);
 
 /**
  * Prune missing directories and symbolic links on every command.
  */
-if (is_dir(VALET_HOME_PATH)) {
+if (is_dir(SQUIRE_HOME_PATH)) {
     Configuration::prune();
 
     Site::pruneLinks();
 }
 
 /**
- * Allow Valet to be run more conveniently by allowing the Node proxy to run password-less sudo.
+ * Allow Squire to be run more conveniently by allowing the Node proxy to run password-less sudo.
  */
 $app->command('install [--with-mariadb]', function ($withMariadb) {
     Nginx::stop();
@@ -50,18 +50,18 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
     Redis::install();
     Mailhog::install();
     Nginx::restart();
-    Valet::symlinkToUsersBin();
+    Squire::symlinkToUsersBin();
     Mysql::setRootPassword();
 
-    output(PHP_EOL.'<info>Valet installed successfully!</info>');
-})->descriptions('Install the Valet services');
+    output(PHP_EOL.'<info>Squire installed successfully!</info>');
+})->descriptions('Install the Squire services');
 
 /**
- * Most commands are available only if valet is installed.
+ * Most commands are available only if squire is installed.
  */
-if (is_dir(VALET_HOME_PATH)) {
+if (is_dir(SQUIRE_HOME_PATH)) {
     /**
-     * Get or set the domain currently being used by Valet.
+     * Get or set the domain currently being used by Squire.
      */
     $app->command('domain [domain]', function ($domain = null) {
         if ($domain === null) {
@@ -78,8 +78,8 @@ if (is_dir(VALET_HOME_PATH)) {
         PhpFpm::restart();
         Nginx::restart();
 
-        info('Your Valet domain has been updated to ['.$domain.'].');
-    })->descriptions('Get or set the domain used for Valet sites');
+        info('Your Squire domain has been updated to ['.$domain.'].');
+    })->descriptions('Get or set the domain used for Squire sites');
 
     /**
      * Add the current working directory to the paths configuration.
@@ -87,8 +87,8 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('park [path]', function ($path = null) {
         Configuration::addPath($path ?: getcwd());
 
-        info(($path === null ? "This" : "The [{$path}]") . " directory has been added to Valet's paths.");
-    })->descriptions('Register the current working (or specified) directory with Valet');
+        info(($path === null ? "This" : "The [{$path}]") . " directory has been added to Squire's paths.");
+    })->descriptions('Register the current working (or specified) directory with Squire');
 
     /**
      * Remove the current working directory from the paths configuration.
@@ -96,11 +96,11 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('forget [path]', function ($path = null) {
         Configuration::removePath($path ?: getcwd());
 
-        info(($path === null ? "This" : "The [{$path}]") . " directory has been removed from Valet's paths.");
-    })->descriptions('Remove the current working (or specified) directory from Valet\'s list of paths');
+        info(($path === null ? "This" : "The [{$path}]") . " directory has been removed from Squire's paths.");
+    })->descriptions('Remove the current working (or specified) directory from Squire\'s list of paths');
 
     /**
-     * Register a symbolic link with Valet.
+     * Register a symbolic link with Squire.
      */
     $app->command('link [name] [--secure]', function ($name, $secure) {
         $domain = Site::link(getcwd(), $name = $name ?: basename(getcwd()));
@@ -110,10 +110,10 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         info('Current working directory linked to '.$domain);
-    })->descriptions('Link the current working directory to Valet');
+    })->descriptions('Link the current working directory to Squire');
 
     /**
-     * Register a subdomain link with Valet.
+     * Register a subdomain link with Squire.
      */
     $app->command('subdomain [action] [name] [--secure]', function ($action, $name, $secure) {
         if($action === 'list') {
@@ -144,16 +144,16 @@ if (is_dir(VALET_HOME_PATH)) {
         $links = Site::links();
 
         table(['Site', 'SSL', 'URL', 'Path'], $links->all());
-    })->descriptions('Display all of the registered Valet links');
+    })->descriptions('Display all of the registered Squire links');
 
     /**
-     * Unlink a link from the Valet links directory.
+     * Unlink a link from the Squire links directory.
      */
     $app->command('unlink [name]', function ($name) {
         Site::unlink($name = $name ?: basename(getcwd()));
 
         info('The ['.$name.'] symbolic link has been removed.');
-    })->descriptions('Remove the specified Valet link');
+    })->descriptions('Remove the specified Squire link');
 
     /**
      * Secure the given domain with a trusted TLS certificate.
@@ -186,19 +186,19 @@ if (is_dir(VALET_HOME_PATH)) {
     })->descriptions('Stop serving the given domain over HTTPS and remove the trusted TLS certificate');
 
     /**
-     * Determine which Valet driver the current directory is using.
+     * Determine which Squire driver the current directory is using.
      */
     $app->command('which', function () {
         require __DIR__.'/drivers/require.php';
 
-        $driver = ValetDriver::assign(getcwd(), basename(getcwd()), '/');
+        $driver = SquireDriver::assign(getcwd(), basename(getcwd()), '/');
 
         if ($driver) {
             info('This site is served by ['.get_class($driver).'].');
         } else {
-            warning('Valet could not determine which driver to use for this site.');
+            warning('Squire could not determine which driver to use for this site.');
         }
-    })->descriptions('Determine which Valet driver serves the current working directory');
+    })->descriptions('Determine which Squire driver serves the current working directory');
 
     /**
      * Display all of the registered paths.
@@ -211,7 +211,7 @@ if (is_dir(VALET_HOME_PATH)) {
         } else {
             info('No paths have been registered.');
         }
-    })->descriptions('Get all of the paths registered with Valet');
+    })->descriptions('Get all of the paths registered with Squire');
 
     /**
      * Open the current or given directory in the browser.
@@ -226,7 +226,7 @@ if (is_dir(VALET_HOME_PATH)) {
      * Generate a publicly accessible URL for your project.
      */
     $app->command('share', function () {
-        warning("It looks like you are running `cli/valet.php` directly, please use the `valet` script in the project root instead.");
+        warning("It looks like you are running `cli/squire.php` directly, please use the `squire` script in the project root instead.");
     })->descriptions('Generate a publicly accessible URL for your project');
 
     /**
@@ -247,7 +247,7 @@ if (is_dir(VALET_HOME_PATH)) {
             Redis::restart();
             Mailhog::restart();
             Elasticsearch::restart();
-            info('Valet services have been started.');
+            info('Squire services have been started.');
             return;
         }
 
@@ -277,8 +277,8 @@ if (is_dir(VALET_HOME_PATH)) {
             }
         }
 
-        info('Specified Valet services have been started.');
-    })->descriptions('Start the Valet services');
+        info('Specified Squire services have been started.');
+    })->descriptions('Start the Squire services');
 
     /**
      * Restart the daemon services.
@@ -291,7 +291,7 @@ if (is_dir(VALET_HOME_PATH)) {
             Redis::restart();
             Mailhog::restart();
             Elasticsearch::restart();
-            info('Valet services have been started.');
+            info('Squire services have been started.');
             return;
         }
 
@@ -320,8 +320,8 @@ if (is_dir(VALET_HOME_PATH)) {
             }
         }
 
-        info('Specified Valet services have been started.');
-    })->descriptions('Restart the Valet services');
+        info('Specified Squire services have been started.');
+    })->descriptions('Restart the Squire services');
 
     /**
      * Stop the daemon services.
@@ -337,7 +337,7 @@ if (is_dir(VALET_HOME_PATH)) {
             Redis::stop();
             Mailhog::stop();
             Elasticsearch::stop();
-            info('Valet services have been stopped.');
+            info('Squire services have been stopped.');
             return;
         }
 
@@ -366,11 +366,11 @@ if (is_dir(VALET_HOME_PATH)) {
             }
         }
 
-        info('Specified Valet services have been stopped.');
-    })->descriptions('Stop the Valet services');
+        info('Specified Squire services have been stopped.');
+    })->descriptions('Stop the Squire services');
 
     /**
-     * Uninstall Valet entirely.
+     * Uninstall Squire entirely.
      */
     $app->command('uninstall', function () {
         Nginx::uninstall();
@@ -379,19 +379,19 @@ if (is_dir(VALET_HOME_PATH)) {
         Mailhog::uninstall();
         Elasticsearch::uninstall();
 
-        info('Valet has been uninstalled.');
-    })->descriptions('Uninstall the Valet services');
+        info('Squire has been uninstalled.');
+    })->descriptions('Uninstall the Squire services');
 
     /**
-     * Determine if this is the latest release of Valet.
+     * Determine if this is the latest release of Squire.
      */
     $app->command('on-latest-version', function () use ($version) {
-        if (Valet::onLatestVersion($version)) {
+        if (Squire::onLatestVersion($version)) {
             output('YES');
         } else {
             output('NO');
         }
-    })->descriptions('Determine if this is the latest version of Valet');
+    })->descriptions('Determine if this is the latest version of Squire');
 
     /**
      * Switch between versions of PHP
@@ -403,7 +403,7 @@ if (is_dir(VALET_HOME_PATH)) {
             info('Already on this version');
             return;
         }
-        info('Valet is now using php'.$phpVersion.'.');
+        info('Squire is now using php'.$phpVersion.'.');
     })->descriptions('Switch between versions of PHP');
 
     /**
@@ -458,7 +458,7 @@ if (is_dir(VALET_HOME_PATH)) {
             }
 
             $databaseName = Mysql::createDatabase($name);
-            
+
             if(!$databaseName) {
                 return warning('Error creating database');
             }
@@ -466,7 +466,7 @@ if (is_dir(VALET_HOME_PATH)) {
             info('Database "' . $databaseName . '" reset successfully');
             return;
         }
-        
+
         if($run === 'open') {
             if($name === '.') {
                 $name = basename(getcwd());
@@ -477,7 +477,7 @@ if (is_dir(VALET_HOME_PATH)) {
             Mysql::openSequelPro($name);
             return;
         }
-        
+
         if($run === 'import') {
             info('Importing database...');
             if(!$name) {
@@ -507,7 +507,7 @@ if (is_dir(VALET_HOME_PATH)) {
             info('Database "' . $data['database'] . '" exported into file "' . $data['filename'] . '"');
             return;
         }
-        
+
         throw new Exception('Command not found');
     })->descriptions('Database commands (list/ls, create, drop, reset, open, import, reimport, export/dump)');
 
@@ -525,9 +525,9 @@ if (is_dir(VALET_HOME_PATH)) {
             PhpFpm::enableExtension('xdebug');
             return;
         }
-        
+
         if($mode === 'off' || $mode === 'disable') {
-            PhpFpm::disableExtension('xdebug');            
+            PhpFpm::disableExtension('xdebug');
             return;
         }
 
@@ -546,7 +546,7 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($mode === 'off' || $mode === 'disable') {
-            PhpFpm::disableExtension('ioncubeloader');            
+            PhpFpm::disableExtension('ioncubeloader');
             return;
         }
 
@@ -580,9 +580,9 @@ if (is_dir(VALET_HOME_PATH)) {
 }
 
 /**
- * Load all of the Valet extensions.
+ * Load all of the Squire extensions.
  */
-foreach (Valet::extensions() as $extension) {
+foreach (Squire::extensions() as $extension) {
     include $extension;
 }
 

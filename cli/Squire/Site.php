@@ -1,6 +1,6 @@
 <?php
 
-namespace Valet;
+namespace Squire;
 
 class Site
 {
@@ -60,19 +60,19 @@ class Site
     }
 
     /**
-     * Pretty print out all links in Valet.
+     * Pretty print out all links in Squire.
      *
      * @param string $filterName
      * @return \Illuminate\Support\Collection
      */
     function links($filterName = '') {
-        $certsPath = VALET_HOME_PATH.'/Certificates';
+        $certsPath = SQUIRE_HOME_PATH.'/Certificates';
 
         $this->files->ensureDirExists($certsPath, user());
 
         $certs = $this->getCertificates($certsPath);
 
-        return $this->getLinks(VALET_HOME_PATH.'/Sites', $certs, $filterName);
+        return $this->getLinks(SQUIRE_HOME_PATH.'/Sites', $certs, $filterName);
     }
 
     /**
@@ -202,7 +202,7 @@ class Site
         $this->createCertificate($url);
 
         $this->files->putAsUser(
-            VALET_HOME_PATH.'/Nginx/'.$url, $this->buildSecureNginxServer($url)
+            SQUIRE_HOME_PATH.'/Nginx/'.$url, $this->buildSecureNginxServer($url)
         );
     }
 
@@ -277,7 +277,7 @@ class Site
      */
     function buildCertificateConf($path, $url)
     {
-        $config = str_replace('VALET_DOMAIN', $url, $this->files->get(__DIR__.'/../stubs/openssl.conf'));
+        $config = str_replace('SQUIRE_DOMAIN', $url, $this->files->get(__DIR__.'/../stubs/openssl.conf'));
         $this->files->putAsUser($path, $config);
     }
 
@@ -292,9 +292,9 @@ class Site
         $path = $this->certificatesPath();
 
         return str_replace(
-            ['VALET_HOME_PATH', 'VALET_SERVER_PATH', 'VALET_STATIC_PREFIX', 'VALET_SITE', 'VALET_CERT', 'VALET_KEY'],
-            [VALET_HOME_PATH, VALET_SERVER_PATH, VALET_STATIC_PREFIX, $url, $path.'/'.$url.'.crt', $path.'/'.$url.'.key'],
-            $this->files->get(__DIR__.'/../stubs/secure.valet.conf')
+            ['SQUIRE_HOME_PATH', 'SQUIRE_SERVER_PATH', 'SQUIRE_STATIC_PREFIX', 'SQUIRE_SITE', 'SQUIRE_CERT', 'SQUIRE_KEY'],
+            [SQUIRE_HOME_PATH, SQUIRE_SERVER_PATH, SQUIRE_STATIC_PREFIX, $url, $path.'/'.$url.'.crt', $path.'/'.$url.'.key'],
+            $this->files->get(__DIR__.'/../stubs/secure.squire.conf')
         );
     }
 
@@ -307,7 +307,7 @@ class Site
     function unsecure($url)
     {
         if ($this->files->exists($this->certificatesPath().'/'.$url.'.crt')) {
-            $this->files->unlink(VALET_HOME_PATH.'/Nginx/'.$url);
+            $this->files->unlink(SQUIRE_HOME_PATH.'/Nginx/'.$url);
 
             $this->files->unlink($this->certificatesPath().'/'.$url.'.conf');
             $this->files->unlink($this->certificatesPath().'/'.$url.'.key');
@@ -319,22 +319,22 @@ class Site
     }
 
     /**
-     * Get the path to the linked Valet sites.
+     * Get the path to the linked Squire sites.
      *
      * @return string
      */
     function sitesPath()
     {
-        return VALET_HOME_PATH.'/Sites';
+        return SQUIRE_HOME_PATH.'/Sites';
     }
 
     /**
-     * Get the path to the Valet TLS certificates.
+     * Get the path to the Squire TLS certificates.
      *
      * @return string
      */
     function certificatesPath()
     {
-        return VALET_HOME_PATH.'/Certificates';
+        return SQUIRE_HOME_PATH.'/Certificates';
     }
 }

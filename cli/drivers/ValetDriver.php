@@ -1,6 +1,6 @@
 <?php
 
-abstract class ValetDriver
+abstract class SquireDriver
 {
     /**
      * Determine if the driver serves the request.
@@ -38,7 +38,7 @@ abstract class ValetDriver
      * @param  string  $sitePath
      * @param  string  $siteName
      * @param  string  $uri
-     * @return ValetDriver|null
+     * @return SquireDriver|null
      */
     public static function assign($sitePath, $siteName, $uri)
     {
@@ -48,29 +48,29 @@ abstract class ValetDriver
             $drivers[] = $customSiteDriver;
         }
 
-        $drivers = array_merge($drivers, static::driversIn(VALET_HOME_PATH.'/Drivers'));
+        $drivers = array_merge($drivers, static::driversIn(SQUIRE_HOME_PATH.'/Drivers'));
 
-        $drivers[] = 'LaravelValetDriver';
+        $drivers[] = 'LaravelSquireDriver';
 
-        $drivers[] = 'WordPressValetDriver';
-        $drivers[] = 'BedrockValetDriver';
-        $drivers[] = 'ContaoValetDriver';
-        $drivers[] = 'SymfonyValetDriver';
-        $drivers[] = 'CraftValetDriver';
-        $drivers[] = 'StatamicValetDriver';
-        $drivers[] = 'StatamicV1ValetDriver';
-        $drivers[] = 'CakeValetDriver';
-        $drivers[] = 'SculpinValetDriver';
-        $drivers[] = 'JigsawValetDriver';
-        $drivers[] = 'KirbyValetDriver';
-        $drivers[] = 'KatanaValetDriver';
-        $drivers[] = 'JoomlaValetDriver';
-        $drivers[] = 'DrupalValetDriver';
-        $drivers[] = 'Concrete5ValetDriver';
-        $drivers[] = 'MagentoValetDriver';
-        $drivers[] = 'Magento2ValetDriver';
+        $drivers[] = 'WordPressSquireDriver';
+        $drivers[] = 'BedrockSquireDriver';
+        $drivers[] = 'ContaoSquireDriver';
+        $drivers[] = 'SymfonySquireDriver';
+        $drivers[] = 'CraftSquireDriver';
+        $drivers[] = 'StatamicSquireDriver';
+        $drivers[] = 'StatamicV1SquireDriver';
+        $drivers[] = 'CakeSquireDriver';
+        $drivers[] = 'SculpinSquireDriver';
+        $drivers[] = 'JigsawSquireDriver';
+        $drivers[] = 'KirbySquireDriver';
+        $drivers[] = 'KatanaSquireDriver';
+        $drivers[] = 'JoomlaSquireDriver';
+        $drivers[] = 'DrupalSquireDriver';
+        $drivers[] = 'Concrete5SquireDriver';
+        $drivers[] = 'MagentoSquireDriver';
+        $drivers[] = 'Magento2SquireDriver';
 
-        $drivers[] = 'BasicValetDriver';
+        $drivers[] = 'BasicSquireDriver';
 
         foreach ($drivers as $driver) {
             $driver = new $driver;
@@ -89,13 +89,13 @@ abstract class ValetDriver
      */
     public static function customSiteDriver($sitePath)
     {
-        if (! file_exists($sitePath.'/LocalValetDriver.php')) {
+        if (! file_exists($sitePath.'/LocalSquireDriver.php')) {
             return;
         }
 
-        require_once $sitePath.'/LocalValetDriver.php';
+        require_once $sitePath.'/LocalSquireDriver.php';
 
-        return 'LocalValetDriver';
+        return 'LocalSquireDriver';
     }
 
     /**
@@ -113,7 +113,7 @@ abstract class ValetDriver
         $drivers = [];
 
         foreach (scandir($path) as $file) {
-            if ($file !== 'ValetDriver.php' && strpos($file, 'ValetDriver') !== false) {
+            if ($file !== 'SquireDriver.php' && strpos($file, 'SquireDriver') !== false) {
                 require_once $path.'/'.$file;
 
                 $drivers[] = basename($file, '.php');
@@ -163,7 +163,7 @@ abstract class ValetDriver
         header('Content-Type: text/html');
         header_remove('Content-Type');
 
-        header('X-Accel-Redirect: /' . VALET_STATIC_PREFIX . $staticFilePath);
+        header('X-Accel-Redirect: /' . SQUIRE_STATIC_PREFIX . $staticFilePath);
     }
 
     /**

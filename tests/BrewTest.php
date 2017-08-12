@@ -1,8 +1,8 @@
 <?php
 
-use Valet\Brew;
-use Valet\Filesystem;
-use Valet\CommandLine;
+use Squire\Brew;
+use Squire\Filesystem;
+use Squire\CommandLine;
 use Illuminate\Container\Container;
 
 class BrewTest extends PHPUnit_Framework_TestCase

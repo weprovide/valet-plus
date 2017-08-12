@@ -1,6 +1,6 @@
 <?php
 
-class SculpinValetDriver extends BasicValetDriver
+class SculpinSquireDriver extends BasicSquireDriver
 {
     /**
      * Determine if the driver serves the request.

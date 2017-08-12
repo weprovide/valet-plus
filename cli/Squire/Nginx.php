@@ -1,6 +1,6 @@
 <?php
 
-namespace Valet;
+namespace Squire;
 
 use DomainException;
 
@@ -59,35 +59,35 @@ class Nginx
 
         $this->files->putAsUser(
             static::NGINX_CONF,
-            str_replace(['VALET_USER', 'VALET_HOME_PATH'], [user(), VALET_HOME_PATH], $contents)
+            str_replace(['SQUIRE_USER', 'SQUIRE_HOME_PATH'], [user(), SQUIRE_HOME_PATH], $contents)
         );
     }
 
     /**
-     * Install the Valet server configuration file.
+     * Install the Squire server configuration file.
      *
      * @return void
      */
     function installServer()
     {
-        $this->files->ensureDirExists('/usr/local/etc/nginx/valet');
+        $this->files->ensureDirExists('/usr/local/etc/nginx/squire');
 
         $this->files->putAsUser(
-            '/usr/local/etc/nginx/valet/valet.conf',
+            '/usr/local/etc/nginx/squire/squire.conf',
             str_replace(
-                ['VALET_HOME_PATH', 'VALET_SERVER_PATH', 'VALET_STATIC_PREFIX'],
-                [VALET_HOME_PATH, VALET_SERVER_PATH, VALET_STATIC_PREFIX],
-                $this->files->get(__DIR__.'/../stubs/valet.conf')
+                ['SQUIRE_HOME_PATH', 'SQUIRE_SERVER_PATH', 'SQUIRE_STATIC_PREFIX'],
+                [SQUIRE_HOME_PATH, SQUIRE_SERVER_PATH, SQUIRE_STATIC_PREFIX],
+                $this->files->get(__DIR__.'/../stubs/squire.conf')
             )
         );
 
         $this->files->putAsUser(
-            '/usr/local/etc/nginx/valet/mailhog.conf',
+            '/usr/local/etc/nginx/squire/mailhog.conf',
             $this->files->get(__DIR__.'/../stubs/mailhog.conf')
         );
 
         $this->files->putAsUser(
-            '/usr/local/etc/nginx/valet/elasticsearch.conf',
+            '/usr/local/etc/nginx/squire/elasticsearch.conf',
             $this->files->get(__DIR__.'/../stubs/elasticsearch.conf')
         );
 
@@ -98,7 +98,7 @@ class Nginx
     }
 
     /**
-     * Install the configuration directory to the ~/.valet directory.
+     * Install the configuration directory to the ~/.squire directory.
      *
      * This directory contains all site-specific Nginx servers.
      *
@@ -106,7 +106,7 @@ class Nginx
      */
     function installNginxDirectory()
     {
-        if (! $this->files->isDir($nginxDirectory = VALET_HOME_PATH.'/Nginx')) {
+        if (! $this->files->isDir($nginxDirectory = SQUIRE_HOME_PATH.'/Nginx')) {
             $this->files->mkdirAsUser($nginxDirectory);
         }
 

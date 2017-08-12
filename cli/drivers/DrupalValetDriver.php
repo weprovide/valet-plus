@@ -1,6 +1,6 @@
 <?php
 
-class DrupalValetDriver extends ValetDriver
+class DrupalSquireDriver extends SquireDriver
 {
     /**
      * Determine if the driver serves the request.

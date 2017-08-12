@@ -1,11 +1,19 @@
 {
-    "name": "weprovide/valet-plus",
+    "name": "weprovide/squire",
     "description": "Blazing fast macOS PHP development environment",
     "license": "MIT",
     "authors": [
         {
             "name": "Tim Neutkens",
             "email": "tim@weprovide.com"
+        },
+        {
+            "name": "Taylor Otwell",
+            "email": "taylor@laravel.com"
+        },
+        {
+            "name": "Adam Wathan",
+            "email": "adam.wathan@gmail.com"
         }
     ],
     "autoload": {
@@ -15,7 +23,7 @@
             "cli/includes/helpers.php"
         ],
         "psr-4": {
-            "Valet\\": "cli/Valet/"
+            "Squire\\": "cli/Squire/"
         }
     },
     "require": {
@@ -31,6 +39,6 @@
         "phpunit/phpunit": "~5.7"
     },
     "bin": [
-        "valet"
+        "squire"
     ]
 }

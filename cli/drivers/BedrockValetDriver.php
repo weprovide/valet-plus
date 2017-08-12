@@ -1,6 +1,6 @@
 <?php
 
-class BedrockValetDriver extends BasicValetDriver
+class BedrockSquireDriver extends BasicSquireDriver
 {
     /**
      * Determine if the driver serves the request.

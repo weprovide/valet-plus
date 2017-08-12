@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Valet - Not Found</title>
+    <title>Squire - Not Found</title>
 
     <style>
         body {

@@ -1,6 +1,6 @@
 <?php
 
-class CakeValetDriver extends ValetDriver
+class CakeSquireDriver extends SquireDriver
 {
     /**
      * Determine if the driver serves the request.

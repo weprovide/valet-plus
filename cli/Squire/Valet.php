@@ -1,15 +1,15 @@
 <?php
 
-namespace Valet;
+namespace Squire;
 
-class Valet
+class Squire
 {
     var $cli, $files;
 
-    var $valetBin = '/usr/local/bin/valet';
+    var $squireBin = '/usr/local/bin/squire';
 
     /**
-     * Create a new Valet instance.
+     * Create a new Squire instance.
      *
      * @param  CommandLine  $cli
      * @param  Filesystem  $files
@@ -21,47 +21,47 @@ class Valet
     }
 
     /**
-     * Symlink the Valet Bash script into the user's local bin.
+     * Symlink the Squire Bash script into the user's local bin.
      *
      * @return void
      */
     function symlinkToUsersBin()
     {
-        $this->cli->quietlyAsUser('rm '.$this->valetBin);
+        $this->cli->quietlyAsUser('rm '.$this->squireBin);
 
-        $this->cli->runAsUser('ln -s '.realpath(__DIR__.'/../../valet').' '.$this->valetBin);
+        $this->cli->runAsUser('ln -s '.realpath(__DIR__.'/../../squire').' '.$this->squireBin);
     }
 
     /**
-     * Get the paths to all of the Valet extensions.
+     * Get the paths to all of the Squire extensions.
      *
      * @return array
      */
     function extensions()
     {
-        if (! $this->files->isDir(VALET_HOME_PATH.'/Extensions')) {
+        if (! $this->files->isDir(SQUIRE_HOME_PATH.'/Extensions')) {
             return [];
         }
 
-        return collect($this->files->scandir(VALET_HOME_PATH.'/Extensions'))
+        return collect($this->files->scandir(SQUIRE_HOME_PATH.'/Extensions'))
                     ->reject(function ($file) {
                         return is_dir($file);
                     })
                     ->map(function ($file) {
-                        return VALET_HOME_PATH.'/Extensions/'.$file;
+                        return SQUIRE_HOME_PATH.'/Extensions/'.$file;
                     })
                     ->values()->all();
     }
 
     /**
-     * Determine if this is the latest version of Valet.
+     * Determine if this is the latest version of Squire.
      *
      * @param  string  $currentVersion
      * @return bool
      */
     function onLatestVersion($currentVersion)
     {
-        $response = \Httpful\Request::get('https://api.github.com/repos/weprovide/valet-plus/releases/latest')->send();
+        $response = \Httpful\Request::get('https://api.github.com/repos/weprovide/squire/releases/latest')->send();
 
         return version_compare($currentVersion, $response->body->tag_name, '>=');
     }

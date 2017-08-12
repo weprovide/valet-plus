@@ -9,7 +9,7 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
-        <testsuite name="Valet Test Suite">
+        <testsuite name="Squire Test Suite">
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>

@@ -1,13 +1,13 @@
 <?php
 
-namespace Valet;
+namespace Squire;
 
 class Configuration
 {
     var $files;
 
     /**
-     * Create a new Valet configuration class instance.
+     * Create a new Squire configuration class instance.
      *
      * @param Filesystem $files
      */
@@ -17,7 +17,7 @@ class Configuration
     }
 
     /**
-     * Install the Valet configuration file.
+     * Install the Squire configuration file.
      *
      * @return void
      */
@@ -35,52 +35,52 @@ class Configuration
     }
 
     /**
-     * Create the Valet configuration directory.
+     * Create the Squire configuration directory.
      *
      * @return void
      */
     function createConfigurationDirectory()
     {
-        $this->files->ensureDirExists(VALET_HOME_PATH, user());
+        $this->files->ensureDirExists(SQUIRE_HOME_PATH, user());
     }
 
     /**
-     * Create the Valet drivers directory.
+     * Create the Squire drivers directory.
      *
      * @return void
      */
     function createDriversDirectory()
     {
-        if ($this->files->isDir($driversDirectory = VALET_HOME_PATH.'/Drivers')) {
+        if ($this->files->isDir($driversDirectory = SQUIRE_HOME_PATH.'/Drivers')) {
             return;
         }
 
         $this->files->mkdirAsUser($driversDirectory);
 
         $this->files->putAsUser(
-            $driversDirectory.'/SampleValetDriver.php',
-            $this->files->get(__DIR__.'/../stubs/SampleValetDriver.php')
+            $driversDirectory.'/SampleSquireDriver.php',
+            $this->files->get(__DIR__.'/../stubs/SampleSquireDriver.php')
         );
     }
 
     /**
-     * Create the Valet sites directory.
+     * Create the Squire sites directory.
      *
      * @return void
      */
     function createSitesDirectory()
     {
-        $this->files->ensureDirExists(VALET_HOME_PATH.'/Sites', user());
+        $this->files->ensureDirExists(SQUIRE_HOME_PATH.'/Sites', user());
     }
 
     /**
-     * Create the directory for the Valet extensions.
+     * Create the directory for the Squire extensions.
      *
      * @return void
      */
     function createExtensionsDirectory()
     {
-        $this->files->ensureDirExists(VALET_HOME_PATH.'/Extensions', user());
+        $this->files->ensureDirExists(SQUIRE_HOME_PATH.'/Extensions', user());
     }
 
     /**
@@ -90,9 +90,9 @@ class Configuration
      */
     function createLogDirectory()
     {
-        $this->files->ensureDirExists(VALET_HOME_PATH.'/Log', user());
+        $this->files->ensureDirExists(SQUIRE_HOME_PATH.'/Log', user());
 
-        $this->files->touch(VALET_HOME_PATH.'/Log/nginx-error.log');
+        $this->files->touch(SQUIRE_HOME_PATH.'/Log/nginx-error.log');
     }
 
     /**
@@ -102,11 +102,11 @@ class Configuration
      */
     function createCertificatesDirectory()
     {
-        $this->files->ensureDirExists(VALET_HOME_PATH.'/Certificates', user());
+        $this->files->ensureDirExists(SQUIRE_HOME_PATH.'/Certificates', user());
     }
 
     /**
-     * Write the base, initial configuration for Valet.
+     * Write the base, initial configuration for Squire.
      */
     function writeBaseConfiguration()
     {
@@ -221,6 +221,6 @@ class Configuration
      */
     function path()
     {
-        return VALET_HOME_PATH.'/config.json';
+        return SQUIRE_HOME_PATH.'/config.json';
     }
 }

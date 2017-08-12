@@ -1,6 +1,6 @@
 <?php
 
-namespace Valet;
+namespace Squire;
 
 use DomainException;
 
@@ -54,11 +54,11 @@ class PhpFpm
 
         $contents = preg_replace('/^user = .+$/m', 'user = '.user(), $contents);
         $contents = preg_replace('/^group = .+$/m', 'group = staff', $contents);
-        $contents = preg_replace('/^listen = .+$/m', 'listen = '.VALET_HOME_PATH.'/valet.sock', $contents);
+        $contents = preg_replace('/^listen = .+$/m', 'listen = '.SQUIRE_HOME_PATH.'/squire.sock', $contents);
         $contents = preg_replace('/^;?listen\.owner = .+$/m', 'listen.owner = '.user(), $contents);
         $contents = preg_replace('/^;?listen\.group = .+$/m', 'listen.group = staff', $contents);
         $contents = preg_replace('/^;?listen\.mode = .+$/m', 'listen.mode = 0777', $contents);
-        $contents = preg_replace('/^;?php_admin_value\[error_log\] = .+$/m', 'php_admin_value[error_log] = '.VALET_HOME_PATH.'/Log/php.log', $contents);
+        $contents = preg_replace('/^;?php_admin_value\[error_log\] = .+$/m', 'php_admin_value[error_log] = '.SQUIRE_HOME_PATH.'/Log/php.log', $contents);
 
         $this->files->put($this->fpmConfigPath(), $contents);
 
@@ -177,7 +177,7 @@ class PhpFpm
 
     function enableExtension($extension) {
         $currentPhpVersion = $this->brew->linkedPhp();
-        
+
         if(!$this->brew->installed($currentPhpVersion.'-'.$extension)) {
             $this->brew->ensureInstalled($currentPhpVersion.'-'.$extension);
         }

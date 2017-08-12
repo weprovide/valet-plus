@@ -1,9 +1,9 @@
 <?php
 
-use Valet\Brew;
-use Valet\DnsMasq;
-use Valet\Filesystem;
-use Valet\CommandLine;
+use Squire\Brew;
+use Squire\DnsMasq;
+use Squire\Filesystem;
+use Squire\CommandLine;
 use Illuminate\Container\Container;
 
 class DnsMasqTest extends PHPUnit_Framework_TestCase

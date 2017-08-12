@@ -1,6 +1,6 @@
 <?php
 
-class JoomlaValetDriver extends BasicValetDriver
+class JoomlaSquireDriver extends BasicSquireDriver
 {
     /**
      * Determine if the driver serves the request.

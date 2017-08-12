@@ -1,6 +1,6 @@
 <?php
 
-class KirbyValetDriver extends ValetDriver
+class KirbySquireDriver extends SquireDriver
 {
     /**
      * Determine if the driver serves the request.

@@ -1,6 +1,6 @@
 <?php
 
-class SymfonyValetDriver extends ValetDriver
+class SymfonySquireDriver extends SquireDriver
 {
     /**
      * Determine if the driver serves the request.

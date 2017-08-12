@@ -1,6 +1,6 @@
 <?php
 
-namespace Valet;
+namespace Squire;
 
 class DnsMasq
 {
@@ -34,7 +34,7 @@ class DnsMasq
         $this->brew->ensureInstalled('dnsmasq');
 
         // For DnsMasq, we create our own custom configuration file which will be imported
-        // in the main DnsMasq file. This allows Valet to make changes to our own files
+        // in the main DnsMasq file. This allows Squire to make changes to our own files
         // without needing to modify the "primary" DnsMasq configuration files again.
         $this->createCustomConfigFile($domain);
 
@@ -92,7 +92,7 @@ class DnsMasq
     }
 
     /**
-     * Determine if Valet's custom DnsMasq configuration is being imported.
+     * Determine if Squire's custom DnsMasq configuration is being imported.
      *
      * @param  string  $customConfigPath
      * @return bool
@@ -136,6 +136,6 @@ class DnsMasq
      */
     function customConfigPath()
     {
-        return $_SERVER['HOME'].'/.valet/dnsmasq.conf';
+        return $_SERVER['HOME'].'/.squire/dnsmasq.conf';
     }
 }
