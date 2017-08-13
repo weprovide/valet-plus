@@ -4,6 +4,8 @@
 
 Valet+ is a development environment for macOS. No Vagrant, no Docker, no `/etc/hosts` file. _Yeah, we like it too._
 
+Valet+ is a fork of the original [Laravel Valet](https://github.com/laravel/valet), Valet+ is an improved version which goal is to make things even simpler and faster. We are very grateful to the Laravel team for providing the base that we built Valet+ on. Since this is a fork we'll pull in changes from the original Valet regularly as they are released. Some of the documentation in this readme was taken from the Valet website and provided here for convenience, so that you can read this document and know about all features provided. The original documentation can be found here: https://laravel.com/docs/valet.
+
 Valet+ configures your Mac to always run Nginx in the background when your machine starts. Then, using [DnsMasq](https://en.wikipedia.org/wiki/Dnsmasq), Valet+ proxies all requests on the `*.dev` domain to point to sites installed on your local machine.
 
 In other words, a blazing fast development environment. Valet+ provides a great alternative if you want flexible basics or prefer extreme speed.
