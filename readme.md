@@ -2,26 +2,36 @@
 
 ## Introduction
 
-Valet+ is a development environment for macOS. No Vagrant, no Docker, no `/etc/hosts` file. _Yeah, we like it too._
+Valet+ is a development environment for macOS. No Vagrant, no Docker, no `/etc/hosts` file.
 
-Valet+ is a fork of the original [Laravel Valet](https://github.com/laravel/valet), Valet+ is an improved version which goal is to make things even simpler and faster. We are very grateful to the Laravel team for providing the base that we built Valet+ on. Since this is a fork we'll pull in changes from the original Valet regularly as they are released. Some of the documentation in this readme was taken from the Valet website and provided here for convenience, so that you can read this document and know about all features provided. The original documentation can be found here: https://laravel.com/docs/valet.
+### Valet vs. Valet+
+
+Valet+ is a third-party fork of [Laravel Valet](https://github.com/laravel/valet). Valet+ adds functionality to Valet with a goal of making things even simpler and faster. We are very grateful to the Laravel team for providing the base that we built Valet+ on. Since this is a fork we'll pull in changes from the original Valet regularly as they are released.
+
+Some of the documentation in this readme was taken from the Valet website and provided here for convenience, so that you can read this document and know about all features provided. The original documentation can be found here: https://laravel.com/docs/valet.
+
+Since Valet+ is intended to replace Valet, it still uses the same `valet` command-line name. Any changes in its interface are documented below.
+
+### Why Valet/Valet+?
 
 Valet+ configures your Mac to always run Nginx in the background when your machine starts. Then, using [DnsMasq](https://en.wikipedia.org/wiki/Dnsmasq), Valet+ proxies all requests on the `*.dev` domain to point to sites installed on your local machine.
 
 In other words, a blazing fast development environment. Valet+ provides a great alternative if you want flexible basics or prefer extreme speed.
 
-Some key differences compared to Valet:
+### Differences from Valet
+
+Here are a few key differences compared to the original Valet:
 
 - PHP version switch
 - Xdebug (on/off mode)
 - PHP extensions (mcrypt, intl, opcache, apcu)
 - Optimized PHP configuration using opcache
-- Mysql (with optimized configuration)
+- MySQL (with optimized configuration)
 - Redis
 - Elasticsearch (optional)
 - Many more features outlined below...
 
-## Table of contents
+## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -30,7 +40,7 @@ Some key differences compared to Valet:
   - [Serving sites](#serving-sites)
 - [Switching PHP version](#switching-php-version)
 - [Xdebug](#xdebug)
-  - [PHPstorm](#phpstorm)
+  - [PhpStorm](#phpstorm)
 - [Database](#database)
   - [Creating databases](#creating-databases)
   - [Importing databases](#importing-databases)
@@ -46,7 +56,7 @@ Some key differences compared to Valet:
 
 ## Installation
 
-> :warning: Valet requires macOS and [Homebrew](https://brew.sh/). Before installation, you should make sure that no other programs such as Apache or Nginx are binding to your local machine's port 80.
+> :warning: Valet+ requires macOS and [Homebrew](https://brew.sh/). Before installation, you should make sure that no other programs such as Apache or Nginx are binding to your local machine's port 80.
 
 1. Install or update [Homebrew](https://brew.sh/) to the latest version using brew update.
 2. Install PHP 7.0 using Homebrew via `brew install homebrew/php/php70`.
@@ -54,15 +64,15 @@ Some key differences compared to Valet:
 4. Install Valet+ with Composer via `composer global require weprovide/valet-plus`.
 5. Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on your shell (`echo $SHELL`)
 6. Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
-7. Once Valet is installed, try pinging any *.dev domain on your terminal using a command such as `ping foobar.dev`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
+7. Once Valet+ is installed, try pinging any `*.dev` domain on your terminal using a command such as `ping foobar.dev`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
 
-> :information_source: Valet will automatically start its daemon each time your machine boots. There is no need to run `valet start` or `valet install` ever again once the initial Valet+ installation is complete.
+> :information_source: Valet+ will automatically start its daemon each time your machine boots. There is no need to run `valet start` or `valet install` ever again once the initial Valet+ installation is complete.
 
-> :information_source: To update Valet+ to the latest version use the `composer global require weprovide/valet-plus` command in your terminal. After upgrading, it is good practice to run the `valet install` command so Valet can make additional upgrades to your configuration files if necessary.
+> :information_source: To update Valet+ to the latest version use the `composer global require weprovide/valet-plus` command in your terminal. After upgrading, it is good practice to run the `valet install` command so Valet+ can make additional upgrades to your configuration files if necessary.
 
 ### Serving sites
 
-Once Valet+ is installed, you're ready to start serving sites. Valet provides a command to help you serve your sites: `valet park`. Which will register the current working directory as projects root. Generally this directory is `~/sites`.
+Once Valet+ is installed, you're ready to start serving sites. Valet+ provides a command to help you serve your sites: `valet park`. Which will register the current working directory as projects root. Generally this directory is `~/sites`.
 
 1. Create a `sites` directory: `mkdir ~/sites`
 2. `cd ~/sites`
@@ -95,7 +105,7 @@ valet use 7.1
 
 ## Xdebug
 
-Xdebug support is build in. It works on port `9000` after you enable it.
+Xdebug support is built-in. It works on port `9000` after you enable it.
 
 Enable Xdebug:
 
@@ -111,9 +121,9 @@ valet xdebug off
 
 > :warning: Xdebug makes your environment slower. That's why we allow to fully enable / disable it. When not debugging it's best to disable it by running `valet xdebug off`.
 
-### PHPstorm
+### PhpStorm
 
-To use Xdebug with PHPstorm you don't have to configure anything. Just run `valet xdebug on` and click the Xdebug button on the top right:
+To use Xdebug with PhpStorm you don't have to configure anything. Just run `valet xdebug on` and click the Xdebug button on the top right:
 
 ![xdebug-phpstorm](images/xdebug-phpstorm.png)
 
@@ -134,7 +144,7 @@ valet ioncube off
 ```
 
 ## Database
-Valet+ automatically installs mysql 5.7 with 5.6 compatibility mode included. It includes a tweaked my.cnf which is aimed at improving speed.
+Valet+ automatically installs MySQL 5.7 with 5.6 compatibility mode included. It includes a tweaked `my.cnf` which is aimed at improving speed.
 
 Username: `root`
 
@@ -246,7 +256,7 @@ Will create `welcome.yourproject.dev`.
 
 ## Mailhog
 
-Mailhog is used to catch emails send from php. You can access the panel at [http://mailhog.dev](http://mailhog.dev).
+Mailhog is used to catch emails send from PHP. You can access the panel at [http://mailhog.dev](http://mailhog.dev).
 
 ## Redis
 
@@ -278,9 +288,9 @@ Open current git project in [Tower](https://www.git-tower.com/mac/)
 valet tower
 ```
 
-## PHPstorm
+## PhpStorm
 
-Open current git project in [PHPstorm](https://www.jetbrains.com/phpstorm/)
+Open current git project in [PhpStorm](https://www.jetbrains.com/phpstorm/)
 
 ```
 valet phpstorm
@@ -335,7 +345,7 @@ By default, Valet serves sites over plain HTTP. However, if you would like to se
 valet secure example
 ```
 
-To "unsecure" a site and revert back to serving its traffic over plain HTTP, use the unsecure command. Like the secure command, this command accepts the host name that you wish to unsecure:
+To "unsecure" a site and revert back to serving its traffic over plain HTTP, use the `unsecure` command. Like the `secure` command, this command accepts the host name you wish to unsecure:
 
 ```
 valet unsecure example
@@ -370,13 +380,13 @@ A full list can be found [here](cli/drivers).
 
 ## Custom Valet Drivers
 
-You can write your own Valet "driver" to serve PHP applications running on another framework or CMS that is not natively supported by Valet. When you install Valet, a `~/.valet/Drivers` directory is created which contains a `SampleValetDriver.php` file. This file contains a sample driver implementation to demonstrate how to write a custom driver. Writing a driver only requires you to implement three methods: `serves`, `isStaticFile`, and `frontControllerPath`.
+You can write your own Valet "driver" to serve PHP applications running on another framework or CMS that is not natively supported by Valet. When you install Valet+, a `~/.valet/Drivers` directory is created which contains a `SampleValetDriver.php` file. This file contains a sample driver implementation to demonstrate how to write a custom driver. Writing a driver only requires you to implement three methods: `serves`, `isStaticFile`, and `frontControllerPath`.
 
 All three methods receive the `$sitePath`, `$siteName`, and `$uri` values as their arguments. The `$sitePath` is the fully qualified path to the site being served on your machine, such as `/Users/Lisa/Sites/my-project`. The `$siteName` is the "host" / "site name" portion of the domain (`my-project`). The `$uri` is the incoming request URI (`/foo/bar`).
 
-Once you have completed your custom Valet driver, place it in the `~/.valet/Drivers` directory using the `FrameworkValetDriver.php` naming convention. For example, if you are writing a custom valet driver for WordPress, your file name should be `WordPressValetDriver.php`.
+Once you have completed your custom Valet+ driver, place it in the `~/.valet/Drivers` directory using the `FrameworkValetDriver.php` naming convention. For example, if you are writing a custom valet driver for WordPress, your file name should be `WordPressValetDriver.php`.
 
-Let's take a look at a sample implementation of each method your custom Valet driver should implement.
+Let's take a look at a sample implementation of each method your custom Valet+ driver should implement.
 
 #### The `serves` Method
 
@@ -487,8 +497,11 @@ Documentation for Valet can be found on the [Laravel website](https://laravel.co
 
 ## Credits
 
-This project is an improved fork of [laravel/valet](https://github.com/laravel/valet). Thanks to everyone who contributed to this project.
+This project is a fork of [laravel/valet](https://github.com/laravel/valet). Thanks to all of the contributors, especially the original authors:
 
-## Authors
+- Taylor Otwell ([@taylorotwell](https://github.com/taylorotwell))
+- Adam Wathan ([@adamwathan](https://github.com/adamwathan))
+
+## Valet+ Authors
 
 - Tim Neutkens ([@timneutkens](https://github.com/timneutkens))
