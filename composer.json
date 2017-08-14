@@ -4,6 +4,14 @@
     "license": "MIT",
     "authors": [
         {
+            "name": "Taylor Otwell",
+            "email": "taylor@laravel.com"
+        },
+        {
+            "name": "Adam Wathan",
+            "email": "adam.wathan@gmail.com"
+        },
+        {
             "name": "Tim Neutkens",
             "email": "tim@weprovide.com"
         }
