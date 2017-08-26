@@ -75,6 +75,7 @@ class Mysql
 
         $this->removeConfiguration($type);
         $this->files->copy(__DIR__.'/../stubs/limit.maxfiles.plist', static::MAX_FILES_CONF);
+        $this->cli->quietly('launchctl load -w '.static::MAX_FILES_CONF);
 
         if (!$this->installedVersion()) {
             $this->brew->installOrFail($type);
