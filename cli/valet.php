@@ -39,7 +39,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
     Nginx::stop();
     PhpFpm::stop();
     Mysql::stop();
-    Redis::stop();
+    RedisTool::stop();
     DevTools::install();
 
     Configuration::install();
@@ -47,7 +47,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
     PhpFpm::install();
     DnsMasq::install();
     Mysql::install($withMariadb ? 'mariadb' : 'mysql');
-    Redis::install();
+    RedisTool::install();
     Mailhog::install();
     Nginx::restart();
     Valet::symlinkToUsersBin();
@@ -244,7 +244,7 @@ if (is_dir(VALET_HOME_PATH)) {
             PhpFpm::restart();
             Nginx::restart();
             Mysql::restart();
-            Redis::restart();
+            RedisTool::restart();
             Mailhog::restart();
             Elasticsearch::restart();
             info('Valet services have been started.');
@@ -264,6 +264,10 @@ if (is_dir(VALET_HOME_PATH)) {
                 }
                 case 'php': {
                     PhpFpm::restart();
+                    break;
+                }
+                case 'redis': {
+                    RedisTool::restart();
                     break;
                 }
                 case 'mailhog': {
@@ -288,7 +292,7 @@ if (is_dir(VALET_HOME_PATH)) {
             PhpFpm::restart();
             Nginx::restart();
             Mysql::restart();
-            Redis::restart();
+            RedisTool::restart();
             Mailhog::restart();
             Elasticsearch::restart();
             info('Valet services have been started.');
@@ -307,6 +311,10 @@ if (is_dir(VALET_HOME_PATH)) {
                 }
                 case 'php': {
                     PhpFpm::restart();
+                    break;
+                }
+                case 'redis': {
+                    RedisTool::restart();
                     break;
                 }
                 case 'mailhog': {
@@ -334,7 +342,7 @@ if (is_dir(VALET_HOME_PATH)) {
             PhpFpm::stop();
             Nginx::stop();
             Mysql::stop();
-            Redis::stop();
+            RedisTool::stop();
             Mailhog::stop();
             Elasticsearch::stop();
             info('Valet services have been stopped.');
@@ -353,6 +361,10 @@ if (is_dir(VALET_HOME_PATH)) {
                 }
                 case 'php': {
                     PhpFpm::stop();
+                    break;
+                }
+                case 'redis': {
+                    RedisTool::stop();
                     break;
                 }
                 case 'mailhog': {
@@ -375,7 +387,7 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('uninstall', function () {
         Nginx::uninstall();
         Mysql::uninstall();
-        Redis::uninstall();
+        RedisTool::uninstall();
         Mailhog::uninstall();
         Elasticsearch::uninstall();
 

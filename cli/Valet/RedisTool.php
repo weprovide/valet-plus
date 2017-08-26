@@ -2,7 +2,7 @@
 
 namespace Valet;
 
-class Redis
+class RedisTool
 {
     var $brew;
     var $cli;

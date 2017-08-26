@@ -26,6 +26,9 @@
             "Valet\\": "cli/Valet/"
         }
     },
+    "replace": {
+        "laravel/valet": "*"
+    },
     "require": {
         "php": ">=5.6",
         "illuminate/container": "~5.1",

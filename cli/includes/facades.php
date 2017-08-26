@@ -32,7 +32,7 @@ class Facade
 class Brew extends Facade {}
 class Nginx extends Facade {}
 class Mysql extends Facade {}
-class Redis extends Facade {}
+class RedisTool extends Facade {}
 class Elasticsearch extends Facade {}
 class Mailhog extends Facade {}
 class CommandLine extends Facade {}
