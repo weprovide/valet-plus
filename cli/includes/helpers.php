@@ -166,19 +166,16 @@ if (! function_exists('ends_with')) {
     }
 }
 
-/**
- * Get the user
- */
 function user()
 {
-	if (! isset($_SERVER['SUDO_USER'])) {
-		if (! isset($_SERVER['USER'])) {
-			return "";
-		} else {
-			return( $_SERVER['USER'] );
-		}
-	} else {
-		return( $_SERVER['SUDO_USER'] );
-	}
+	if(isset($_SERVER['SUDO_USER'])) {
+		return $_SERVER['SUDO_USER']
+    }
+
+	if(isset($_SERVER['USER'])) {
+		return isset($_SERVER['USER'])
+    }
+
+	return ''
 }
 
