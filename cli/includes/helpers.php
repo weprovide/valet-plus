@@ -166,6 +166,9 @@ if (! function_exists('ends_with')) {
     }
 }
 
+/**
+ * Get the user
+ */
 function user()
 {
 	if(isset($_SERVER['SUDO_USER'])) {
