@@ -171,9 +171,14 @@ if (! function_exists('ends_with')) {
  */
 function user()
 {
-    if (! isset($_SERVER['SUDO_USER'])) {
-        return $_SERVER['USER'];
+	if(isset($_SERVER['SUDO_USER'])) {
+		return $_SERVER['SUDO_USER']
     }
 
-    return $_SERVER['SUDO_USER'];
+	if(isset($_SERVER['USER'])) {
+		return isset($_SERVER['USER'])
+    }
+
+	return ''
 }
+
