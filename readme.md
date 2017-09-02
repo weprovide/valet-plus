@@ -84,7 +84,7 @@ For example:
 
 1. `mkdir ~/sites/example`
 2. `cd ~/sites/example`
-3. `echo "<?php echo 'Valet+ at your service'" > index.php`
+3. `echo "<?php echo 'Valet+ at your service';" > index.php`
 4. Go to `http://example.dev`, you should see `Valet+ at your service`
 
 ## Switching PHP version
