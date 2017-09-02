@@ -94,10 +94,11 @@ if (! function_exists('retry')) {
     /**
      * Retry the given function N times.
      *
-     * @param  int  $retries
-     * @param  callable  $retries
-     * @param  int  $sleep
+     * @param int $retries
+     * @param $fn
+     * @param  int $sleep
      * @return mixed
+     * @throws Exception
      */
     function retry($retries, $fn, $sleep = 0)
     {
@@ -122,8 +123,8 @@ if (! function_exists('retry')) {
 
 /**
  * Verify that the script is currently running as "sudo".
- *
  * @return void
+ * @throws Exception
  */
 function should_be_sudo()
 {
@@ -171,12 +172,12 @@ if (! function_exists('ends_with')) {
  */
 function user()
 {
-	if(isset($_SERVER['SUDO_USER'])) {
+	if(isset($_SERVER['SUDO_USER']) && $_SERVER['SUDO_USER'] !== null) {
 		return $_SERVER['SUDO_USER'];
     }
 
-	if(isset($_SERVER['USER'])) {
-		return isset($_SERVER['USER']);
+	if(isset($_SERVER['USER']) && $_SERVER['USER'] !== null) {
+		return $_SERVER['USER'];
     }
 
 	return '';
