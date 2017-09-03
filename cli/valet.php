@@ -191,7 +191,7 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('which', function () {
         require __DIR__.'/drivers/require.php';
 
-        $driver = ValetDriver::assign(getcwd(), basename(getcwd()), '/');
+        $driver = ValetDriver::assign(getcwd(), basename(getcwd()), '/', true);
 
         if ($driver) {
             info('This site is served by ['.get_class($driver).'].');

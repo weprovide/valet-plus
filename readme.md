@@ -360,6 +360,8 @@ Other logs, including the PHP error log, are located at `/usr/local/var/log`
 ## Valet drivers
 Valet uses drivers to handle requests. You can read more about those [here](https://laravel.com/docs/5.4/valet#custom-valet-drivers).
 
+When using Valet+ drivers are automatically cached using APCu to avoid doing a driver lookup every time there is a request. You can reset the cache for a specific site by running `valet which`.
+
 By default these are included:
 
 - Static HTML

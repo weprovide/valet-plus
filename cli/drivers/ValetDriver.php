@@ -35,13 +35,21 @@ abstract class ValetDriver
     /**
      * Find a driver that can serve the incoming request.
      *
-     * @param  string  $sitePath
-     * @param  string  $siteName
-     * @param  string  $uri
-     * @return ValetDriver|null
+     * @param  string $sitePath
+     * @param  string $siteName
+     * @param  string $uri
+     * @param bool $noCache
+     * @return null|ValetDriver
      */
-    public static function assign($sitePath, $siteName, $uri)
+    public static function assign($sitePath, $siteName, $uri, $noCache = false)
     {
+        $cachedDriver = apcu_fetch('valet_driver_'.$siteName);
+
+        if(!$noCache && $cachedDriver) {
+            $driver = new $cachedDriver;
+            return $driver;
+        }
+
         $drivers = [];
 
         if ($customSiteDriver = static::customSiteDriver($sitePath)) {
@@ -50,10 +58,11 @@ abstract class ValetDriver
 
         $drivers = array_merge($drivers, static::driversIn(VALET_HOME_PATH.'/Drivers'));
 
-        $drivers[] = 'LaravelValetDriver';
-
-        $drivers[] = 'WordPressValetDriver';
+        $drivers[] = 'Magento2ValetDriver';
+        $drivers[] = 'MagentoValetDriver';
         $drivers[] = 'BedrockValetDriver';
+        $drivers[] = 'WordPressValetDriver';
+        $drivers[] = 'LaravelValetDriver';
         $drivers[] = 'ContaoValetDriver';
         $drivers[] = 'SymfonyValetDriver';
         $drivers[] = 'CraftValetDriver';
@@ -67,18 +76,20 @@ abstract class ValetDriver
         $drivers[] = 'JoomlaValetDriver';
         $drivers[] = 'DrupalValetDriver';
         $drivers[] = 'Concrete5ValetDriver';
-        $drivers[] = 'MagentoValetDriver';
-        $drivers[] = 'Magento2ValetDriver';
-
         $drivers[] = 'BasicValetDriver';
 
         foreach ($drivers as $driver) {
-            $driver = new $driver;
+            $driverInstance = new $driver;
 
-            if ($driver->serves($sitePath, $siteName, $driver->mutateUri($uri))) {
-                return $driver;
+            if ($driverInstance->serves($sitePath, $siteName, $driverInstance->mutateUri($uri))) {
+                // Cache the valet driver for a specific site for 1 hour
+                apcu_add('valet_driver_'.$siteName, $driver, 3600);
+                return $driverInstance;
             }
         }
+
+        $basicInstance = new BasicValetDriver;
+        return $basicInstance;
     }
 
     /**
