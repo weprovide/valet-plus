@@ -122,6 +122,10 @@ class Magento2ValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        if(isset($_GET['profile'])) {
+            $_SERVER['MAGE_PROFILER'] = 'html';
+        }
+
         if($uri === '/setup') {
             Header('HTTP/1.1 301 Moved Permanently');
             Header('Location: http://' . $_SERVER['HTTP_HOST'] . $uri . '/');
