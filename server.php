@@ -34,28 +34,32 @@ if (strpos($siteName, 'www.') === 0) {
 /**
  * Determine the fully qualified path to the site.
  */
-$valetSitePath = null;
+$valetSitePath = apcu_fetch('valet_site_path'.$siteName);
 $domain = array_slice(explode('.', $siteName), -1)[0];
 
-foreach ($valetConfig['paths'] as $path) {
-    if (is_dir($path.'/'.$siteName)) {
-        $valetSitePath = $path.'/'.$siteName;
-        break;
+if(!$valetSitePath) {
+    foreach ($valetConfig['paths'] as $path) {
+        if (is_dir($path.'/'.$siteName)) {
+            $valetSitePath = $path.'/'.$siteName;
+            break;
+        }
+
+        if (is_dir($path.'/'.$domain)) {
+            $valetSitePath = $path.'/'.$domain;
+            break;
+        }
     }
 
-    if (is_dir($path.'/'.$domain)) {
-        $valetSitePath = $path.'/'.$domain;
-        break;
+    if (is_null($valetSitePath)) {
+        http_response_code(404);
+        require __DIR__.'/cli/templates/404.php';
+        exit;
     }
-}
 
-if (is_null($valetSitePath)) {
-    http_response_code(404);
-    require __DIR__.'/cli/templates/404.php';
-    exit;
-}
+    $valetSitePath = realpath($valetSitePath);
 
-$valetSitePath = realpath($valetSitePath);
+    apcu_add('valet_site_path'.$siteName, $valetSitePath, 3600);
+}
 
 /**
  * Find the appropriate Valet driver for the request.
