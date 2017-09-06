@@ -260,7 +260,11 @@ class Mysql
     function importDatabase($file, $database) {
         $database = $database ?: $this->getDirName();
         $this->createDatabase($database);
-        $this->cli->passthru('pv ' . escapeshellarg($file) . ' | mysql ' . escapeshellarg($database));
+        $gzip = ' | ';
+        if (stristr($file, '.gz')) {
+          $gzip = ' | gzip -cd | ';
+        }
+        $this->cli->passthru('pv ' . escapeshellarg($file) . $gzip . 'mysql ' . escapeshellarg($database));
     }
 
     function reimportDatabase($file, $database) {
@@ -275,14 +279,18 @@ class Mysql
         $database = $database ?: $this->getDirName();
 
         if(!$filename || $filename === '-') {
-            $filename = $database.'-'.date(DateTime::ATOM);
+            $filename = $database.'-'.date('Y-m-d-His', time());
         }
 
         if(!stristr($filename, '.sql')) {
-            $filename = $filename.'.sql';
+            $filename = $filename.'.sql.gz';
         }
 
-        $this->cli->passthru('mysqldump ' . escapeshellarg($database) . ' > ' . escapeshellarg($filename ?: $database));
+        if(!stristr($filename, '.gz')) {
+            $filename = $filename.'.gz';
+        }
+
+        $this->cli->passthru('mysqldump ' . escapeshellarg($database) . ' | gzip > ' . escapeshellarg($filename ?: $database));
 
         return [
             'database' => $database,
