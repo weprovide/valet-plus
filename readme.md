@@ -206,19 +206,23 @@ Export a database:
 valet db export <filename> <database>
 ```
 
-When no database is given it'll try to find the closest git repository directory name. When it can't find one it'll use the current working directory name.
+When no database name is given it'll try to find the closest git repository directory name. When it can't find one it'll use the current working directory name.
 
-When no filename is given it will use `<database>-<date>.sql`. Optionally you can use `valet db export - <database>` to automatically generate the filename for a custom database.
+When no filename is given it will use `<database>-<date>.sql.gz`. Optionally you can use `valet db export - <database>` to automatically generate the filename for a custom database.
+
+All database exports are gzipped.
 
 ### Importing databases
 
 Import a database with progress bar
 
 ```
-valet db import <filename>.sql <name>
+valet db import <filename>.sql(.gz) <name>
 ```
 
 When no name is given it'll try to find the closest git repository directory name. When it can't find one it'll use the current working directory name.
+
+You can import `.sql` directly as well as gzipped `.sql.gz` database exports.
 
 ### Open database in Sequel Pro
 
