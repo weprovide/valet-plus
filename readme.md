@@ -334,7 +334,7 @@ valet configure
 
 #### Magento 2
 
-Automatically configure the `env.php`, `config.php` base url and elastic search configuration in the database for Magento 2.
+Automatically configure the `env.php`, `config.php` base url, seo url rewrites and elastic search configuration in the database for Magento 2.
 
 #### Magento 1
 
