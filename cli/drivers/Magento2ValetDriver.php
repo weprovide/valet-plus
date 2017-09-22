@@ -93,11 +93,15 @@ class Magento2ValetDriver extends ValetDriver
         }
 
         if ($isMagentoStatic) {
-            $resource = preg_replace('#static(/version[0-9]+)?/#', '', $uri, 1);
-            $uri = '/static' . $resource;
+            $resource = preg_replace('#static(/version[0-9]+)?/#', 'static/', $uri, 1);
+            $uri = $resource;
         }
 
-        if (file_exists($staticFilePath = $sitePath . '/pub' . $uri)) {
+        if(strpos($uri, '/pub/') === false){
+            $uri = '/pub' . $uri;
+        }
+
+        if (file_exists($staticFilePath = $sitePath . $uri)) {
             return $staticFilePath;
         }
 
