@@ -128,6 +128,11 @@ class PhpFpm
 
         foreach($extensions as $extension) {
             if($this->brew->installed($currentVersion.'-'.$extension)) {
+                // Intl breaks often when switching versions
+                if($extension === 'intl') {
+                    $this->cli->runAsUser('brew upgrade '. $currentVersion . '-' . $extension);
+                }
+
                 $this->cli->runAsUser('brew link '. $currentVersion . '-' . $extension);
                 info('['.$currentVersion.'] '.$extension.' already installed');
             } else {
