@@ -19,7 +19,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 Container::setInstance(new Container);
 
-$version = '1.0.4';
+$version = '1.0.5';
 
 $app = new Application('Valet+', $version);
 
@@ -470,7 +470,7 @@ if (is_dir(VALET_HOME_PATH)) {
             }
 
             $databaseName = Mysql::createDatabase($name);
-            
+
             if(!$databaseName) {
                 return warning('Error creating database');
             }
@@ -478,7 +478,7 @@ if (is_dir(VALET_HOME_PATH)) {
             info('Database "' . $databaseName . '" reset successfully');
             return;
         }
-        
+
         if($run === 'open') {
             if($name === '.') {
                 $name = basename(getcwd());
@@ -489,7 +489,7 @@ if (is_dir(VALET_HOME_PATH)) {
             Mysql::openSequelPro($name);
             return;
         }
-        
+
         if($run === 'import') {
             info('Importing database...');
             if(!$name) {
@@ -519,7 +519,7 @@ if (is_dir(VALET_HOME_PATH)) {
             info('Database "' . $data['database'] . '" exported into file "' . $data['filename'] . '"');
             return;
         }
-        
+
         throw new Exception('Command not found');
     })->descriptions('Database commands (list/ls, create, drop, reset, open, import, reimport, export/dump)');
 
@@ -537,9 +537,9 @@ if (is_dir(VALET_HOME_PATH)) {
             PhpFpm::enableExtension('xdebug');
             return;
         }
-        
+
         if($mode === 'off' || $mode === 'disable') {
-            PhpFpm::disableExtension('xdebug');            
+            PhpFpm::disableExtension('xdebug');
             return;
         }
 
@@ -558,7 +558,7 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($mode === 'off' || $mode === 'disable') {
-            PhpFpm::disableExtension('ioncubeloader');            
+            PhpFpm::disableExtension('ioncubeloader');
             return;
         }
 
