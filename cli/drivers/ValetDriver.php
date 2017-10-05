@@ -44,6 +44,11 @@ abstract class ValetDriver
     public static function assign($sitePath, $siteName, $uri, $noCache = false)
     {
         $cachedDriver = apcu_fetch('valet_driver_'.$siteName);
+        $drivers = [];
+
+        if ($customSiteDriver = static::customSiteDriver($sitePath)) {
+            $drivers[] = $customSiteDriver;
+        }
 
         if(!$noCache && $cachedDriver) {
             $driver = new $cachedDriver;
