@@ -63,7 +63,10 @@ class PhpFpm
         $this->files->put($this->fpmConfigPath(), $contents);
 
         $systemZoneName = readlink('/etc/localtime');
+        // All versions below High Sierra
         $systemZoneName = str_replace('/usr/share/zoneinfo/', '', $systemZoneName);
+        // macOS High Sierra has a new location for the timezone info
+        $systemZoneName = str_replace('/var/db/timezone/zoneinfo/', '', $systemZoneName);
         $contents = $this->files->get(__DIR__.'/../stubs/z-performance.ini');
         $contents = str_replace('TIMEZONE', $systemZoneName, $contents);
 
