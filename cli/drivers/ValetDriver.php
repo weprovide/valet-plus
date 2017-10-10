@@ -50,18 +50,12 @@ abstract class ValetDriver
             $drivers[] = $customSiteDriver;
         }
 
+        $drivers = array_merge($drivers, static::driversIn(VALET_HOME_PATH.'/Drivers'));
+
         if(!$noCache && $cachedDriver) {
             $driver = new $cachedDriver;
             return $driver;
         }
-
-        $drivers = [];
-
-        if ($customSiteDriver = static::customSiteDriver($sitePath)) {
-            $drivers[] = $customSiteDriver;
-        }
-
-        $drivers = array_merge($drivers, static::driversIn(VALET_HOME_PATH.'/Drivers'));
 
         $drivers[] = 'Magento2ValetDriver';
         $drivers[] = 'MagentoValetDriver';
