@@ -421,8 +421,9 @@ if (is_dir(VALET_HOME_PATH)) {
     /**
      * Create database
      */
-    $app->command('db [run] [name] [optional]', function ($input, $output, $run, $name, $optional) {
+    $app->command('db [run] [name] [optional] [-y|--yes]', function ($input, $output, $run, $name, $optional) {
         $helper = $this->getHelperSet()->get('question');
+        $default = $input->getOptions();
 
         if($run === 'list' || $run === 'ls') {
             Mysql::listDatabases();
@@ -441,10 +442,12 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($run === 'drop') {
-            $question = new ConfirmationQuestion('Are you sure you want to delete the database? [y/N] ', false);
-            if (!$helper->ask($input, $output, $question)) {
-                warning('Aborted');
-                return;
+            if(!$default['yes']) {
+                $question = new ConfirmationQuestion('Are you sure you want to delete the database? [y/N] ', FALSE);
+                if (!$helper->ask($input, $output, $question)) {
+                    warning('Aborted');
+                    return;
+                }
             }
             $databaseName = Mysql::dropDatabase($name);
 
@@ -457,10 +460,12 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($run === 'reset') {
-            $question = new ConfirmationQuestion('Are you sure you want to reset the database? [y/N] ', false);
-            if (!$helper->ask($input, $output, $question)) {
-                warning('Aborted');
-                return;
+          if(!$default['yes']) {
+                $question = new ConfirmationQuestion('Are you sure you want to reset the database? [y/N] ', FALSE);
+                if (!$helper->ask($input, $output, $question)) {
+                    warning('Aborted');
+                    return;
+                }
             }
 
             $dropped = Mysql::dropDatabase($name);
@@ -500,10 +505,12 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($run === 'reimport') {
-            $question = new ConfirmationQuestion('Are you sure you want to reimport the database? [y/N] ', false);
-            if (!$helper->ask($input, $output, $question)) {
-                warning('Aborted');
-                return;
+          if(!$default['yes']) {
+                $question = new ConfirmationQuestion('Are you sure you want to reimport the database? [y/N] ', FALSE);
+                if (!$helper->ask($input, $output, $question)) {
+                    warning('Aborted');
+                    return;
+                }
             }
             info('Resetting database, importing database...');
             if(!$name) {
