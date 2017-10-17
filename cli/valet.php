@@ -423,7 +423,7 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app->command('db [run] [name] [optional] [-y|--yes]', function ($input, $output, $run, $name, $optional) {
         $helper = $this->getHelperSet()->get('question');
-        $default = $input->getOptions();
+        $defaults = $input->getOptions();
 
         if($run === 'list' || $run === 'ls') {
             Mysql::listDatabases();
@@ -442,7 +442,7 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($run === 'drop') {
-            if(!$default['yes']) {
+            if(!$defaults['yes']) {
                 $question = new ConfirmationQuestion('Are you sure you want to delete the database? [y/N] ', FALSE);
                 if (!$helper->ask($input, $output, $question)) {
                     warning('Aborted');
@@ -460,7 +460,7 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($run === 'reset') {
-          if(!$default['yes']) {
+          if(!$defaults['yes']) {
                 $question = new ConfirmationQuestion('Are you sure you want to reset the database? [y/N] ', FALSE);
                 if (!$helper->ask($input, $output, $question)) {
                     warning('Aborted');
@@ -505,7 +505,7 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         if($run === 'reimport') {
-          if(!$default['yes']) {
+          if(!$defaults['yes']) {
                 $question = new ConfirmationQuestion('Are you sure you want to reimport the database? [y/N] ', FALSE);
                 if (!$helper->ask($input, $output, $question)) {
                     warning('Aborted');
