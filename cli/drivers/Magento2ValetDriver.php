@@ -97,8 +97,12 @@ class Magento2ValetDriver extends ValetDriver
             $uri = '/static' . $resource;
         }
 
-        if (file_exists($staticFilePath = $sitePath . '/pub' . $uri)) {
+        if (strpos($uri, '/js-translation.json') === false && file_exists($staticFilePath = $sitePath . '/pub' . $uri)) {
             return $staticFilePath;
+        }
+
+        if(strpos($uri, '/js-translation.json') !== false) {
+            header('Cache-Control: no-store, must-revalidate');
         }
 
         if (strpos($uri, '/static/') === 0) {
