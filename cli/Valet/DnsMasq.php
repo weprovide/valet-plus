@@ -138,4 +138,22 @@ class DnsMasq
     {
         return $_SERVER['HOME'].'/.valet/dnsmasq.conf';
     }
+
+    /**
+     * Start the service.
+     *
+     * @return void
+     */
+    function restart() {
+        $this->brew->restartService('dnsmasq');
+    }
+
+    /**
+     * Stop the service.
+     *
+     * @return void
+     */
+    function stop() {
+        $this->brew->stopService('dnsmasq');
+    }
 }

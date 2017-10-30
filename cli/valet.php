@@ -241,6 +241,7 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app->command('start [services]*', function ($services) {
         if(empty($services)) {
+            DnsMasq::restart();
             PhpFpm::restart();
             Nginx::restart();
             Mysql::restart();
@@ -289,6 +290,7 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app->command('restart [services]*', function ($services) {
         if(empty($services)) {
+            DnsMasq::restart();
             PhpFpm::restart();
             Nginx::restart();
             Mysql::restart();
@@ -339,6 +341,7 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app->command('stop [services]*', function ($services) {
         if(empty($services)) {
+            DnsMasq::stop();
             PhpFpm::stop();
             Nginx::stop();
             Mysql::stop();
