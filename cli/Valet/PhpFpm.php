@@ -194,7 +194,6 @@ class PhpFpm
 
         if($this->files->exists($iniPath.'ext-'.$extension.'.ini')) {
             info($extension.' was already enabled.');
-            $this->restart();
             return true;
         }
 
