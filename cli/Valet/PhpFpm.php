@@ -131,7 +131,7 @@ class PhpFpm
 
         foreach($extensions as $extension) {
             if('php72' == $currentVersion && 'mcrypt' == $extension) {
-                info('['.$currentVersion.'] mcrypt extension skipped (not supported in php72)');
+                info('['.$currentVersion.'] mcrypt extension (not supported in php72)');
                 continue;
             }
             if($this->brew->installed($currentVersion.'-'.$extension)) {
