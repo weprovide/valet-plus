@@ -130,6 +130,10 @@ class PhpFpm
         info('['.$currentVersion.'] Installing extensions');
 
         foreach($extensions as $extension) {
+            if('php72' == $currentVersion && 'mcrypt' == $extension) {
+                info('['.$currentVersion.'] mcrypt extension skipped (not supported in php72)');
+                continue;
+            }
             if($this->brew->installed($currentVersion.'-'.$extension)) {
                 // Intl breaks often when switching versions
                 if($extension === 'intl') {
@@ -152,7 +156,7 @@ class PhpFpm
     function switchTo($version)
     {
         $version = preg_replace('/[.]/','',$version);
-        $versions = ['71', '70', '56'];
+        $versions = ['72', '71', '70', '56'];
         $extensions = $this->getExtensions();
         $currentVersion = $this->brew->linkedPhp();
 
