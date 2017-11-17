@@ -103,6 +103,10 @@ valet use 7.0
 valet use 7.1
 ```
 
+```
+valet use 7.2
+```
+
 ## Xdebug
 
 Xdebug support is built-in. It works on port `9000` after you enable it.
