@@ -2,7 +2,6 @@
 
 namespace Valet;
 
-use DateTime;
 use DomainException;
 use mysqli;
 use MYSQLI_ASSOC;
@@ -277,7 +276,7 @@ class Mysql
      *
      * @param string $file
      * @param string $database
-     * @param bool   $dropDatabase
+     * @param bool $dropDatabase
      */
     public function importDatabase($file, $database, $dropDatabase = false)
     {
@@ -289,7 +288,12 @@ class Mysql
         }
 
         $this->createDatabase($database);
-        $this->cli->passthru('pv ' . \escapeshellarg($file) . ' | mysql ' . \escapeshellarg($database));
+
+        $gzip = ' | ';
+        if (stristr($file, '.gz')) {
+            $gzip = ' | gzip -cd | ';
+        }
+        $this->cli->passthru('pv ' . \escapeshellarg($file) . $gzip . 'mysql ' . \escapeshellarg($database));
     }
 
     /**
@@ -361,14 +365,17 @@ class Mysql
         $database = $this->getDatabaseName($database);
 
         if (!$filename || $filename === '-') {
-            $filename = $database . '-' . \date(DateTime::ATOM);
+            $filename = $database . '-' . date('Y-m-d-His', time());
         }
 
-        if (!\stristr($filename, '.sql')) {
-            $filename = $filename . '.sql';
+        if (!stristr($filename, '.sql')) {
+            $filename = $filename . '.sql.gz';
+        }
+        if (!stristr($filename, '.gz')) {
+            $filename = $filename . '.gz';
         }
 
-        $this->cli->passthru('mysqldump ' . \escapeshellarg($database) . ' > ' . \escapeshellarg($filename ?: $database));
+        $this->cli->passthru('mysqldump ' . \escapeshellarg($database) . ' | gzip > ' . \escapeshellarg($filename ?: $database));
 
         return [
             'database' => $database,
