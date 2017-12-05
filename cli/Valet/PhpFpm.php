@@ -246,4 +246,35 @@ class PhpFpm
 
       return true;
     }
+
+    function isAutoStartEnabled() {
+        $iniPath = $this->iniPath();
+        if ($this->files->exists($iniPath.'z-performance.ini')) {
+        }
+        return false;
+    }
+
+    function enableAutoStart() {
+        $iniPath = $this->iniPath();
+        if ($this->files->exists($iniPath . 'z-performance.ini')) {
+            $this->cli->passthru('sed -i "" "s/xdebug.remote_autostart=0/xdebug.remote_autostart=1/g" ' . $iniPath . 'z-performance.ini');
+            $this->restart();
+            info('xdebug.remote_autostart is now enabled.');
+            return true;
+        }
+        warning('Cannot find z-performance.ini, please re-install Valet+');
+        return false;
+    }
+
+    function disableAutoStart() {
+        $iniPath = $this->iniPath();
+        if ($this->files->exists($iniPath . 'z-performance.ini')) {
+            $this->cli->passthru('sed -i "" "s/xdebug.remote_autostart=1/xdebug.remote_autostart=0/g" ' . $iniPath . 'z-performance.ini');
+            $this->restart();
+            info('xdebug.remote_autostart is now disabled.');
+            return true;
+        }
+        warning('Cannot find z-performance.ini, please re-install Valet+');
+        return false;
+    }
 }

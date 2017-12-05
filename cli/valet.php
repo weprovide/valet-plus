@@ -556,6 +556,25 @@ if (is_dir(VALET_HOME_PATH)) {
         throw new Exception('Mode not found. Available modes: on / off');
     })->descriptions('Enable / disable Xdebug');
 
+    $app->command('xdebug_autostart [mode]', function ($mode) {
+        if($mode == '' || $mode == 'status') {
+            PhpFpm::isAutoStartEnabled();
+            return;
+        }
+
+        if($mode === 'on' || $mode === 'enable') {
+            PhpFpm::enableAutoStart();
+            return;
+        }
+
+        if($mode === 'off' || $mode === 'disable') {
+            PhpFpm::disableAutoStart();
+            return;
+        }
+
+        throw new Exception('Mode not found. Available modes: on / off');
+    })->descriptions('Enable / disable xdebug.remote_autostart');
+
     $app->command('ioncube [mode]', function ($mode) {
         if($mode == '' || $mode == 'status') {
             PhpFpm::isExtensionEnabled('ioncubeloader');
