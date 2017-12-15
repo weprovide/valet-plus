@@ -19,7 +19,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 Container::setInstance(new Container);
 
-$version = '1.0.9';
+$version = '1.0.10';
 
 $app = new Application('Valet+', $version);
 

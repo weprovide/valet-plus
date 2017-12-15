@@ -14,7 +14,7 @@ Since Valet+ is intended to replace Valet, it still uses the same `valet` comman
 
 ### Why Valet/Valet+?
 
-Valet+ configures your Mac to always run Nginx in the background when your machine starts. Then, using [DnsMasq](https://en.wikipedia.org/wiki/Dnsmasq), Valet+ proxies all requests on the `*.dev` domain to point to sites installed on your local machine.
+Valet+ configures your Mac to always run Nginx in the background when your machine starts. Then, using [DnsMasq](https://en.wikipedia.org/wiki/Dnsmasq), Valet+ proxies all requests on the `*.test` domain to point to sites installed on your local machine.
 
 In other words, a blazing fast development environment. Valet+ provides a great alternative if you want flexible basics or prefer extreme speed.
 
@@ -64,7 +64,7 @@ Here are a few key differences compared to the original Valet:
 4. Install Valet+ with Composer via `composer global require weprovide/valet-plus`.
 5. Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on your shell (`echo $SHELL`)
 6. Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
-7. Once Valet+ is installed, try pinging any `*.dev` domain on your terminal using a command such as `ping foobar.dev`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
+7. Once Valet+ is installed, try pinging any `*.test` domain on your terminal using a command such as `ping foobar.test`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
 
 > :information_source: Valet+ will automatically start its daemon each time your machine boots. There is no need to run `valet start` or `valet install` ever again once the initial Valet+ installation is complete.
 
@@ -78,14 +78,14 @@ Once Valet+ is installed, you're ready to start serving sites. Valet+ provides a
 2. `cd ~/sites`
 3. `valet park`
 
-That's all there is to it. Now, any project you create within your "parked" directory will automatically be served using the http://folder-name.dev convention.
+That's all there is to it. Now, any project you create within your "parked" directory will automatically be served using the http://folder-name.test convention.
 
 For example:
 
 1. `mkdir ~/sites/example`
 2. `cd ~/sites/example`
 3. `echo "<?php echo 'Valet+ at your service';" > index.php`
-4. Go to `http://example.dev`, you should see `Valet+ at your service`
+4. Go to `http://example.test`, you should see `Valet+ at your service`
 
 ## Switching PHP version
 
@@ -260,11 +260,11 @@ For example:
 valet subdomain add welcome
 ```
 
-Will create `welcome.yourproject.dev`.
+Will create `welcome.yourproject.test`.
 
 ## Mailhog
 
-Mailhog is used to catch emails send from PHP. You can access the panel at [http://mailhog.dev](http://mailhog.dev).
+Mailhog is used to catch emails send from PHP. You can access the panel at [http://mailhog.test](http://mailhog.test).
 
 ## Redis
 
@@ -290,7 +290,7 @@ The most recent version of Elasticsearch – 5.6 at the time of writing – can 
 brew install elasticsearch
 ```
 
-It will run on the default port `9200`, and is accessible at [http://elasticsearch.dev/](http://elasticsearch.dev/).
+It will run on the default port `9200`, and is accessible at [http://elasticsearch.test/](http://elasticsearch.test/).
 
 Elasticsearch 2.4 is installed by default because [Magento 2.1 does not support Elasticsearch 5](http://devdocs.magento.com/guides/v2.1/config-guide/elasticsearch/es-overview.html).
 
@@ -361,7 +361,7 @@ Automatically configure the `local.xml` and base url in the database for Magento
 
 ## Securing Sites With TLS
 
-By default, Valet serves sites over plain HTTP. However, if you would like to serve a site over encrypted TLS using HTTP/2, use the secure command. For example, if your site is being served by Valet on the example.dev domain, you should run the following command to secure it:
+By default, Valet serves sites over plain HTTP. However, if you would like to serve a site over encrypted TLS using HTTP/2, use the secure command. For example, if your site is being served by Valet on the example.test domain, you should run the following command to secure it:
 
 ```
 valet secure example
