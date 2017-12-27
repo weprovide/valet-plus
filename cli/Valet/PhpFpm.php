@@ -198,14 +198,12 @@ class PhpFpm
 
         if($this->files->exists($iniPath.'ext-'.$extension.'.ini')) {
             info($extension.' was already enabled.');
-            return true;
+            return false;
         }
 
         if($this->files->exists($iniPath.'ext-'.$extension.'.ini.disabled')) {
             $this->files->move($iniPath.'ext-'.$extension.'.ini.disabled', $iniPath.'ext-'.$extension.'.ini');
         }
-
-        $this->restart();
 
         info('Enabled '.$extension);
         return true;
@@ -215,14 +213,12 @@ class PhpFpm
         $iniPath = $this->iniPath();
         if($this->files->exists($iniPath.'ext-'.$extension.'.ini.disabled')) {
             info($extension.' was already disabled.');
-            return true;
+            return false;
         }
 
         if($this->files->exists($iniPath.'ext-'.$extension.'.ini')) {
             $this->files->move($iniPath.'ext-'.$extension.'.ini', $iniPath.'ext-'.$extension.'.ini.disabled');
         }
-
-        $this->restart();
 
         info('Disabled '.$extension);
         return true;
@@ -245,5 +241,27 @@ class PhpFpm
       }
 
       return true;
+    }
+
+    function enableAutoStart() {
+        $iniPath = $this->iniPath();
+        if ($this->files->exists($iniPath . 'z-performance.ini')) {
+            $this->cli->passthru('sed -i "" "s/xdebug.remote_autostart=0/xdebug.remote_autostart=1/g" ' . $iniPath . 'z-performance.ini');
+            info('xdebug.remote_autostart is now enabled.');
+            return true;
+        }
+        warning('Cannot find z-performance.ini, please re-install Valet+');
+        return false;
+    }
+
+    function disableAutoStart() {
+        $iniPath = $this->iniPath();
+        if ($this->files->exists($iniPath . 'z-performance.ini')) {
+            $this->cli->passthru('sed -i "" "s/xdebug.remote_autostart=1/xdebug.remote_autostart=0/g" ' . $iniPath . 'z-performance.ini');
+            info('xdebug.remote_autostart is now disabled.');
+            return true;
+        }
+        warning('Cannot find z-performance.ini, please re-install Valet+');
+        return false;
     }
 }
