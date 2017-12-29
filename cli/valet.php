@@ -503,6 +503,16 @@ if (is_dir(VALET_HOME_PATH)) {
             if(!$name) {
                 throw new Exception('Please provide a dump file');
             }
+
+            // check if database already exists.
+            if(Mysql::isDatabaseExists($optional)){
+                $question = new ConfirmationQuestion('Database already exists are you sure you want to continue? [y/N] ', FALSE);
+                if (!$helper->ask($input, $output, $question)) {
+                    warning('Aborted');
+                    return;
+                }
+            }
+            
             Mysql::importDatabase($name, $optional);
             return;
         }
