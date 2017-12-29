@@ -18,6 +18,10 @@ class Mysql
     public $configuration;
     public $site;
     public $systemDatabase = ['sys', 'performance_schema', 'information_schema', 'mysql'];
+    /**
+     * @var Mysqli
+     */
+    protected $link = false;
 
     /**
      * Create a new instance.
@@ -217,14 +221,17 @@ class Mysql
      * Run Mysql query.
      *
      * @param $query
+     * @param bool $escape
      *
      * @return bool|\mysqli_result
      */
-    protected function query($query)
+    protected function query($query, $escape = true)
     {
         $link = $this->getConnection();
 
-        return tap($link->query(\mysqli_real_escape_string($link, $query)), function ($result) use ($link) {
+        $query = $escape ? $this->escape($query) : $query;
+
+        return tap($link->query($query), function ($result) use ($link) {
             if (!$result) { // throw mysql error
                 warning(\mysqli_error($link));
             }
@@ -238,16 +245,34 @@ class Mysql
      */
     public function getConnection()
     {
+        // if connection already exists return it early.
+        if ($this->link) {
+            return $this->link;
+        }
+
         // Create connection
-        $link = new mysqli('localhost', 'root', 'root');
+        $this->link = new mysqli('localhost', 'root', 'root');
+
         // Check connection
-        if ($link->connect_error) {
+        if ($this->link->connect_error) {
             warning('Failed to connect to database');
 
             return false;
         }
 
-        return $link;
+        return $this->link;
+    }
+
+    /**
+     * escape string of query via myslqi.
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    protected function escape($string)
+    {
+        return \mysqli_real_escape_string($this->getConnection(), $string);
     }
 
     /**
@@ -276,7 +301,7 @@ class Mysql
      *
      * @param string $file
      * @param string $database
-     * @param bool $dropDatabase
+     * @param bool   $dropDatabase
      */
     public function importDatabase($file, $database, $dropDatabase = false)
     {
@@ -290,7 +315,7 @@ class Mysql
         $this->createDatabase($database);
 
         $gzip = ' | ';
-        if (stristr($file, '.gz')) {
+        if (\stristr($file, '.gz')) {
             $gzip = ' | gzip -cd | ';
         }
         $this->cli->passthru('pv ' . \escapeshellarg($file) . $gzip . 'mysql ' . \escapeshellarg($database));
@@ -349,7 +374,23 @@ class Mysql
     {
         $name = $this->getDatabaseName($name);
 
-        return $this->query('CREATE DATABASE `' . $name . '`') ? $name : false;
+        return $this->query('CREATE DATABASE IF NOT EXISTS `' . $name . '`') ? $name : false;
+    }
+
+    /**
+     * Check if database already exists.
+     *
+     * @param string $name
+     *
+     * @return bool|\mysqli_result
+     */
+    public function isDatabaseExists($name)
+    {
+        $name = $this->getDatabaseName($name);
+
+        $query = $this->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" . $this->escape($name) . "'", false);
+
+        return (bool) $query->num_rows;
     }
 
     /**
@@ -365,13 +406,13 @@ class Mysql
         $database = $this->getDatabaseName($database);
 
         if (!$filename || $filename === '-') {
-            $filename = $database . '-' . date('Y-m-d-His', time());
+            $filename = $database . '-' . \date('Y-m-d-His', \time());
         }
 
-        if (!stristr($filename, '.sql')) {
+        if (!\stristr($filename, '.sql')) {
             $filename = $filename . '.sql.gz';
         }
-        if (!stristr($filename, '.gz')) {
+        if (!\stristr($filename, '.gz')) {
             $filename = $filename . '.gz';
         }
 
