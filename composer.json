@@ -1,5 +1,5 @@
 {
-    "name": "weprovide/valet-plus",
+    "name": "techdivision/valet-plus",
     "description": "Blazing fast macOS PHP development environment",
     "license": "MIT",
     "authors": [
@@ -14,6 +14,10 @@
         {
             "name": "Tim Neutkens",
             "email": "tim@weprovide.com"
+        },
+        {
+            "name": "Johann Zelger",
+            "email": "j.zelger@techdivision.com"
         }
     ],
     "autoload": {

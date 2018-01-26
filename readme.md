@@ -111,16 +111,24 @@ valet use 7.2
 
 Xdebug support is built-in. It works on port `9000` after you enable it.
 
+The `[--remote_autostart=]` option can be used by typing: `valet xdebug --remote_autostart=0` or changing both settings: `valet xdebug on --remote_autostart=1`
+
 Enable Xdebug:
 
 ```
-valet xdebug on
+valet xdebug on [--remote_autostart=]
 ```
 
 Disable Xdebug:
 
 ```
-valet xdebug off
+valet xdebug off [--remote_autostart=]
+```
+
+Enable/disable xdebug.remote_autostart:
+
+```
+valet xdebug --remote_autostart=[true/false]
 ```
 
 > :warning: Xdebug makes your environment slower. That's why we allow to fully enable / disable it. When not debugging it's best to disable it by running `valet xdebug off`.

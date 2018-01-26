@@ -537,42 +537,71 @@ if (is_dir(VALET_HOME_PATH)) {
         DevTools::configure();
     })->descriptions('Configure application connection settings');
 
-    $app->command('xdebug [mode]', function ($mode) {
-        if($mode == '' || $mode == 'status') {
+    $app->command('xdebug [mode] [--remote_autostart=]', function ($input, $mode) {
+        $restart = false;
+        $isValidMode = false;
+        $defaults = $input->getOptions();
+        if (isset($defaults['remote_autostart'])) {
+            if ($defaults['remote_autostart']) {
+                PhpFpm::enableAutoStart();
+            } else {
+                PhpFpm::disableAutoStart();
+            }
+            $restart = true;
+        }
+
+        if ($mode == '' || $mode == 'status') {
             PhpFpm::isExtensionEnabled('xdebug');
+            $isValidMode = true;
+        }
+
+        if ($mode === 'on' || $mode === 'enable') {
+            $change = PhpFpm::enableExtension('xdebug');
+            if ($change) {
+                $restart = true;
+            }
+            $isValidMode = true;
+        }
+
+        if ($mode === 'off' || $mode === 'disable') {
+            $change = PhpFpm::disableExtension('xdebug');
+            if ($change) {
+                $restart = true;
+            }
+            $isValidMode = true;
+        }
+
+        if ($restart) {
+            PhpFpm::restart();
             return;
         }
 
-        if($mode === 'on' || $mode === 'enable') {
-            PhpFpm::enableExtension('xdebug');
-            return;
+        if (!$isValidMode) {
+            throw new Exception('Mode not found. Available modes: on / off / status');
         }
 
-        if($mode === 'off' || $mode === 'disable') {
-            PhpFpm::disableExtension('xdebug');
-            return;
-        }
-
-        throw new Exception('Mode not found. Available modes: on / off');
+        return;
     })->descriptions('Enable / disable Xdebug');
 
     $app->command('ioncube [mode]', function ($mode) {
-        if($mode == '' || $mode == 'status') {
+        if ($mode == '' || $mode == 'status') {
             PhpFpm::isExtensionEnabled('ioncubeloader');
             return;
         }
 
-        if($mode === 'on' || $mode === 'enable') {
+        if ($mode === 'on' || $mode === 'enable') {
             PhpFpm::enableExtension('ioncubeloader');
+            PhpFpm::restart();
             return;
         }
 
-        if($mode === 'off' || $mode === 'disable') {
+        if ($mode === 'off' || $mode === 'disable') {
             PhpFpm::disableExtension('ioncubeloader');
+            PhpFpm::restart();
             return;
         }
 
-        throw new Exception('Mode not found. Available modes: on / off');
+        throw new Exception('Mode not found. Available modes: on / off / status');
     })->descriptions('Enable / disable ioncube');
 
     $app->command('elasticsearch [mode]', function ($mode) {
