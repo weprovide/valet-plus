@@ -10,9 +10,6 @@ if (file_exists(__DIR__.'/../vendor/autoload.php')) {
     require __DIR__.'/../../../autoload.php';
 }
 
-// convert composer.json to php object
-$composer = json_decode(file_get_contents(__DIR__ . '/../composer.json'));
-
 use Silly\Application;
 use Illuminate\Container\Container;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
@@ -26,7 +23,7 @@ Container::setInstance(new Container);
 // get current version based on git describe and tags
 $version = new Version('0.0.0' , __DIR__ . '/../');
 
-$app = new Application($composer->app, $version->getVersion());
+$app = new Application('Valet+', $version->getVersion());
 
 /**
  * Prune missing directories and symbolic links on every command.
