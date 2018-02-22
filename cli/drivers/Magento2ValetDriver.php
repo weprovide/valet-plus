@@ -132,6 +132,10 @@ class Magento2ValetDriver extends ValetDriver
         if(isset($_GET['profile'])) {
             $_SERVER['MAGE_PROFILER'] = 'html';
         }
+        
+        if(strpos($uri, '/errors') === 0) {
+            return $sitePath . '/pub' . $uri;
+        }
 
         if($uri === '/setup') {
             Header('HTTP/1.1 301 Moved Permanently');
