@@ -88,7 +88,7 @@ class Magento2ValetDriver extends ValetDriver
             $isMagentoStatic = true;
         }
 
-        if (!$isMagentoStatic && strpos($uri, '/media/') === false) {
+        if (!$isMagentoStatic && strpos($uri, '/media/') === false && strpos($uri, '/errors/') === false) {
             return false;
         }
 
