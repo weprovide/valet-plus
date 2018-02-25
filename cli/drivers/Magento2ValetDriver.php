@@ -88,7 +88,7 @@ class Magento2ValetDriver extends ValetDriver
             $isMagentoStatic = true;
         }
 
-        if (!$isMagentoStatic && strpos($uri, '/media/') === false) {
+        if (!$isMagentoStatic && strpos($uri, '/media/') === false && strpos($uri, '/errors/') === false) {
             return false;
         }
 
@@ -157,8 +157,10 @@ class Magento2ValetDriver extends ValetDriver
             exit;
         }
 
-        $_SERVER['DOCUMENT_ROOT'] = $sitePath;
+        $_SERVER['DOCUMENT_ROOT']   = $sitePath . '/pub';
+        $_SERVER['SCRIPT_FILENAME'] = $sitePath . '/pub/index.php';
+        $_SERVER['SCRIPT_NAME']     = substr($_SERVER['SCRIPT_FILENAME'], strlen($_SERVER['DOCUMENT_ROOT']));
 
-        return $sitePath . '/pub/index.php';
+        return $_SERVER['SCRIPT_FILENAME'];
     }
 }
