@@ -529,11 +529,8 @@ Documentation for Valet can be found on the [Laravel website](https://laravel.co
 
 ## Credits
 
-This project is a fork of [laravel/valet](https://github.com/laravel/valet). Thanks to all of the contributors, especially the original authors:
+This project is a fork of [weprovide/valet-plus](https://github.com/weprovide/valet-plus) & [laravel/valet](https://github.com/laravel/valet). Thanks to all of the contributors, especially the original authors:
 
 - Taylor Otwell ([@taylorotwell](https://github.com/taylorotwell))
 - Adam Wathan ([@adamwathan](https://github.com/adamwathan))
-
-## Valet+ Authors
-
 - Tim Neutkens ([@timneutkens](https://github.com/timneutkens))
