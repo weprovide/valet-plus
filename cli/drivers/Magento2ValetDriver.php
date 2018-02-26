@@ -79,6 +79,10 @@ class Magento2ValetDriver extends ValetDriver
     {
         $isMagentoStatic = false;
         $resource = $uri;
+        
+        if (strpos($uri, '/errors/') !== false) {
+            return $sitePath . '/pub' . $uri;
+        }
 
         if(strpos($uri,'/pub') === 0 && file_exists($sitePath.'/setup'.$uri)) {
             return $sitePath.'/setup'.$uri;
