@@ -24,7 +24,7 @@ Here are a few key differences compared to the original Valet:
 
 - PHP version switch
 - Xdebug (on/off mode)
-- PHP extensions (mcrypt, intl, opcache, apcu)
+- PHP extensions (mcrypt, intl, opcache)
 - Optimized PHP configuration using opcache
 - MySQL (with optimized configuration)
 - Redis
@@ -390,7 +390,8 @@ Other logs are located at `/usr/local/var/log`
 ## Valet drivers
 Valet uses drivers to handle requests. You can read more about those [here](https://laravel.com/docs/5.4/valet#custom-valet-drivers).
 
-When using Valet+ drivers are automatically cached using APCu to avoid doing a driver lookup every time there is a request. You can reset the cache for a specific site by running `valet which`.
+~~When using Valet+ drivers are automatically cached using APCu to avoid doing a driver lookup every time there is a request. You can reset the cache for a specific site by running `valet which`.~~
+APCu is temporarily turned off due to a compatibility issue with PHP-FPM, see https://github.com/weprovide/valet-plus/issues/49.
 
 By default these are included:
 
