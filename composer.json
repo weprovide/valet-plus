@@ -1,5 +1,6 @@
 {
     "name": "weprovide/valet-plus",
+    "app": "Valet+",
     "description": "Blazing fast macOS PHP development environment",
     "license": "MIT",
     "authors": [
@@ -14,6 +15,10 @@
         {
             "name": "Tim Neutkens",
             "email": "tim@weprovide.com"
+        },
+        {
+            "name": "Johann Zelger",
+            "email": "j.zelger@techdivision.com"
         }
     ],
     "autoload": {
@@ -35,7 +40,8 @@
         "mnapoli/silly": "~1.5.0",
         "symfony/process": "~2.7|~3.0",
         "nategood/httpful": "~0.2",
-        "tightenco/collect": "~5.4.0"
+        "tightenco/collect": "~5.4.0",
+        "sebastian/version": "^2.0"
     },
     "require-dev": {
         "mockery/mockery": "0.9.*",

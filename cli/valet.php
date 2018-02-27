@@ -13,15 +13,17 @@ if (file_exists(__DIR__.'/../vendor/autoload.php')) {
 use Silly\Application;
 use Illuminate\Container\Container;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use SebastianBergmann\Version;
 
 /**
  * Create the application.
  */
 Container::setInstance(new Container);
 
-$version = '1.0.10';
+// get current version based on git describe and tags
+$version = new Version('0.0.0' , __DIR__ . '/../');
 
-$app = new Application('Valet+', $version);
+$app = new Application('Valet+', $version->getVersion());
 
 /**
  * Prune missing directories and symbolic links on every command.
@@ -248,6 +250,8 @@ if (is_dir(VALET_HOME_PATH)) {
             RedisTool::restart();
             Mailhog::restart();
             Elasticsearch::restart();
+            RabbitMq::restart();
+            Varnish::restart();
             info('Valet services have been started.');
             return;
         }
@@ -279,6 +283,14 @@ if (is_dir(VALET_HOME_PATH)) {
                     Elasticsearch::restart();
                     break;
                 }
+                case 'rabbitmq': {
+                    RabbitMq::restart();
+                    break;
+                }
+                case 'varnish': {
+                    Varnish::restart();
+                    break;
+                }
             }
         }
 
@@ -297,6 +309,8 @@ if (is_dir(VALET_HOME_PATH)) {
             RedisTool::restart();
             Mailhog::restart();
             Elasticsearch::restart();
+            RabbitMq::restart();
+            Varnish::restart();
             info('Valet services have been started.');
             return;
         }
@@ -327,6 +341,14 @@ if (is_dir(VALET_HOME_PATH)) {
                     Elasticsearch::restart();
                     break;
                 }
+                case 'rabbitmq': {
+                    RabbitMq::restart();
+                    break;
+                }
+                case 'varnish': {
+                    Varnish::restart();
+                    break;
+                }
             }
         }
 
@@ -348,6 +370,8 @@ if (is_dir(VALET_HOME_PATH)) {
             RedisTool::stop();
             Mailhog::stop();
             Elasticsearch::stop();
+            RabbitMq::stop();
+            Varnish::stop();
             info('Valet services have been stopped.');
             return;
         }
@@ -378,6 +402,14 @@ if (is_dir(VALET_HOME_PATH)) {
                     Elasticsearch::stop();
                     break;
                 }
+                case 'rabbitmq': {
+                    RabbitMq::stop();
+                    break;
+                }
+                case 'varnish': {
+                    Varnish::stop();
+                    break;
+                }
             }
         }
 
@@ -393,6 +425,8 @@ if (is_dir(VALET_HOME_PATH)) {
         RedisTool::uninstall();
         Mailhog::uninstall();
         Elasticsearch::uninstall();
+        RabbitMq::uninstall();
+        Varnish::uninstall();
 
         info('Valet has been uninstalled.');
     })->descriptions('Uninstall the Valet services');
@@ -612,6 +646,24 @@ if (is_dir(VALET_HOME_PATH)) {
 
         throw new Exception('Sub-command not found. Available: install');
     })->descriptions('Enable / disable Elasticsearch');
+
+    $app->command('rabbitmq [mode]', function ($mode) {
+        if($mode === 'install' || $mode === 'on') {
+            RabbitMq::install();
+            return;
+        }
+
+        throw new Exception('Sub-command not found. Available: install');
+    })->descriptions('Enable / disable RabbitMq');
+
+    $app->command('varnish [mode]', function ($mode) {
+        if($mode === 'install' || $mode === 'on') {
+            Varnish::install();
+            return;
+        }
+
+        throw new Exception('Sub-command not found. Available: install');
+    })->descriptions('Enable / disable Varnish');
 
     $app->command('tower', function () {
         DevTools::tower();
