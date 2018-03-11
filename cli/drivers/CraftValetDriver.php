@@ -2,6 +2,91 @@
 
 class CraftValetDriver extends ValetDriver
 {
+    public function configure($devtools, $url) {
+        info('Configuring Craft');
+
+        $sitePath = getcwd();
+        $siteConfigured = $this->isConfigured($devtools, $sitePath);
+        $databaseName = $devtools->mysql->getDirName();
+        $envFile = $sitePath.'/.env';
+
+        if(!$this->envExists($sitePath) || !$siteConfigured) {
+            // Read source configuration from site if it exists
+            $sourceFile = $this->envExists($sitePath) ? $envFile : __DIR__.'/../stubs/craft/env';
+            info('.env is either missing or misconfigured. Configuring .env file...');
+            $devtools->files->putAsUser(
+                $envFile,
+                str_replace(
+                    ['DB_DATABASE=""', 'DB_PASSWORD=""' ],
+                    ['DB_DATABASE="' . $databaseName .'"', 'DB_PASSWORD="root"' ],
+                    $devtools->files->get($sourceFile)
+                )
+            );
+        }
+        // Check if security key is set, set one up if it is not
+        if(preg_match('/SECURITY_KEY=""/', $devtools->files->get($envFile)) === 1) {
+            info('SECURITY_KEY is not set. Setting SECURITY_KEY in .env');
+            $devtools->files->putAsUser(
+                $sitePath.'/.env',
+                str_replace(
+                    'SECURITY_KEY=""',
+                    'SECURITY_KEY="'. $this->random_str(32) .'"',
+                    $devtools->files->get($envFile)
+                )
+            );
+        }
+
+        if (!in_array($databaseName, $devtools->mysql->getDataBases(false))) {
+            info('Creating database');
+            if ($devtools->mysql->createDatabase($devtools->mysql->getDirName())) {
+                info('Database created');
+            } else {
+                warning('Could not create database');
+            }
+        }
+
+
+        info('Configured Craft');
+    }
+
+    public function isConfigured($devtools, $sitePath) {
+        if (!file_exists($sitePath.'/.env')) {
+            return false;
+        }
+        return (
+            (preg_match('/DB_DATABASE="\S+"/', $devtools->files->get($sitePath.'/.env')) === 1)
+            && (preg_match('/DB_PASSWORD="\S+"/', $devtools->files->get($sitePath.'/.env')) === 1)
+            && (preg_match('/SECURITY_KEY="\S+"/', $devtools->files->get($sitePath.'/.env')) === 1)
+        );
+    }
+    public function envExists($sitePath) {
+        return file_exists($sitePath.'/.env');
+    }
+
+    /**
+     * Generate a random string, using a cryptographically secure
+     * pseudorandom number generator (random_int)
+     *
+     * Copied from https://stackoverflow.com/questions/4356289/php-random-string-generator/31107425#31107425
+     *
+     * For PHP 7, random_int is a PHP core function
+     * For PHP 5.x, depends on https://github.com/paragonie/random_compat
+     *
+     * @param int $length      How many characters do we want?
+     * @param string $keyspace A string of all possible characters
+     *                         to select from
+     * @return string
+     */
+    function random_str($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-')
+    {
+        $str = '';
+        $max = mb_strlen($keyspace, '8bit') - 1;
+        for ($i = 0; $i < $length; ++$i) {
+            $str .= $keyspace[random_int(0, $max)];
+        }
+        return $str;
+    }
+
     /**
      * Determine if the driver serves the request.
      *

@@ -228,7 +228,7 @@ class Mysql
         return $name;
     }
 
-    function getDatabases() {
+    function getDatabases($asMultiDimensionArray = true) {
         $link = $this->getConnection();
         $sql = mysqli_real_escape_string($link, 'SHOW DATABASES');
         $result = $link->query($sql);
@@ -244,7 +244,7 @@ class Mysql
                 continue;
             }
             
-            $databases[] = [$row['Database']];
+            $databases[] = $asMultiDimensionArray ? [$row['Database']] : $row['Database'];
         }
 
         $result->free();
