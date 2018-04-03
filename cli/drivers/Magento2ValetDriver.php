@@ -26,14 +26,14 @@ class Magento2ValetDriver extends ValetDriver
         }
 
         info('Setting base url...');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:set web/unsecure/base_url ' . $url . '/');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:set web/secure/base_url ' . $url . '/');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/unsecure/base_url ' . $url . '/');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/secure/base_url ' . $url . '/');
 
         info('Setting elastic search hostname...');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
         
         info('Enabling URL rewrites...');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:set web/seo/use_rewrites 1');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/seo/use_rewrites 1');
         
         info('Flushing cache...');
         $devtools->cli->quietlyAsUser('n98-magerun2 cache:flush');
