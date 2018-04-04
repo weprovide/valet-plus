@@ -452,7 +452,14 @@ if (is_dir(VALET_HOME_PATH)) {
             info('Already on this version');
             return;
         }
-        info('Valet is now using php'.$phpVersion.'.');
+        info('Valet is now using php@'.$phpVersion.'.');
+    })->descriptions('Switch between versions of PHP');
+
+    /**
+     * Fix common problems
+     */
+    $app->command('fix', function () {
+        PhpFpm::fix();
     })->descriptions('Switch between versions of PHP');
 
     /**

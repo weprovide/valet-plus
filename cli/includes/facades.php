@@ -30,6 +30,7 @@ class Facade
 }
 
 class Brew extends Facade {}
+class Pecl extends Facade {}
 class Nginx extends Facade {}
 class Mysql extends Facade {}
 class RedisTool extends Facade {}
