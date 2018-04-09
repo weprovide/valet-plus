@@ -59,8 +59,8 @@ Here are a few key differences compared to the original Valet:
 > :warning: Valet+ requires macOS and [Homebrew](https://brew.sh/). Before installation, you should make sure that no other programs such as Apache or Nginx are binding to your local machine's port 80.
 
 1. Install or update [Homebrew](https://brew.sh/) to the latest version using brew update.
-2. Install PHP 7.0 using Homebrew via `brew install homebrew/php/php70`.
-3. Install Composer using Homebrew via `brew install homebrew/php/composer`.
+2. Install PHP 7.0 using Homebrew via `brew install php@7.0 && brew link php@7.0 --overwrite --force`.
+3. Install Composer using Homebrew via `HOMEBREW_NO_ENV_FILTERING=1 brew install composer`.
 4. Install Valet+ with Composer via `composer global require techdivision/valet-plus`.
 5. Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on your shell (`echo $SHELL`)
 6. Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
