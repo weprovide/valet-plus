@@ -15,7 +15,7 @@ class DevTools
     var $mysql;
 
     var $taps = [
-        'homebrew/homebrew-php'
+        'homebrew/core'
     ];
 
     /**
