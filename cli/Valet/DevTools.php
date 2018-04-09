@@ -65,6 +65,7 @@ class DevTools
         foreach ($customTools as $url => $tool) {
             if (!$this->files->exists($tool)) {
                 $this->files->putAsUser($tool, $this->files->get($url));
+                $this->cli->quietlyAsUser('chmod +x $tool');
             }
         }
     }
