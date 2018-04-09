@@ -15,7 +15,7 @@ class DevTools
     var $mysql;
 
     var $taps = [
-        'homebrew/homebrew-php'
+        'homebrew/core'
     ];
 
     /**
@@ -55,8 +55,10 @@ class DevTools
         info('[devtools] Installing');
 
         foreach($tools as $tool) {
-            if ($this->brew->installed($tool)) {
+            if($this->brew->installed($tool)) {
                 info('[devtools] '.$tool.' already installed');
+            } else {
+                $this->brew->ensureInstalled($tool, [], $this->taps);
             }
         }
         
