@@ -21,11 +21,11 @@ class DevTools
     /**
      * Create a new Nginx instance.
      *
-     * @param  Brew $brew
-     * @param  CommandLine $cli
-     * @param  Filesystem $files
-     * @param  Configuration $configuration
-     * @param  Site $site
+     * @param Brew $brew
+     * @param CommandLine $cli
+     * @param Filesystem $files
+     * @param Configuration $configuration
+     * @param Site $site
      * @param Mysql $mysql
      */
     function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
@@ -46,7 +46,12 @@ class DevTools
      */
     function install()
     {
-        $tools = ['wp-cli', 'n98-magerun', 'n98-magerun2', 'pv'];
+        $tools = ['autoconf', 'wp-cli', 'pv'];
+        $customTools = [
+          'https://files.magerun.net/n98-magerun.phar' => '/usr/local/bin/magerun',
+          'https://files.magerun.net/n98-magerun2.phar' => '/usr/local/bin/magerun2'
+        ];
+        
         info('[devtools] Installing');
 
         foreach($tools as $tool) {
@@ -55,13 +60,11 @@ class DevTools
             } else {
                 $this->brew->ensureInstalled($tool, [], $this->taps);
             }
-
-            if($tool === 'n98-magerun') {
-                $this->files->symlinkAsUser('/usr/local/bin/n98-magerun', '/usr/local/bin/magerun');
-            }
-
-            if($tool === 'n98-magerun') {
-                $this->files->symlinkAsUser('/usr/local/bin/n98-magerun2', '/usr/local/bin/magerun2');
+        }
+        
+        foreach ($customTools as $url => $tool) {
+            if (!$this->files->exists($tool)) {
+                $this->files->putAsUser($tool, $this->files->get($url));
             }
         }
     }
