@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 valet stop
-brew remove --force --ignore-dependencies $(brew list | grep -v mysql)
+brew remove --force --ignore-dependencies $(brew list | grep php)
+bash -c "sudo rm -rf /etc/php.ini /usr/local/bin/php* /usr/local/php*"
 brew upgrade
 brew untap homebrew/php
 brew install php@7.0
