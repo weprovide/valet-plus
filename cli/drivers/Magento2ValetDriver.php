@@ -79,6 +79,10 @@ class Magento2ValetDriver extends ValetDriver
     {
         $isMagentoStatic = false;
         $resource = $uri;
+        
+        if(strpos($uri,'/errors') === 0 && file_exists($sitePath.'/pub'.$uri)) {
+            return $sitePath.'/pub'.$uri;
+        }
 
         if(strpos($uri,'/pub') === 0 && file_exists($sitePath.'/setup'.$uri)) {
             return $sitePath.'/setup'.$uri;
@@ -131,6 +135,14 @@ class Magento2ValetDriver extends ValetDriver
     {
         if(isset($_GET['profile'])) {
             $_SERVER['MAGE_PROFILER'] = 'html';
+        }
+        
+        if(strpos($uri, '/errors') === 0) {
+            $file = $sitePath . '/pub' . $uri;
+            if (file_exists($file)) {
+                return $file;
+            }
+            return $sitePath . '/pub/errors/404.php';
         }
 
         if($uri === '/setup') {
