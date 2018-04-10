@@ -578,52 +578,6 @@ if (is_dir(VALET_HOME_PATH)) {
         DevTools::configure();
     })->descriptions('Configure application connection settings');
 
-    $app->command('xdebug [mode] [--remote_autostart=]', function ($input, $mode) {
-        $restart = false;
-        $isValidMode = false;
-        $defaults = $input->getOptions();
-        if (isset($defaults['remote_autostart'])) {
-            if ($defaults['remote_autostart']) {
-                PhpFpm::enableAutoStart();
-            } else {
-                PhpFpm::disableAutoStart();
-            }
-            $restart = true;
-        }
-
-        if ($mode == '' || $mode == 'status') {
-            PhpFpm::isExtensionEnabled('xdebug');
-            $isValidMode = true;
-        }
-
-        if ($mode === 'on' || $mode === 'enable') {
-            $change = PhpFpm::enableExtension('xdebug');
-            if ($change) {
-                $restart = true;
-            }
-            $isValidMode = true;
-        }
-
-        if ($mode === 'off' || $mode === 'disable') {
-            $change = PhpFpm::disableExtension('xdebug');
-            if ($change) {
-                $restart = true;
-            }
-            $isValidMode = true;
-        }
-
-        if ($restart) {
-            PhpFpm::restart();
-            return;
-        }
-
-        if (!$isValidMode) {
-            throw new Exception('Mode not found. Available modes: on / off / status');
-        }
-
-        return;
-    })->descriptions('Enable / disable Xdebug');
-
     $app->command('ioncube [mode]', function ($mode) {
         if ($mode == '' || $mode == 'status') {
             PhpFpm::isExtensionEnabled('ioncubeloader');
