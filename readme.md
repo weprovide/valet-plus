@@ -409,6 +409,10 @@ By default these are included:
 - Slim
 - Statamic
 - Zend Framework
+- Drupal
+- Typo3
+- Neos
+- Craft
 
 A full list can be found [here](cli/drivers).
 
