@@ -22,6 +22,12 @@ class Pecl
             '7.1' => null,
             '7.0' => null,
             '7.2' => null
+        ],
+        self::XDEBUG_EXTENSION => [
+            '5.6' => '2.5.5',
+            '7.0' => null,
+            '7.1' => null,
+            '7.2' => null,
         ]
     ];
 
