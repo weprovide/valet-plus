@@ -70,6 +70,8 @@ class Nginx
      */
     function installServer()
     {
+        $domain = $this->configuration->read()['domain'];
+
         $this->files->ensureDirExists('/usr/local/etc/nginx/valet');
 
         $this->files->putAsUser(
@@ -83,12 +85,20 @@ class Nginx
 
         $this->files->putAsUser(
             '/usr/local/etc/nginx/valet/mailhog.conf',
-            $this->files->get(__DIR__.'/../stubs/mailhog.conf')
+            str_replace(
+                ['VALET_DOMAIN'],
+                [$domain],
+                $this->files->get(__DIR__ . '/../stubs/mailhog.conf')
+            )
         );
 
         $this->files->putAsUser(
             '/usr/local/etc/nginx/valet/elasticsearch.conf',
-            $this->files->get(__DIR__.'/../stubs/elasticsearch.conf')
+            str_replace(
+                ['VALET_DOMAIN'],
+                [$domain],
+                $this->files->get(__DIR__ . '/../stubs/mailhog.conf')
+            )
         );
 
         $this->files->putAsUser(
