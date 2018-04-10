@@ -13,9 +13,4 @@ HOMEBREW_NO_ENV_FILTERING=1 brew reinstall composer
 composer global require techdivision/valet-plus
 grep -q 'export PATH="$PATH:$HOME/.composer/vendor/bin"' ~/.bashrc || echo 'export PATH="$PATH:$HOME/.composer/vendor/bin"' >> ~/.bashrc
 grep -q 'export PATH="$PATH:$HOME/.composer/vendor/bin"' ~/.zshrc || echo 'export PATH="$PATH:$HOME/.composer/vendor/bin"' >> ~/.zshrc
-curl -so /usr/local/bin/cachetool.phar http://gordalina.github.io/cachetool/downloads/cachetool.phar
-chmod a+x /usr/local/bin/cachetool.phar
-cachetool.phar apcu:cache:clear --cli
-cachetool.phar opcache:reset --cli
 valet install
-
