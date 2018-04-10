@@ -38,11 +38,14 @@ if (is_dir(VALET_HOME_PATH)) {
  * Allow Valet to be run more conveniently by allowing the Node proxy to run password-less sudo.
  */
 $app->command('install [--with-mariadb]', function ($withMariadb) {
+    PhpFpm::checkInstallation();
+
     Nginx::stop();
     PhpFpm::stop();
     Mysql::stop();
     RedisTool::stop();
     DevTools::install();
+    Binaries::installBinaries();
 
     Configuration::install();
     Nginx::install();
@@ -420,6 +423,8 @@ if (is_dir(VALET_HOME_PATH)) {
      * Uninstall Valet entirely.
      */
     $app->command('uninstall', function () {
+        Binaries::uninstallBinaries();
+        Pecl::uninstallExtensions();
         Nginx::uninstall();
         Mysql::uninstall();
         RedisTool::uninstall();
@@ -452,7 +457,7 @@ if (is_dir(VALET_HOME_PATH)) {
             info('Already on this version');
             return;
         }
-        info('Valet is now using php'.$phpVersion.'.');
+        info('Valet is now using php@'.$phpVersion.'.');
     })->descriptions('Switch between versions of PHP');
 
     /**
@@ -572,8 +577,18 @@ if (is_dir(VALET_HOME_PATH)) {
     })->descriptions('Configure application connection settings');
 
     $app->command('xdebug [mode] [--remote_autostart=]', function ($input, $mode) {
+        $modes = ['on', 'enable', 'off', 'disable', 'status'];
+
+        if (!in_array($mode, $modes)) {
+            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
+        }
+
+        if ($mode == '' || $mode == 'status') {
+            Pecl::isInstalled('xdebug');
+            return;
+        }
+
         $restart = false;
-        $isValidMode = false;
         $defaults = $input->getOptions();
         if (isset($defaults['remote_autostart'])) {
             if ($defaults['remote_autostart']) {
@@ -584,58 +599,58 @@ if (is_dir(VALET_HOME_PATH)) {
             $restart = true;
         }
 
-        if ($mode == '' || $mode == 'status') {
-            PhpFpm::isExtensionEnabled('xdebug');
-            $isValidMode = true;
+        $phpVersion = Brew::linkedPhp();
+
+        if (Pecl::installed('xdebug') === false && ($mode === 'on' || $mode === 'enable')) {
+            info("[php@$phpVersion] Installing xdebug extension");
+            $restart = Pecl::installExtension('xdebug', $phpVersion);
+        }elseif($mode === 'on' || $mode === 'enable'){
+            info("[php@$phpVersion] xdebug extension is already installed");
         }
 
-        if ($mode === 'on' || $mode === 'enable') {
-            $change = PhpFpm::enableExtension('xdebug');
-            if ($change) {
-                $restart = true;
-            }
-            $isValidMode = true;
-        }
-
-        if ($mode === 'off' || $mode === 'disable') {
-            $change = PhpFpm::disableExtension('xdebug');
-            if ($change) {
-                $restart = true;
-            }
-            $isValidMode = true;
+        if (Pecl::installed('xdebug') === true && ($mode === 'off' || $mode === 'disable')) {
+            info("[php@$phpVersion] Uninstalling xdebug extension");
+            $restart = Pecl::uninstallExtension('xdebug', $phpVersion);
+        }elseif($mode === 'off' || $mode === 'disable'){
+            info("[php@$phpVersion] xdebug extension is already uninstalled");
         }
 
         if ($restart) {
             PhpFpm::restart();
-            return;
-        }
-
-        if (!$isValidMode) {
-            throw new Exception('Mode not found. Available modes: on / off / status');
         }
 
         return;
     })->descriptions('Enable / disable Xdebug');
 
     $app->command('ioncube [mode]', function ($mode) {
+        $modes = ['on', 'enable', 'off', 'disable', 'status'];
+
+        if (!in_array($mode, $modes)) {
+            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
+        }
+
+        $phpVersion = Brew::linkedPhp();
+
         if ($mode == '' || $mode == 'status') {
-            PhpFpm::isExtensionEnabled('ioncubeloader');
+            Pecl::isInstalled('ioncube_loader_dar');
             return;
         }
 
-        if ($mode === 'on' || $mode === 'enable') {
-            PhpFpm::enableExtension('ioncubeloader');
+        if (Pecl::installed('ioncube_loader_dar') === false && ($mode === 'on' || $mode === 'enable')) {
+            info("[php@$phpVersion] Installing ioncube_loader_dar extension");
+            $restart = Pecl::installExtension('ioncube_loader_dar');
             PhpFpm::restart();
-            return;
+        }elseif($mode === 'on' || $mode === 'enable'){
+            info("[php@$phpVersion] ioncube_loader_dar extension is already installed");
         }
 
-        if ($mode === 'off' || $mode === 'disable') {
-            PhpFpm::disableExtension('ioncubeloader');
+        if (Pecl::installed('ioncube_loader_dar') === true && ($mode === 'off' || $mode === 'disable')) {
+            info("[php@$phpVersion] Uninstalling ioncube_loader_dar extension");
+            $restart = Pecl::uninstallExtension('ioncube_loader_dar');
             PhpFpm::restart();
-            return;
+        }elseif($mode === 'off' || $mode === 'disable'){
+            info("[php@$phpVersion] ioncube_loader_dar extension is already uninstalled");
         }
-
-        throw new Exception('Mode not found. Available modes: on / off / status');
     })->descriptions('Enable / disable ioncube');
 
     $app->command('elasticsearch [mode]', function ($mode) {
@@ -680,6 +695,10 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('ssh-key', function () {
         DevTools::sshkey();
     })->descriptions('Copy ssh key');
+
+    $app->command('fix', function () {
+        PhpFpm::fix();
+    })->descriptions('Fixes common installation problems that prevent Valet+ from working');
 }
 
 /**
