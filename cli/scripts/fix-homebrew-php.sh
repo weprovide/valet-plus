@@ -2,7 +2,7 @@
 
 valet stop
 sudo rm -rf /usr/local/Cellar/php@5.6/5.6.*/var/log
-brew remove --force $(brew list | grep php)
+brew remove --force --ignore-dependencies $(brew list | grep php)
 bash -c "sudo rm -rf /etc/php.ini /usr/local/bin/php* /usr/local/php*"
 brew upgrade
 brew untap homebrew/php
