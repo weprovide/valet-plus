@@ -109,29 +109,31 @@ valet use 7.2
 
 ## Xdebug
 
-Xdebug support is built-in. It works on port `9000` after you enable it.
+Xdebug support is built-in. It works on port `9000` and is installed and enabled by default.
+The autostart feature is disabled that it not harms performance that much when there is no need for debugging.
 
-The `[--remote_autostart=]` option can be used by typing: `valet xdebug --remote_autostart=0` or changing both settings: `valet xdebug on --remote_autostart=1`
+Please install a x-debug extension for your favorite browser listed below to enable debugging sessions on demand.
 
-Enable Xdebug:
+### Xdebug Helper for Firefox
+https://addons.mozilla.org/en-GB/firefox/addon/xdebug-helper-for-firefox/
 
-```
-valet xdebug on [--remote_autostart=]
-```
+This extension for Firefox was built to make debugging with an IDE easier. You can find the extension at https://addons.mozilla.org/en-GB/firefox/addon/xdebug-helper-for-firefox/. The source code for this extension is on GitHub.
 
-Disable Xdebug:
+### Xdebug Helper for Chrome
+https://chrome.google.com/extensions/detail/eadndfjplgieldjbigjakmdgkmoaaaoc
 
-```
-valet xdebug off [--remote_autostart=]
-```
+This extension for Chrome will help you to enable/disable debugging and profiling with a single click. You can find the extension at https://chrome.google.com/extensions/detail/eadndfjplgieldjbigjakmdgkmoaaaoc.
 
-Enable/disable xdebug.remote_autostart:
+### Xdebug Toggler for Safari
+http://benmatselby.posterous.com/xdebug-toggler-for-safari
 
-```
-valet xdebug --remote_autostart=[true/false]
-```
+This extension for Safari allows you to auto start Xdebug debugging from within Safari. You can get it from Github at https://github.com/benmatselby/xdebug-toggler.
 
-> :warning: Xdebug makes your environment slower. That's why we allow to fully enable / disable it. When not debugging it's best to disable it by running `valet xdebug off`.
+### Xdebug launcher for Opera
+https://addons.opera.com/addons/extensions/details/xdebug-launcher/?display=en
+
+This extension for Opera allows you to start an Xdebug session from Opera.
+
 
 ### PhpStorm
 
