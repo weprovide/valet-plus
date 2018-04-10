@@ -23,7 +23,6 @@ In other words, a blazing fast development environment. Valet+ provides a great 
 Here are a few key differences compared to the original Valet:
 
 - PHP version switch
-- Xdebug (on/off mode)
 - PHP extensions (mcrypt, intl, opcache, apcu)
 - Optimized PHP configuration using opcache
 - MySQL (with optimized configuration)
@@ -112,24 +111,24 @@ valet use 7.2
 Xdebug support is built-in. It works on port `9000` and is installed and enabled by default.
 The autostart feature is disabled that it not harms performance that much when there is no need for debugging.
 
-Please install a x-debug extension for your favorite browser listed below to enable debugging sessions on demand.
+Please install a Xdebug extension for your favorite browser listed below to enable debugging sessions on demand.
 
-### Xdebug Helper for Firefox
+#### Xdebug Helper for Firefox
 https://addons.mozilla.org/en-GB/firefox/addon/xdebug-helper-for-firefox/
 
 This extension for Firefox was built to make debugging with an IDE easier. You can find the extension at https://addons.mozilla.org/en-GB/firefox/addon/xdebug-helper-for-firefox/. The source code for this extension is on GitHub.
 
-### Xdebug Helper for Chrome
+#### Xdebug Helper for Chrome
 https://chrome.google.com/extensions/detail/eadndfjplgieldjbigjakmdgkmoaaaoc
 
 This extension for Chrome will help you to enable/disable debugging and profiling with a single click. You can find the extension at https://chrome.google.com/extensions/detail/eadndfjplgieldjbigjakmdgkmoaaaoc.
 
-### Xdebug Toggler for Safari
+#### Xdebug Toggler for Safari
 http://benmatselby.posterous.com/xdebug-toggler-for-safari
 
 This extension for Safari allows you to auto start Xdebug debugging from within Safari. You can get it from Github at https://github.com/benmatselby/xdebug-toggler.
 
-### Xdebug launcher for Opera
+#### Xdebug launcher for Opera
 https://addons.opera.com/addons/extensions/details/xdebug-launcher/?display=en
 
 This extension for Opera allows you to start an Xdebug session from Opera.
@@ -137,11 +136,11 @@ This extension for Opera allows you to start an Xdebug session from Opera.
 
 ### PhpStorm
 
-To use Xdebug with PhpStorm you don't have to configure anything. Just run `valet xdebug on` and click the Xdebug button on the top right:
+To use Xdebug with PhpStorm you don't have to configure anything. Just click the Xdebug button on the top right:
 
 ![xdebug-phpstorm](images/xdebug-phpstorm.png)
 
-Then install [Xdebug helper](https://chrome.google.com/webstore/detail/xdebug-helper/eadndfjplgieldjbigjakmdgkmoaaaoc) for Chrome and enable it when viewing the page you want to use Xdebug on.
+Then install Xdebug extension for your favorite browser mentioned above.
 
 ## Ioncube
 
