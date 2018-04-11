@@ -495,9 +495,8 @@ class Pecl
     private function replaceIniDefinition($extension, $phpIniFile, $result)
     {
         if (!preg_match("/Installing '(.*$extension.so)'/", $result, $matches)) {
-            $error = substr($result, count($result) - 200, count($result));
             throw new DomainException('Could not find installation path for: ' . $extension .
-                "\nCommand: pecl install $extension, failed! Error:\n\n\n $error");
+                "\n\n$result");
         }
 
         if (!preg_match('/(zend_extension|extension)\="(.*' . $extension . '.so)"/', $phpIniFile, $iniMatches)) {
