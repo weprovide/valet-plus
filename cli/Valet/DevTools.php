@@ -7,6 +7,17 @@ use ValetDriver;
 
 class DevTools
 {
+    const WP_CLI_TOOL = 'wp-cli';
+    const PV_TOOL = 'pv';
+    const GEOIP_TOOL = 'geoip';
+
+
+    const SUPPORTED_TOOLS = [
+        self::WP_CLI_TOOL,
+        self::PV_TOOL,
+        self::GEOIP_TOOL
+    ];
+
     var $brew;
     var $cli;
     var $files;
@@ -42,14 +53,31 @@ class DevTools
      */
     function install()
     {
-        $tools = ['wp-cli', 'pv'];
-        info('[devtools] Installing');
+        info('[devtools] Installing tools');
 
-        foreach ($tools as $tool) {
+        foreach (self::SUPPORTED_TOOLS as $tool) {
             if ($this->brew->installed($tool)) {
                 info('[devtools] ' . $tool . ' already installed');
             } else {
                 $this->brew->ensureInstalled($tool, []);
+            }
+        }
+    }
+
+    /**
+     * Uninstall development tools using brew.
+     *
+     * @return void
+     */
+    function uninstall()
+    {
+        info('[devtools] Uninstalling tools');
+
+        foreach (self::SUPPORTED_TOOLS as $tool) {
+            if (!$this->brew->installed($tool)) {
+                info('[devtools] ' . $tool . ' already uninstalled');
+            } else {
+                $this->brew->ensureUninstalled($tool, ['--force']);
             }
         }
     }

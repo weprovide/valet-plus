@@ -425,6 +425,7 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('uninstall', function () {
         Binaries::uninstallBinaries();
         Pecl::uninstallExtensions();
+        DevTools::uninstall();
         Nginx::uninstall();
         Mysql::uninstall();
         RedisTool::uninstall();
