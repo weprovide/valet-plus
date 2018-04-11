@@ -96,6 +96,21 @@ class Brew
     }
 
     /**
+     * Ensure that the given formula is uninstalled.
+     *
+     * @param  string $formula
+     * @param  array $options
+     * @param  array $taps
+     * @return void
+     */
+    function ensureUninstalled($formula, $options = [], $taps = [])
+    {
+        if ($this->installed($formula)) {
+            $this->uninstallOrFail($formula, $options, $taps);
+        }
+    }
+
+    /**
      * Install the given formula and throw an exception on failure.
      *
      * @param  string $formula
@@ -117,6 +132,32 @@ class Brew
                 output($errorOutput);
 
                 throw new DomainException('Brew was unable to install [' . $formula . '].');
+            }
+        );
+    }
+
+    /**
+     * Uninstall the given formula and throw an exception on failure.
+     *
+     * @param  string $formula
+     * @param  array $options
+     * @param  array $taps
+     * @return void
+     */
+    function uninstallOrFail($formula, $options = [], $taps = [])
+    {
+        info('[' . $formula . '] Uninstalling');
+
+        if (count($taps) > 0) {
+            $this->tap($taps);
+        }
+
+        $this->cli->runAsUser(
+            trim('brew uninstall ' . $formula . ' ' . implode(' ', $options)),
+            function ($exitCode, $errorOutput) use ($formula) {
+                output($errorOutput);
+
+                throw new DomainException('Brew was unable to uninstall [' . $formula . '].');
             }
         );
     }
