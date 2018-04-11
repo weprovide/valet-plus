@@ -62,6 +62,13 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
 })->descriptions('Install the Valet services');
 
 /**
+ * Fix common problems within the Valet+ installation.
+ */
+$app->command('fix', function () {
+    PhpFpm::fix();
+})->descriptions('Fixes common installation problems that prevent Valet+ from working');
+
+/**
  * Most commands are available only if valet is installed.
  */
 if (is_dir(VALET_HOME_PATH)) {
@@ -695,10 +702,6 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('ssh-key', function () {
         DevTools::sshkey();
     })->descriptions('Copy ssh key');
-
-    $app->command('fix', function () {
-        PhpFpm::fix();
-    })->descriptions('Fixes common installation problems that prevent Valet+ from working');
 }
 
 /**
