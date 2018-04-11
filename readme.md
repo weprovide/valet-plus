@@ -1,3 +1,5 @@
+[![Gitter](https://img.shields.io/gitter/room/valet-plus/Lounge.svg?style=flat-square)](https://gitter.im/valet-plus/Lobby)
+
 <p align="center"><img width="200" src="images/logo.png"></p>
 
 ## Introduction
