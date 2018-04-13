@@ -512,19 +512,10 @@ class Pecl
             throw new DomainException('Could not find installation path for: ' . $extension .
                 "\n\n$result");
         }
-        $extensionRegex = '/^(zend_extension|extension)\="(.*' . $extension . '.so)"$/ms';
-        $phpIniFile = preg_replace($extensionRegex, '', $phpIniFile);
-        return $this->createIniDefinition($extension, $phpIniFile);
-    }
+        $phpIniFile = preg_replace(
+            '/^(zend_extension|extension)\="(.*' . $extension . '.so)"$/ms', '', $phpIniFile
+        );
 
-    /**
-     * @param $extension
-     * @param $phpIniFile
-     *
-     * @return string
-     */
-    private function createIniDefinition($extension, $phpIniFile)
-    {
         $extensionDir = preg_replace(
             "/(^\/.*)(\/php@\d+\.\d+)\/(.*)/", "$1$2",
             $this->getExtensionDirectory()
