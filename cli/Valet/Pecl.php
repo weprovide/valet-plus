@@ -96,14 +96,14 @@ class Pecl
             '5.6' => '2.2.7',
             'default' => false
         ],
+        self::APCU_BC_EXTENSION => [
+            '5.6' => false
+        ],
         self::APCU_EXTENSION => [
             '7.2' => false,
             '7.1' => false,
             '7.0' => false,
             '5.6' => '4.0.11'
-        ],
-        self::APCU_BC_EXTENSION => [
-            '5.6' => false
         ],
         self::GEOIP_EXTENSION => [
             '7.2' => '1.1.1',
@@ -405,7 +405,6 @@ class Pecl
         if ($this->installed($extension)) {
             return false;
         }
-
         if ($isCustom) {
             $this->customInstall($extension, $version);
         } elseif ($isCustom === false && $version !== false) {
