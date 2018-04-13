@@ -529,10 +529,9 @@ class Pecl
             "/(^\/.*)(\/php@\d+\.\d+)\/(.*)/", "$1$2",
             $this->getExtensionDirectory()
         );
-        $extensionDir .= '/'.max(scandir($extensionDir)).'/pecl/xxxxx';
-        $extensionPath = trim(str_replace("\n", "", $extensionDir));
-        preg_match("/^.*pecl\//", $extensionPath, $matches);
-        $extensionDirParent = reset($matches);
+        $extensionDir .= '/'.max(scandir($extensionDir)).'/pecl/';
+        $extensionDirParent = trim(str_replace("\n", "", $extensionDir));
+
         $directories = scandir($extensionDirParent);
         foreach ($directories as $possibleMatch) {
             if ($possibleMatch == "." || $possibleMatch == "..") continue;
@@ -540,7 +539,8 @@ class Pecl
             if (file_exists($extensionPath)) {
                 $this->setPeclConfig('ext_dir', $extensionDirParent . $possibleMatch);
                 info('[PECL] Creating ini definition for extension ' . $extensionPath);
-                return "extension=\"".$extensionPath."\"\n".$phpIniFile;
+                return (in_array($extension, ['xdebug', 'ioncube']) ? 'zend_' : '').
+                    "extension=\"".$extensionPath."\"\n".$phpIniFile;
             } else {
                 output('[PECL] ' . $extensionPath . ' doesn\'t exist.');
             }
