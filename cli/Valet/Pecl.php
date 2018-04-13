@@ -220,9 +220,10 @@ class Pecl
     /**
      * Install a single extension.
      *
-     * @param $extension
-     *    The extension key name.
+     * @param string $extension The extension key name.
      * @param null $version
+     *
+     * @return string
      */
     private function install($extension, $version = null)
     {
@@ -449,9 +450,9 @@ class Pecl
         $alias = $this->getExtensionAlias($extension);
         $phpIniFile = $this->files->get($phpIniPath);
         if ($this->isCustomExtension($extension)) {
-            $phpIniFile = preg_replace('/;?(zend_extension|extension)\=".*' . $alias . '"/', '', $phpIniFile);
+            $phpIniFile = preg_replace('/;?(zend_extension|extension)\=".*' . $alias . '"\n?/', '', $phpIniFile);
         } else {
-            $phpIniFile = preg_replace('/;?(zend_extension|extension)\=".*' . $alias . '.so"/', '', $phpIniFile);
+            $phpIniFile = preg_replace('/;?(zend_extension|extension)\=".*' . $alias . '.so"\n?/', '', $phpIniFile);
         }
         $this->saveIniFile($phpIniPath, $phpIniFile);
     }
