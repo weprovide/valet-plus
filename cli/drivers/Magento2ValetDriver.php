@@ -26,14 +26,14 @@ class Magento2ValetDriver extends ValetDriver
         }
 
         info('Setting base url...');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:set web/unsecure/base_url ' . $url . '/');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:set web/secure/base_url ' . $url . '/');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/unsecure/base_url ' . $url . '/');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/secure/base_url ' . $url . '/');
 
         info('Setting elastic search hostname...');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
         
         info('Enabling URL rewrites...');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:set web/seo/use_rewrites 1');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/seo/use_rewrites 1');
         
         info('Flushing cache...');
         $devtools->cli->quietlyAsUser('n98-magerun2 cache:flush');
@@ -79,6 +79,10 @@ class Magento2ValetDriver extends ValetDriver
     {
         $isMagentoStatic = false;
         $resource = $uri;
+        
+        if(strpos($uri,'/errors') === 0 && file_exists($sitePath.'/pub'.$uri)) {
+            return $sitePath.'/pub'.$uri;
+        }
 
         if(strpos($uri,'/pub') === 0 && file_exists($sitePath.'/setup'.$uri)) {
             return $sitePath.'/setup'.$uri;
@@ -131,6 +135,14 @@ class Magento2ValetDriver extends ValetDriver
     {
         if(isset($_GET['profile'])) {
             $_SERVER['MAGE_PROFILER'] = 'html';
+        }
+        
+        if(strpos($uri, '/errors') === 0) {
+            $file = $sitePath . '/pub' . $uri;
+            if (file_exists($file)) {
+                return $file;
+            }
+            return $sitePath . '/pub/errors/404.php';
         }
 
         if($uri === '/setup') {

@@ -36,12 +36,12 @@ class Brew
     /**
      * Determine if the given formula is installed.
      *
-     * @param  string  $formula
+     * @param  string $formula
      * @return bool
      */
     function installed($formula)
     {
-        return in_array($formula, explode(PHP_EOL, $this->cli->runAsUser('brew list | grep '.$formula)));
+        return in_array($formula, explode(PHP_EOL, $this->cli->runAsUser('brew list | grep ' . $formula)));
     }
 
     /**
@@ -84,45 +84,89 @@ class Brew
     /**
      * Ensure that the given formula is installed.
      *
-     * @param  string  $formula
-     * @param  array  $options
-     * @param  array  $taps
+     * @param  string $formula
+     * @param  array $options
+     * @param  array $taps
      * @return void
      */
     function ensureInstalled($formula, $options = [], $taps = [])
     {
-        if (! $this->installed($formula)) {
+        if (!$this->installed($formula)) {
             $this->installOrFail($formula, $options, $taps);
+        }
+    }
+
+    /**
+     * Ensure that the given formula is uninstalled.
+     *
+     * @param  string $formula
+     * @param  array $options
+     * @param  array $taps
+     * @return void
+     */
+    function ensureUninstalled($formula, $options = [], $taps = [])
+    {
+        if ($this->installed($formula)) {
+            $this->uninstallOrFail($formula, $options, $taps);
         }
     }
 
     /**
      * Install the given formula and throw an exception on failure.
      *
-     * @param  string  $formula
-     * @param  array  $options
-     * @param  array  $taps
+     * @param  string $formula
+     * @param  array $options
+     * @param  array $taps
      * @return void
      */
     function installOrFail($formula, $options = [], $taps = [])
     {
-        info('['.$formula.'] Installing');
+        info('[' . $formula . '] Installing');
 
         if (count($taps) > 0) {
             $this->tap($taps);
         }
 
-        $this->cli->runAsUser(trim('brew install '.$formula.' '.implode(' ', $options)), function ($exitCode, $errorOutput) use ($formula) {
-            output($errorOutput);
+        $this->cli->runAsUser(
+            trim('brew install ' . $formula . ' ' . implode(' ', $options)),
+            function ($exitCode, $errorOutput) use ($formula) {
+                output($errorOutput);
 
-            throw new DomainException('Brew was unable to install ['.$formula.'].');
-        });
+                throw new DomainException('Brew was unable to install [' . $formula . '].');
+            }
+        );
+    }
+
+    /**
+     * Uninstall the given formula and throw an exception on failure.
+     *
+     * @param  string $formula
+     * @param  array $options
+     * @param  array $taps
+     * @return void
+     */
+    function uninstallOrFail($formula, $options = [], $taps = [])
+    {
+        info('[' . $formula . '] Uninstalling');
+
+        if (count($taps) > 0) {
+            $this->tap($taps);
+        }
+
+        $this->cli->runAsUser(
+            trim('brew uninstall ' . $formula . ' ' . implode(' ', $options)),
+            function ($exitCode, $errorOutput) use ($formula) {
+                output($errorOutput);
+
+                throw new DomainException('Brew was unable to uninstall [' . $formula . '].');
+            }
+        );
     }
 
     /**
      * Tap the given formulas.
      *
-     * @param  dynamic[string]  $formula
+     * @param  dynamic [string]  $formula
      * @return void
      */
     function tap($formulas)
@@ -130,8 +174,34 @@ class Brew
         $formulas = is_array($formulas) ? $formulas : func_get_args();
 
         foreach ($formulas as $formula) {
-            $this->cli->passthru('sudo -u '.user().' brew tap '.$formula);
+            $this->cli->passthru('sudo -u ' . user() . ' brew tap ' . $formula);
         }
+    }
+
+    /**
+     * Untap the given formulas.
+     *
+     * @param  dynamic [string]  $formula
+     * @return void
+     */
+    function unTap($formulas)
+    {
+        $formulas = is_array($formulas) ? $formulas : func_get_args();
+
+        foreach ($formulas as $formula) {
+            $this->cli->passthru('sudo -u ' . user() . ' brew untap ' . $formula);
+        }
+    }
+
+    /**
+     * Check if brew has the given tap.
+     *
+     * @param $formula
+     * @return bool
+     */
+    function hasTap($formula)
+    {
+        return strpos($this->cli->runAsUser("brew tap | grep $formula"), $formula) !== false;
     }
 
     /**
@@ -146,10 +216,10 @@ class Brew
         foreach ($services as $service) {
             // Brew list doesn't show php@7.2 eventhough it is installed.
             if ($this->installed($service) || $service === self::PHP_V72_FORMULAE) {
-                info('['.$service.'] Restarting');
+                info('[' . $service . '] Restarting');
 
-                $this->cli->quietly('sudo brew services stop '.$service);
-                $this->cli->quietly('sudo brew services start '.$service);
+                $this->cli->quietly('sudo brew services stop ' . $service);
+                $this->cli->quietly('sudo brew services start ' . $service);
             }
         }
     }
@@ -166,9 +236,9 @@ class Brew
         foreach ($services as $service) {
             // Brew list doesn't show php@7.2 eventhough it is installed.
             if ($this->installed($service) || $service === self::PHP_V72_FORMULAE) {
-                info('['.$service.'] Stopping');
+                info('[' . $service . '] Stopping');
 
-                $this->cli->quietly('sudo brew services stop '.$service);
+                $this->cli->quietly('sudo brew services stop ' . $service);
             }
         }
     }
@@ -180,7 +250,7 @@ class Brew
      *
      * @return string
      */
-    function linkedPhp($asFormula = FALSE)
+    function linkedPhp($asFormula = false)
     {
         if (!$this->files->isLink('/usr/local/bin/php')) {
             throw new DomainException("Unable to determine linked PHP.");
@@ -192,7 +262,7 @@ class Brew
 
         foreach ($versions as $version) {
             $version = str_replace('php@', '', $version);
-            if (strpos($resolvedPath, $version) !== FALSE) {
+            if (strpos($resolvedPath, $version) !== false) {
                 if ($asFormula) {
                     $version = 'php@' . $version;
                 }
