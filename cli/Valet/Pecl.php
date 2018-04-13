@@ -521,7 +521,7 @@ class Pecl
      * @param $extension
      * @param $phpIniFile
      *
-     * @return bool|null|string|string[]
+     * @return string
      */
     private function createIniDefinition($extension, $phpIniFile)
     {
@@ -545,8 +545,7 @@ class Pecl
                 output('[PECL] ' . $extensionPath . ' doesn\'t exist.');
             }
         }
-
-        return false;
+        return $phpIniFile;
     }
 
     /**
