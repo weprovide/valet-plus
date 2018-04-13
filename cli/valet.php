@@ -21,7 +21,7 @@ use SebastianBergmann\Version;
 Container::setInstance(new Container);
 
 // get current version based on git describe and tags
-$version = new Version('1.2.0' , __DIR__ . '/../');
+$version = new Version('1.3.0' , __DIR__ . '/../');
 
 $app = new Application('Valet+', $version->getVersion());
 
@@ -39,7 +39,9 @@ if (is_dir(VALET_HOME_PATH)) {
  */
 $app->command('install [--with-mariadb]', function ($withMariadb) {
     PhpFpm::checkInstallation();
-
+    
+    Pecl::uninstallExtensions();
+    
     Nginx::stop();
     PhpFpm::stop();
     Mysql::stop();
