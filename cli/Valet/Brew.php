@@ -254,8 +254,8 @@ class Brew
         if (!$this->files->isLink('/usr/local/bin/php')) {
             throw new DomainException("Unable to determine linked PHP.");
         }
-
-        $resolvedPath = $this->files->readLink('/usr/local/bin/php');
+	
+	$resolvedPath = str_replace(["@", "."], "", $this->files->readLink('/usr/local/bin/php'));
 
         $versions = self::SUPPORTED_PHP_FORMULAE;
 
