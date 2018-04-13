@@ -40,7 +40,8 @@ class PhpFpm
 
         $this->files->ensureDirExists('/usr/local/var/log', user());
         $this->updateConfiguration();
-        $this->pecl->installExtensions($version, $this->getPhpIniPath());
+        $this->pecl->updatePeclChannel();
+        $this->pecl->installExtensions($version);
         $this->restart();
     }
 
@@ -74,10 +75,6 @@ class PhpFpm
         $iniPath = $this->iniPath();
         $this->files->ensureDirExists($iniPath, user());
         $this->files->putAsUser($this->iniPath().'z-performance.ini', $contents);
-    }
-
-    function getPhpIniPath(){
-        return str_replace('/conf.d/', '/php.ini', $this->iniPath());
     }
 
     function iniPath() {
@@ -143,21 +140,27 @@ class PhpFpm
             return false;
         }
 
-        $this->pecl->uninstallExtensions($currentVersion, $this->getPhpIniPath());
+        $this->pecl->uninstallExtensions();
 
-        $this->cli->runAsUser('brew unlink php@' . $currentVersion);
-        $this->cli->runAsUser('sudo ln -s /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib');
+        $this->cli->passthru('brew unlink php@' . $currentVersion);
+        $this->cli->passthru('sudo ln -s /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib');
 
         if (!$this->brew->installed('php@' . $version)) {
             $this->brew->ensureInstalled('php@' . $version);
         }
 
-        $this->cli->runAsUser('brew unlink php@' . $version . ' && brew link php@' . $version.' --force --overwrite');
+        $this->cli->passthru('brew link php@' . $version.' --force --overwrite');
         $this->stop();
         $this->install();
         return true;
     }
 
+    /**
+     * @deprecated Deprecated in favor of Pecl#installExtesnion();
+     *
+     * @param $extension
+     * @return bool
+     */
     function enableExtension($extension) {
         $currentPhpVersion = $this->brew->linkedPhp();
 
@@ -180,6 +183,12 @@ class PhpFpm
         return true;
     }
 
+    /**
+     * @deprecated Deprecated in favor of Pecl#uninstallExtesnion();
+     *
+     * @param $extension
+     * @return bool
+     */
     function disableExtension($extension) {
         $iniPath = $this->iniPath();
         if($this->files->exists($iniPath.'ext-'.$extension.'.ini.disabled')) {
@@ -195,6 +204,12 @@ class PhpFpm
         return true;
     }
 
+    /**
+     * @deprecated Deprecated in favor of Pecl#installed();
+     *
+     * @param $extension
+     * @return bool
+     */
     function isExtensionEnabled($extension) {
 
       $currentPhpVersion = $this->brew->linkedPhp();
@@ -236,25 +251,96 @@ class PhpFpm
         return false;
     }
 
+    function checkInstallation(){
+        // Check for errors within the installation of php.
+        info('[php] Checking for errors within the php installation...');
+        if($this->brew->installed('php56') &&
+            $this->brew->installed('php70')  &&
+            $this->brew->installed('php71')  &&
+            $this->brew->installed('php72')  &&
+            $this->brew->installed('n98-magerun')  &&
+            $this->brew->installed('n98-magerun2')  &&
+            $this->brew->installed('drush')  &&
+            $this->files->exists('/usr/local/etc/php/5.6/ext-intl.ini')  &&
+            $this->files->exists('/usr/local/etc/php/5.6/ext-mcrypt.ini')  &&
+            $this->files->exists('/usr/local/etc/php/5.6/ext-apcu.ini')  &&
+            $this->files->exists('/usr/local/etc/php/7.0/ext-intl.ini')  &&
+            $this->files->exists('/usr/local/etc/php/7.0/ext-mcrypt.ini')  &&
+            $this->files->exists('/usr/local/etc/php/7.0/ext-apcu.ini')  &&
+            $this->files->exists('/usr/local/etc/php/7.1/ext-intl.ini')  &&
+            $this->files->exists('/usr/local/etc/php/7.1/ext-mcrypt.ini')  &&
+            $this->files->exists('/usr/local/etc/php/7.1/ext-apcu.ini')  &&
+            $this->files->exists('/usr/local/etc/php/7.2/ext-intl.ini')  &&
+            $this->files->exists('/usr/local/etc/php/7.2/ext-mcrypt.ini')  &&
+            $this->files->exists('/usr/local/etc/php/7.2/ext-apcu.ini')  &&
+            $this->brew->hasTap(self::DEPRECATED_PHP_TAP)
+        ){
+            // No errors found return, do not run fix logic.
+            throw new DomainException("[php] Valet+ found errors within the installation.\n
+            run: valet fix for valet to try and resolve these errors");
+            return;
+        }
+    }
+
     /**
      * Fixes common problems with php installations from Homebrew.
      */
     function fix(){
-        $deprecatedVersions = ['56', '70', '71', '72'];
-        $deprecatedExtensions = ['apcu', 'intl', 'mcrypt'];
+        // Remove old homebrew/php tap packages.
+        info('Removing all old php56- packages from homebrew/php tap');
+        $this->cli->passthru('brew list | grep php56- | xargs brew uninstall');
+        info('Removing all old php70- packages from homebrew/php tap');
+        $this->cli->passthru('brew list | grep php70- | xargs brew uninstall');
+        info('Removing all old php71- packages from homebrew/php tap');
+        $this->cli->passthru('brew list | grep php71- | xargs brew uninstall');
+        info('Removing all old php72- packages from homebrew/php tap');
+        $this->cli->passthru('brew list | grep php72- | xargs brew uninstall');
 
-        foreach($deprecatedVersions as $phpversion) {
-            info('[php '.$phpversion.'] Disabling modules: ');
+        info('Removing all old n98-magerun packages from homebrew/php tap');
+        $this->cli->passthru('brew list | grep n98-magerun | xargs brew uninstall');
+
+        info('Removing drush package from homebrew/php tap');
+        $this->cli->passthru('brew list | grep drush | xargs brew uninstall');
+
+        // Disable extensions that are not managed by the PECL manager or within php core.
+        $deprecatedVersions = ['5.6', '7.0', '7.1', '7.2'];
+        $deprecatedExtensions = ['apcu', 'intl', 'mcrypt'];
+        foreach($deprecatedVersions as $phpVersion) {
+            info('[php'.$phpVersion.'] Disabling modules: '.implode(', ', $deprecatedExtensions));
             foreach($deprecatedExtensions as $extension) {
-                $this->disableExtension($extension);
+                if($this->files->exists("/usr/local/etc/php/$phpVersion/ext-$extension.ini")){
+                    $this->files->move(
+                        "/usr/local/etc/php/$phpVersion/ext-$extension.ini",
+                        "/usr/local/etc/php/$phpVersion/ext-$extension.ini.disabled"
+                    );
+                }
             }
-            $this->cli->passthru('brew cleanup php' . $phpversion);
         }
 
-        if($this->brew->hasTap(self::DEPRECATED_PHP_TAP)){
-            info('[brew] untapping formulae');
+        info('Trying to remove php56...');
+        $this->cli->passthru('brew uninstall php56');
+        info('Trying to remove php70...');
+        $this->cli->passthru('brew uninstall php70');
+        info('Trying to remove php71...');
+        $this->cli->passthru('brew uninstall php71');
+        info('Trying to remove php72...');
+        $this->cli->passthru('brew uninstall php72');
+
+        // If the current php is not 7.1, link 7.1.
+        info('Installing and linking new PHP homebrew/core version.');
+        $this->cli->passthru('brew uninstall ' . Brew::PHP_V71_FORMULAE);
+        $this->cli->passthru('brew install ' . Brew::PHP_V71_FORMULAE);
+        $this->cli->passthru('brew unlink '. Brew::PHP_V71_FORMULAE);
+        $this->cli->passthru('brew link '.Brew::PHP_V71_FORMULAE.' --force --overwrite');
+
+        if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {
+            info('[brew] untapping formulae ' . self::DEPRECATED_PHP_TAP);
             $this->brew->unTap(self::DEPRECATED_PHP_TAP);
         }
+
+        warning("Please check your linked php version, you might need to restart your terminal!".
+            "\nLinked PHP should be php 7.1:");
+        $this->cli->passthru('php -v');
     }
 
     /**

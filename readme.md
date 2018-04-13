@@ -23,7 +23,8 @@ In other words, a blazing fast development environment. Valet+ provides a great 
 Here are a few key differences compared to the original Valet:
 
 - PHP version switch
-- PHP extensions (mcrypt, intl, opcache, apcu)
+- Xdebug (on/off mode)
+- PHP extensions (mcrypt, intl, opcache)
 - Optimized PHP configuration using opcache
 - MySQL (with optimized configuration)
 - Redis
@@ -58,16 +59,17 @@ Here are a few key differences compared to the original Valet:
 > :warning: Valet+ requires macOS and [Homebrew](https://brew.sh/). Before installation, you should make sure that no other programs such as Apache or Nginx are binding to your local machine's port 80.
 
 1. Install or update [Homebrew](https://brew.sh/) to the latest version using brew update.
-2. Install PHP 7.0 using Homebrew via `brew install php@7.0 && brew link php@7.0 --overwrite --force`.
-3. Install Composer using Homebrew via `HOMEBREW_NO_ENV_FILTERING=1 brew install composer`.
-4. Install Valet+ with Composer via `composer global require techdivision/valet-plus`.
+2. Install PHP 7.1 using Homebrew via `brew install php@7.1`.
+3. Install Composer using Homebrew via `brew install composer`.
+4. Install Valet+ with Composer via `composer global require weprovide/valet-plus`.
 5. Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on your shell (`echo $SHELL`)
-6. Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
-7. Once Valet+ is installed, try pinging any `*.test` domain on your terminal using a command such as `ping foobar.test`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
+6. Run the `valet fix` command. This will check for common issues preventing Valet+ from installing.
+7. Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
+8. Once Valet+ is installed, try pinging any `*.test` domain on your terminal using a command such as `ping foobar.test`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
 
 > :information_source: Valet+ will automatically start its daemon each time your machine boots. There is no need to run `valet start` or `valet install` ever again once the initial Valet+ installation is complete.
 
-> :information_source: To update Valet+ to the latest version use the `composer global require techdivision/valet-plus` command in your terminal. After upgrading, it is good practice to run the `valet install` command so Valet+ can make additional upgrades to your configuration files if necessary.
+> :information_source: To update Valet+ to the latest version use the `composer global require weprovide/valet-plus` command in your terminal. After upgrading, it is good practice to run the `valet install` command so Valet+ can make additional upgrades to your configuration files if necessary.
 
 ### Serving sites
 
@@ -108,39 +110,37 @@ valet use 7.2
 
 ## Xdebug
 
-Xdebug support is built-in. It works on port `9000` and is installed and enabled by default.
-The autostart feature is disabled that it not harms performance that much when there is no need for debugging.
+Xdebug support is built-in. It works on port `9000` after you enable it.
 
-Please install a Xdebug extension for your favorite browser listed below to enable debugging sessions on demand.
+The `[--remote_autostart=]` option can be used by typing: `valet xdebug --remote_autostart=0` or changing both settings: `valet xdebug on --remote_autostart=1`
 
-#### Xdebug Helper for Firefox
-https://addons.mozilla.org/en-GB/firefox/addon/xdebug-helper-for-firefox/
+Enable Xdebug:
 
-This extension for Firefox was built to make debugging with an IDE easier. You can find the extension at https://addons.mozilla.org/en-GB/firefox/addon/xdebug-helper-for-firefox/. The source code for this extension is on GitHub.
+```
+valet xdebug on [--remote_autostart=]
+```
 
-#### Xdebug Helper for Chrome
-https://chrome.google.com/extensions/detail/eadndfjplgieldjbigjakmdgkmoaaaoc
+Disable Xdebug:
 
-This extension for Chrome will help you to enable/disable debugging and profiling with a single click. You can find the extension at https://chrome.google.com/extensions/detail/eadndfjplgieldjbigjakmdgkmoaaaoc.
+```
+valet xdebug off [--remote_autostart=]
+```
 
-#### Xdebug Toggler for Safari
-http://benmatselby.posterous.com/xdebug-toggler-for-safari
+Enable/disable xdebug.remote_autostart:
 
-This extension for Safari allows you to auto start Xdebug debugging from within Safari. You can get it from Github at https://github.com/benmatselby/xdebug-toggler.
+```
+valet xdebug --remote_autostart=[true/false]
+```
 
-#### Xdebug launcher for Opera
-https://addons.opera.com/addons/extensions/details/xdebug-launcher/?display=en
-
-This extension for Opera allows you to start an Xdebug session from Opera.
-
+> :warning: Xdebug makes your environment slower. That's why we allow to fully enable / disable it. When not debugging it's best to disable it by running `valet xdebug off`.
 
 ### PhpStorm
 
-To use Xdebug with PhpStorm you don't have to configure anything. Just click the Xdebug button on the top right:
+To use Xdebug with PhpStorm you don't have to configure anything. Just run `valet xdebug on` and click the Xdebug button on the top right:
 
 ![xdebug-phpstorm](images/xdebug-phpstorm.png)
 
-Then install Xdebug extension for your favorite browser mentioned above.
+Then install [Xdebug helper](https://chrome.google.com/webstore/detail/xdebug-helper/eadndfjplgieldjbigjakmdgkmoaaaoc) for Chrome and enable it when viewing the page you want to use Xdebug on.
 
 ## Ioncube
 
@@ -391,7 +391,8 @@ Other logs are located at `/usr/local/var/log`
 ## Valet drivers
 Valet uses drivers to handle requests. You can read more about those [here](https://laravel.com/docs/5.4/valet#custom-valet-drivers).
 
-When using Valet+ drivers are automatically cached using APCu to avoid doing a driver lookup every time there is a request. You can reset the cache for a specific site by running `valet which`.
+~~When using Valet+ drivers are automatically cached using APCu to avoid doing a driver lookup every time there is a request. You can reset the cache for a specific site by running `valet which`.~~
+APCu is temporarily turned off due to a compatibility issue with PHP-FPM, see https://github.com/weprovide/valet-plus/issues/49.
 
 By default these are included:
 
@@ -408,6 +409,10 @@ By default these are included:
 - Slim
 - Statamic
 - Zend Framework
+- Drupal
+- Typo3
+- Neos
+- Craft
 
 A full list can be found [here](cli/drivers).
 
@@ -530,8 +535,11 @@ Documentation for Valet can be found on the [Laravel website](https://laravel.co
 
 ## Credits
 
-This project is a fork of [weprovide/valet-plus](https://github.com/weprovide/valet-plus) & [laravel/valet](https://github.com/laravel/valet). Thanks to all of the contributors, especially the original authors:
+This project is a fork of [laravel/valet](https://github.com/laravel/valet). Thanks to all of the contributors, especially the original authors:
 
 - Taylor Otwell ([@taylorotwell](https://github.com/taylorotwell))
 - Adam Wathan ([@adamwathan](https://github.com/adamwathan))
+
+## Valet+ Authors
+
 - Tim Neutkens ([@timneutkens](https://github.com/timneutkens))
