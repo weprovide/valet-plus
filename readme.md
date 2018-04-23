@@ -415,6 +415,7 @@ By default these are included:
 - Typo3
 - Neos
 - Craft
+- Pimcore 5
 
 A full list can be found [here](cli/drivers).
 
