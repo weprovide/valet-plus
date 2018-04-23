@@ -139,7 +139,6 @@ class PhpFpm
         if ($version === $currentVersion) {
             return false;
         }
-
         $this->pecl->uninstallExtensions();
 
         $this->cli->passthru('brew unlink php@' . $currentVersion);
@@ -151,6 +150,11 @@ class PhpFpm
 
         $this->cli->passthru('brew link php@' . $version.' --force --overwrite');
         $this->stop();
+
+        info('Setting pecl config');
+        info($this->pecl->setPeclConfig('php_ini', str_replace($currentVersion, $version, $this->pecl->getPhpIniPath())));
+        info($this->pecl->setPeclConfig('ext_dir', str_replace($currentVersion, $version, $this->pecl->getExtensionDirectory())));
+
         $this->install();
         return true;
     }
