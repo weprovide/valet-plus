@@ -63,6 +63,6 @@ class Valet
     {
         $response = \Httpful\Request::get('https://api.github.com/repos/weprovide/valet-plus/releases/latest')->send();
 
-        return version_compare($currentVersion, $response->body->tag_name, '>=');
+        return version_compare($currentVersion->getVersion(), $response->body->tag_name, '>=');
     }
 }
