@@ -269,7 +269,7 @@ class Pecl
         info("[PECL] Adding $extensionAlias to php.ini...");
         $extensionType = $this->getExtensionType($extension);
         $phpIniPath = $this->getPhpIniPath();
-        $directive = $extensionType . '="' . $extensionDirectory . '/' . $extensionAlias . '"';
+        $directive = $extensionType . '="' . $extensionAlias . '"';
         $phpIniFile = $this->files->get($phpIniPath);
         $this->saveIniFile($phpIniPath, $directive . "\n" . $phpIniFile);
 
@@ -494,20 +494,22 @@ class Pecl
      */
     private function replaceIniDefinition($extension, $phpIniFile, $result)
     {
-        if (!preg_match("/Installing '(.*$extension.so)'/", $result, $matches)) {
-            throw new DomainException('Could not find installation path for: ' . $extension .
-                "\n\n$result");
+        if (!preg_match("/Installing '(.*$extension.so)'/", $result)) {
+            throw new DomainException("Could not find installation path for: $extension\n\n$result");
+        }
+
+        if (strpos($result, "Error:")) {
+            throw new DomainException("Installation path found, but installation failed:\n\n$result");
         }
 
         if (!preg_match('/(zend_extension|extension)\="(.*' . $extension . '.so)"/', $phpIniFile, $iniMatches)) {
             $phpIniPath = $this->getPhpIniPath();
-            throw new DomainException('Could not find ini definition for: ' . $extension .
-                " in $phpIniPath");
+            throw new DomainException("Could not find ini definition for: $extension in $phpIniPath");
         }
 
         $phpIniFile = preg_replace('/(zend_extension|extension)\="(.*' . $extension . '.so)"/', '', $phpIniFile);
 
-        return $iniMatches[1] . '="' . $matches[1] . '"' . $phpIniFile;
+        return $iniMatches[1] . '="' . $iniMatches[2] . '"'."\n". $phpIniFile;
     }
 
     /**
