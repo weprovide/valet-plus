@@ -29,3 +29,4 @@ require_once __DIR__.'/MagentoValetDriver.php';
 require_once __DIR__.'/Magento2ValetDriver.php';
 require_once __DIR__.'/Typo3ValetDriver.php';
 require_once __DIR__.'/NeosValetDriver.php';
+require_once __DIR__.'/Shopware5ValetDriver.php';

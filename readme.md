@@ -416,6 +416,7 @@ By default these are included:
 - Neos
 - Craft
 - Pimcore 5
+- Shopware 5
 
 A full list can be found [here](cli/drivers).
 
