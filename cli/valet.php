@@ -21,7 +21,7 @@ use SebastianBergmann\Version;
 Container::setInstance(new Container);
 
 // get current version based on git describe and tags
-$version = new Version('0.0.0' , __DIR__ . '/../');
+$version = new Version('1.0.14' , __DIR__ . '/../');
 
 $app = new Application('Valet+', $version->getVersion());
 
