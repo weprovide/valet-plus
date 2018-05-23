@@ -161,12 +161,18 @@ class PhpFpm
         info('[libjpeg] Relinking');
         $this->cli->passthru('sudo ln -fs /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib');
 
-        if (!$this->brew->installed('php@' . $version)) {
+        $installed = $this->brew->installed('php@' . $version);
+        if (!$installed) {
             $this->brew->ensureInstalled('php@' . $version);
         }
 
-        info("[php@$version] Linking");
-        output($this->cli->runAsUser('brew link php@' . $version.' --force --overwrite'));
+        // If php@7.2 was not installed, it installed and automagically linked itself.
+        // If we try to link it again it will throw an already linked warning.
+        // PHP 5.6, 7.0 and 7.1 do not show this behaviour probably because they're not the default formulae.
+        if(!(!$installed && $version === $this->sanitizeVersion(Brew::PHP_V72_FORMULAE))){
+            info("[php@$version] Linking");
+            output($this->cli->runAsUser('brew link php@' . $version.' --force --overwrite'));
+        }
 
         $this->stop();
         $this->install();
