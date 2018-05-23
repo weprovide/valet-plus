@@ -155,7 +155,13 @@ class Pecl
      */
     function getPhpIniPath()
     {
-        return str_replace("\n", '', $this->cli->runAsUser('pecl config-get php_ini'));
+        $phpIniPath = str_replace("\n", '', $this->cli->runAsUser('pecl config-get php_ini'));
+
+        if(empty($phpIniPath)){
+            throw new DomainException('Pear config is missing php_ini! Try to use valet fix to solve this problem.');
+        }
+
+        return $phpIniPath;
     }
 
     /**
@@ -180,6 +186,136 @@ class Pecl
     {
         info('[PECL] Updating PECL channel: pecl.php.net');
         $this->cli->runAsUser('pecl channel-update pecl.php.net');
+    }
+
+    /**
+     * Fix common problems related to the PECL/PEAR installation.
+     */
+    function fix(){
+        info('[PECL] Checking pear config...');
+        // Check if pear config is set correctly as per:
+        // https://github.com/kabel/homebrew-core/blob/2564749d8f73e43cbb8cfc449bca4f564ac0e9e1/Formula/php%405.6.rb
+        // Brew installation standard.
+        foreach (['5.6', '7.0', '7.1', '7.2'] as $phpVersion){
+            output("Checking php $phpVersion...");
+
+            $pearConfigPath = "/usr/local/etc/php/$phpVersion/pear.conf";
+
+            if(!$this->files->exists($pearConfigPath)){
+                warning("    Skipping $phpVersion, Pear config path could not be found at: $pearConfigPath");
+                continue;
+            }
+
+            $pearConfig = $this->files->get($pearConfigPath);
+            $pearConfigSplit = explode("\n", $pearConfig);
+
+            $pearConfigVersion = '';
+            $pearConfig = false;
+            foreach($pearConfigSplit as $splitValue){
+                if(strpos($splitValue, 'php_ini')){
+                    $pearConfig = unserialize($splitValue);
+                }else if(strpos($splitValue, 'Config')){
+                    $pearConfigVersion = $splitValue;
+                }else{
+                    continue;
+                }
+            }
+
+            if($pearConfig === false){
+                warning("Could not determine pear configuration for PhP version: $phpVersion, skipping...");
+                continue;
+            }
+
+            $phpIniPath = str_replace('pear.conf', 'php.ini', $pearConfigPath);
+            $phpDirPath = "/usr/local/share/pear@$phpVersion";
+            $pearDocDirPath = "/usr/local/share/pear@$phpVersion/doc";
+            $phpExtensionDirPath = '/usr/local/lib/php/pecl/'.basename($pearConfig['ext_dir']);
+            $phpBinPath = "/usr/local/opt/php@$phpVersion/bin";
+            $pearDataDirPath = "/usr/local/share/pear@$phpVersion/data";
+            $pearCfgDirPath = "/usr/local/share/pear@$phpVersion/cfg";
+            $pearWwwDirPath = "/usr/local/share/pear@$phpVersion/htdocs";
+            $pearManDirPath = '/usr/local/share/man';
+            $pearTestDirPath = "/usr/local/share/pear@$phpVersion/test";
+            $phpBinDirPath = "/usr/local/opt/php@$phpVersion/bin/php";
+
+            // PhP 7.2 doesn't work with a @ version annotation.
+            if($phpVersion === '7.2'){
+                $phpDirPath = str_replace("@$phpVersion", '', $phpDirPath);
+                $pearDocDirPath = str_replace("@$phpVersion", '', $pearDocDirPath);
+                $phpBinPath = str_replace("@$phpVersion", '', $phpBinPath);
+                $pearDataDirPath = str_replace("@$phpVersion", '', $pearDataDirPath);
+                $pearCfgDirPath = str_replace("@$phpVersion", '', $pearCfgDirPath);
+                $pearWwwDirPath = str_replace("@$phpVersion", '', $pearWwwDirPath);
+                $pearDataDirPath = str_replace("@$phpVersion", '', $pearDataDirPath);
+                $pearTestDirPath = str_replace("@$phpVersion", '', $pearTestDirPath);
+                $phpBinDirPath = str_replace("@$phpVersion", '', $phpBinDirPath);
+            }
+
+            // Check php_ini value of par config.
+            if(empty($pearConfig['php_ini']) || $pearConfig['php_ini'] !== $phpIniPath){
+                output("    Setting pear config php_ini directive to: $phpIniPath");
+                $pearConfig['php_ini'] = $phpIniPath;
+            }
+            // Check php_dir value of par config.
+            if(empty($pearConfig['php_dir']) || $pearConfig['php_dir'] !== $phpDirPath){
+                output("    Setting pear config php_dir directive to: $phpDirPath");
+                $pearConfig['php_dir'] = $phpDirPath;
+            }
+            // Check doc_dir value of par config.
+            if(empty($pearConfig['doc_dir']) || $pearConfig['doc_dir'] !== $pearDocDirPath){
+                output("    Setting pear config doc_dir directive to: $pearDocDirPath");
+                $pearConfig['doc_dir'] = $pearDocDirPath;
+            }
+            // Check ext_dir value of par config.
+            if(empty($pearConfig['ext_dir']) || $pearConfig['ext_dir'] !== $phpExtensionDirPath){
+                output("    Setting pear config ext_dir directive to: $phpExtensionDirPath");
+                $pearConfig['ext_dir'] = $phpExtensionDirPath;
+            }
+            // Check php_bin value of par config.
+            if(empty($pearConfig['bin_dir']) || $pearConfig['bin_dir'] !== $phpBinPath){
+                output("    Setting pear config bin_dir directive to: $phpBinPath");
+                $pearConfig['bin_dir'] = $phpBinPath;
+            }
+            // Check data_dir value of par config.
+            if(empty($pearConfig['data_dir']) || $pearConfig['data_dir'] !== $pearDataDirPath){
+                output("    Setting pear config data_dir directive to: $pearDataDirPath");
+                $pearConfig['data_dir'] = $pearDataDirPath;
+            }
+            // Check cfg_dir value of par config.
+            if(empty($pearConfig['cfg_dir']) || $pearConfig['cfg_dir'] !== $pearCfgDirPath){
+                output("    Setting pear config cfg_dir directive to: $pearCfgDirPath");
+                $pearConfig['cfg_dir'] = $pearCfgDirPath;
+            }
+            // Check www_dir value of par config.
+            if(empty($pearConfig['www_dir']) || $pearConfig['www_dir'] !== $pearWwwDirPath){
+                output("    Setting pear config www_dir directive to: $pearWwwDirPath");
+                $pearConfig['www_dir'] = $pearWwwDirPath;
+            }
+            // Check man_dir value of par config.
+            if(empty($pearConfig['man_dir']) || $pearConfig['man_dir'] !== $pearManDirPath){
+                output("    Setting pear config man_dir directive to: $pearManDirPath");
+                $pearConfig['man_dir'] = $pearManDirPath;
+            }
+            // Check test_dir value of par config.
+            if(empty($pearConfig['test_dir']) || $pearConfig['test_dir'] !== $pearTestDirPath){
+                output("    Setting pear config test_dir directive to: $pearTestDirPath");
+                $pearConfig['test_dir'] = $pearTestDirPath;
+            }
+            // Check php_bin value of par config.
+            if(empty($pearConfig['php_bin']) || $pearConfig['php_bin'] !== $phpBinDirPath){
+                output("    Setting pear config php_bin directive to: $phpBinDirPath");
+                $pearConfig['php_bin'] = $phpBinDirPath;
+            }
+
+            // Rebuild the config.
+            $pearConfig = serialize($pearConfig);
+            if(!empty($pearConfigVersion)){
+                $pearConfig = $pearConfigVersion."\n".$pearConfig;
+            }
+
+            // Put config back into the pear.conf file.
+            $this->files->put($pearConfigPath, $pearConfig);
+        }
     }
 
     /**
