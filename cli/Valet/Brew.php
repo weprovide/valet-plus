@@ -2,7 +2,6 @@
 
 namespace Valet;
 
-use Exception;
 use DomainException;
 
 class Brew
