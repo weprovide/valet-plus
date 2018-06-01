@@ -77,7 +77,7 @@ class Elasticsearch
         }
 
         info('[elasticsearch] Stopping');
-        $this->cli->quietly('sudo brew services stop elasticsearch@2.4');
+        $this->cli->quietly('brew services stop elasticsearch@2.4');
         $this->cli->quietlyAsUser('brew services stop elasticsearch@2.4');
     }
 

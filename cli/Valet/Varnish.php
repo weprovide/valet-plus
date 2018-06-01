@@ -38,7 +38,7 @@ class Varnish
     {
         if (!$this->brew->installed('varnish')) {
             $this->brew->installOrFail('varnish');
-            $this->cli->quietly('sudo brew services stop varnish');
+            $this->cli->quietly('brew services stop varnish');
         }
         $this->restart();
     }

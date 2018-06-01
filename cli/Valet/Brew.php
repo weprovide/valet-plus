@@ -217,8 +217,8 @@ class Brew
             if ($this->installed($service) || $service === self::PHP_V72_FORMULAE) {
                 info('[' . $service . '] Restarting');
 
-                $this->cli->quietly('sudo brew services stop ' . $service);
-                $this->cli->quietly('sudo brew services start ' . $service);
+                $this->cli->quietly('brew services stop ' . $service);
+                $this->cli->quietly('brew services start ' . $service);
             }
         }
     }
@@ -237,7 +237,7 @@ class Brew
             if ($this->installed($service) || $service === self::PHP_V72_FORMULAE) {
                 info('[' . $service . '] Stopping');
 
-                $this->cli->quietly('sudo brew services stop ' . $service);
+                $this->cli->quietly('brew services stop ' . $service);
             }
         }
     }
