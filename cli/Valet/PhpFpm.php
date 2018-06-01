@@ -61,7 +61,6 @@ class PhpFpm
         $contents = preg_replace('/^;?listen\.group = .+$/m', 'listen.group = staff', $contents);
         $contents = preg_replace('/^;?listen\.mode = .+$/m', 'listen.mode = 0777', $contents);
         $contents = preg_replace('/^;?php_admin_value\[error_log\] = .+$/m', 'php_admin_value[error_log] = '.VALET_HOME_PATH.'/Log/php.log', $contents);
-
         $this->files->put($this->fpmConfigPath(), $contents);
 
         $systemZoneName = readlink('/etc/localtime');
@@ -75,6 +74,22 @@ class PhpFpm
         $iniPath = $this->iniPath();
         $this->files->ensureDirExists($iniPath, user());
         $this->files->putAsUser($this->iniPath().'z-performance.ini', $contents);
+
+        // Get php.ini file.
+        $extensionDirectory = $this->pecl->getExtensionDirectory();
+        $phpIniPath = $this->pecl->getPhpIniPath();
+        $contents = $this->files->get($phpIniPath);
+
+        // Replace all extension_dir directives with nothing. And place extension_dir directive for valet+
+        $contents = preg_replace(
+            "/ *extension_dir = \"(.*)\"\n/",
+            '',
+            $contents
+        );
+        $contents = "extension_dir = \"$extensionDirectory\"\n" . $contents;
+
+        // Save php.ini file.
+        $this->files->putAsUser($phpIniPath, $contents);
     }
 
     function iniPath() {
@@ -124,8 +139,6 @@ class PhpFpm
 
     /**
      * Switch between versions of installed PHP
-     *
-     * @return bool
      */
     function switchTo($version)
     {
@@ -136,19 +149,31 @@ class PhpFpm
             throw new DomainException("This version of PHP not available. The following versions are available: " . implode(' ', $versions));
         }
 
+        // If the current version equals that of the current PHP version, do not switch.
         if ($version === $currentVersion) {
-            return false;
+            info('Already on this version');
+            return;
         }
-        $this->pecl->uninstallExtensions();
 
-        $this->cli->passthru('brew unlink php@' . $currentVersion);
-        $this->cli->passthru('sudo ln -s /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib');
+        info("[php@$currentVersion] Unlinking");
+        output($this->cli->runAsUser('brew unlink php@' . $currentVersion));
 
-        if (!$this->brew->installed('php@' . $version)) {
+        info('[libjpeg] Relinking');
+        $this->cli->passthru('sudo ln -fs /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib');
+
+        $installed = $this->brew->installed('php@' . $version);
+        if (!$installed) {
             $this->brew->ensureInstalled('php@' . $version);
         }
 
-        $this->cli->passthru('brew link php@' . $version.' --force --overwrite');
+        // If php@7.2 was not installed, it installed and automagically linked itself.
+        // If we try to link it again it will throw an already linked warning.
+        // PHP 5.6, 7.0 and 7.1 do not show this behaviour probably because they're not the default formulae.
+        if(!(!$installed && $version === $this->sanitizeVersion(Brew::PHP_V72_FORMULAE))){
+            info("[php@$version] Linking");
+            output($this->cli->runAsUser('brew link php@' . $version.' --force --overwrite'));
+        }
+
         $this->stop();
 
         info('Setting pecl config');
@@ -156,7 +181,7 @@ class PhpFpm
         info($this->pecl->setPeclConfig('ext_dir', str_replace($currentVersion, $version, $this->pecl->getExtensionDirectory())));
 
         $this->install();
-        return true;
+        info("Valet is now using php@$version");
     }
 
     /**
