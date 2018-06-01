@@ -51,11 +51,14 @@ class DevTools
      *
      * @return void
      */
-    function install()
+    function install($skipTools)
     {
         info('[devtools] Installing tools');
 
         foreach (self::SUPPORTED_TOOLS as $tool) {
+            if (in_array($tool, $skipTools)) {
+                continue;
+            }
             if ($this->brew->installed($tool)) {
                 info('[devtools] ' . $tool . ' already installed');
             } else {

@@ -37,14 +37,14 @@ if (is_dir(VALET_HOME_PATH)) {
 /**
  * Allow Valet to be run more conveniently by allowing the Node proxy to run password-less sudo.
  */
-$app->command('install [--with-mariadb]', function ($withMariadb) {
+$app->command('install [--with-mariadb] [--with-wpcli]', function ($withMariadb, $withWpCli) {
     PhpFpm::checkInstallation();
 
     Nginx::stop();
     PhpFpm::stop();
     Mysql::stop();
     RedisTool::stop();
-    DevTools::install();
+    DevTools::install($withWpCli ? [] : ['homebrew/php/wp-cli']);
     Binaries::installBinaries();
 
     Configuration::install();
