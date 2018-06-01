@@ -175,6 +175,11 @@ class PhpFpm
         }
 
         $this->stop();
+
+        info('Setting pecl config');
+        info($this->pecl->setPeclConfig('php_ini', str_replace($currentVersion, $version, $this->pecl->getPhpIniPath())));
+        info($this->pecl->setPeclConfig('ext_dir', str_replace($currentVersion, $version, $this->pecl->getExtensionDirectory())));
+
         $this->install();
         info("Valet is now using php@$version");
     }

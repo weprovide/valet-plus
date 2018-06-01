@@ -165,6 +165,19 @@ class Pecl
     }
 
     /**
+     * Set pecl config
+     *
+     * @param $key
+     * @param $value
+     *
+     * @return mixed
+     */
+    function setPeclConfig($key, $value)
+    {
+        return $this->cli->runAsUser('pecl config-set '.$key.' '.$value);
+    }
+
+    /**
      * Get the current PHP version from the PECL config.
      *
      * @return string
@@ -175,8 +188,8 @@ class Pecl
         $version = $this->cli->runAsUser('pecl version | grep PHP');
         $version = str_replace('PHP Version:', '', $version);
         $version = str_replace(' ', '', $version);
-        $version = substr($version, 0, 3);
-        return $version;
+        $version = explode(".", $version);
+        return $version[0].".".$version[1];
     }
 
     /**
@@ -356,9 +369,10 @@ class Pecl
     /**
      * Install a single extension.
      *
-     * @param $extension
-     *    The extension key name.
+     * @param string $extension The extension key name.
      * @param null $version
+     *
+     * @return string
      */
     private function install($extension, $version = null)
     {
@@ -585,9 +599,9 @@ class Pecl
         $alias = $this->getExtensionAlias($extension);
         $phpIniFile = $this->files->get($phpIniPath);
         if ($this->isCustomExtension($extension)) {
-            $phpIniFile = preg_replace('/;?(zend_extension|extension)\=".*' . $alias . '"/', '', $phpIniFile);
+            $phpIniFile = preg_replace('/;?(zend_extension|extension)\=".*' . $alias . '"\n?/', '', $phpIniFile);
         } else {
-            $phpIniFile = preg_replace('/;?(zend_extension|extension)\=".*' . $alias . '.so"/', '', $phpIniFile);
+            $phpIniFile = preg_replace('/;?(zend_extension|extension)\=".*' . $alias . '.so"\n?/', '', $phpIniFile);
         }
         $this->saveIniFile($phpIniPath, $phpIniFile);
     }
@@ -637,15 +651,31 @@ class Pecl
         if (strpos($result, "Error:")) {
             throw new DomainException("Installation path found, but installation failed:\n\n$result");
         }
+        $phpIniFile = preg_replace(
+            '/^(zend_extension|extension)\="(.*' . $extension . '.so)"$/ms', '', $phpIniFile
+        );
 
-        if (!preg_match('/(zend_extension|extension)\="(.*' . $extension . '.so)"/', $phpIniFile, $iniMatches)) {
-            $phpIniPath = $this->getPhpIniPath();
-            throw new DomainException("Could not find ini definition for: $extension in $phpIniPath");
+        $extensionDir = preg_replace(
+            "/(^\/.*)(\/php@\d+\.\d+)\/(.*)/", "$1$2",
+            $this->getExtensionDirectory()
+        );
+        $extensionDir .= '/'.max(scandir($extensionDir)).'/pecl/';
+        $extensionDirParent = trim(str_replace("\n", "", $extensionDir));
+
+        $directories = scandir($extensionDirParent);
+        foreach ($directories as $possibleMatch) {
+            if ($possibleMatch == "." || $possibleMatch == "..") continue;
+            $extensionPath = $extensionDirParent . $possibleMatch . "/" . $extension . ".so";
+            if (file_exists($extensionPath)) {
+                $this->setPeclConfig('ext_dir', $extensionDirParent . $possibleMatch);
+                info('[PECL] Creating ini definition for extension ' . $extensionPath);
+                return (in_array($extension, ['xdebug', 'ioncube']) ? 'zend_' : '').
+                    "extension=\"".$extensionPath."\"\n".$phpIniFile;
+            } else {
+                output('[PECL] ' . $extensionPath . ' doesn\'t exist.');
+            }
         }
-
-        $phpIniFile = preg_replace('/(zend_extension|extension)\="(.*' . $extension . '.so)"/', '', $phpIniFile);
-
-        return $iniMatches[1] . '="' . $iniMatches[2] . '"'."\n". $phpIniFile;
+        return $phpIniFile;
     }
 
     /**
