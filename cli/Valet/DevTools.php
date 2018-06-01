@@ -7,7 +7,7 @@ use ValetDriver;
 
 class DevTools
 {
-    const WP_CLI_TOOL = 'wp-cli';
+    const WP_CLI_TOOL = 'homebrew/php/wp-cli';
     const PV_TOOL = 'pv';
     const GEOIP_TOOL = 'geoip';
 
