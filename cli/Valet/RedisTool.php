@@ -39,7 +39,7 @@ class RedisTool
     {
         if (!$this->brew->installed('redis')) {
             $this->brew->installOrFail('redis');
-            $this->cli->quietly('brew services stop redis');
+            $this->cli->quietly('sudo brew services stop redis');
         }
 
         $this->installConfiguration();
@@ -75,7 +75,7 @@ class RedisTool
     function stop()
     {
         info('[redis] Stopping');
-        $this->cli->quietly('brew services stop redis');
+        $this->cli->quietly('sudo brew services stop redis');
         $this->cli->quietlyAsUser('brew services stop redis');
     }
 

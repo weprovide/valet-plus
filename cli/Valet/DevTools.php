@@ -68,13 +68,13 @@ class DevTools
             if (exec('wp --info')) {
                 info('wp-cli is already installed');
             } else {
-                echo shell_exec('
-                    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && 
-                    php wp-cli.phar --info && 
-                    chmod +x wp-cli.phar && 
-                    sudo mv wp-cli.phar /usr/local/bin/wp &&
-                    wp --info
-                    ');
+                echo shell_exec(
+                    'curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && ' .
+                    'php wp-cli.phar --info && ' .
+                    'chmod +x wp-cli.phar && ' .
+                    'sudo mv wp-cli.phar /usr/local/bin/wp && '.
+                    'wp --info'
+                );
             }
         }
     }

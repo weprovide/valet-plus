@@ -144,7 +144,7 @@ class Mysql
         $version = $this->installedVersion() ?: 'mysql';
         info('['.$version.'] Stopping');
 
-        $this->cli->quietly('brew services stop '.$version);
+        $this->cli->quietly('sudo brew services stop '.$version);
         $this->cli->quietlyAsUser('brew services stop '.$version);
     }
 

@@ -38,7 +38,7 @@ class RabbitMq
     {
         if (!$this->brew->installed('rabbitmq')) {
             $this->brew->installOrFail('rabbitmq');
-            $this->cli->quietly('brew services stop rabbitmq');
+            $this->cli->quietly('sudo brew services stop rabbitmq');
         }
         $this->restart();
     }
