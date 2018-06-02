@@ -44,7 +44,7 @@ $app->command('install [--with-mariadb] [--with-wpcli]', function ($withMariadb,
     PhpFpm::stop();
     Mysql::stop();
     RedisTool::stop();
-    DevTools::install($withWpCli ? [] : ['homebrew/php/wp-cli']);
+    DevTools::install($withWpCli ? [] : ['wp-cli']);
     Binaries::installBinaries();
 
     Configuration::install();

@@ -7,13 +7,10 @@ use ValetDriver;
 
 class DevTools
 {
-    const WP_CLI_TOOL = 'homebrew/php/wp-cli';
     const PV_TOOL = 'pv';
     const GEOIP_TOOL = 'geoip';
 
-
-    const SUPPORTED_TOOLS = [
-        self::WP_CLI_TOOL,
+    const BREW_SUPPORTED_TOOLS = [
         self::PV_TOOL,
         self::GEOIP_TOOL
     ];
@@ -55,7 +52,7 @@ class DevTools
     {
         info('[devtools] Installing tools');
 
-        foreach (self::SUPPORTED_TOOLS as $tool) {
+        foreach (self::BREW_SUPPORTED_TOOLS as $tool) {
             if (in_array($tool, $skipTools)) {
                 continue;
             }
@@ -63,6 +60,21 @@ class DevTools
                 info('[devtools] ' . $tool . ' already installed');
             } else {
                 $this->brew->ensureInstalled($tool, []);
+            }
+        }
+
+        if (!in_array('wp-cli', $skipTools)) {
+            info('Installing wp-cli...');
+            if (exec('wp --info')) {
+                info('wp-cli is already installed');
+            } else {
+                echo shell_exec('
+                    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && 
+                    php wp-cli.phar --info && 
+                    chmod +x wp-cli.phar && 
+                    sudo mv wp-cli.phar /usr/local/bin/wp &&
+                    wp --info
+                    ');
             }
         }
     }
@@ -76,7 +88,7 @@ class DevTools
     {
         info('[devtools] Uninstalling tools');
 
-        foreach (self::SUPPORTED_TOOLS as $tool) {
+        foreach (self::BREW_SUPPORTED_TOOLS as $tool) {
             if (!$this->brew->installed($tool)) {
                 info('[devtools] ' . $tool . ' already uninstalled');
             } else {
