@@ -6,7 +6,7 @@ use DomainException;
 
 class PhpFpm
 {
-    var $brew, $cli, $files, $pecl;
+    var $brew, $cli, $files, $pecl, $peclCustom;
 
     const DEPRECATED_PHP_TAP = 'homebrew/php';
 
@@ -17,12 +17,13 @@ class PhpFpm
      * @param  CommandLine $cli
      * @param  Filesystem $files
      */
-    function __construct(Brew $brew, CommandLine $cli, Filesystem $files, Pecl $pecl)
+    function __construct(Brew $brew, CommandLine $cli, Filesystem $files, Pecl $pecl, PeclCustom $peclCustom)
     {
         $this->cli = $cli;
         $this->brew = $brew;
         $this->files = $files;
         $this->pecl = $pecl;
+        $this->peclCustom = $peclCustom;
     }
 
     /**
@@ -42,6 +43,7 @@ class PhpFpm
         $this->updateConfiguration();
         $this->pecl->updatePeclChannel();
         $this->pecl->installExtensions($version);
+        $this->peclCustom->installExtensions($version);
         $this->restart();
     }
 
