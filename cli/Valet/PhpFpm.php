@@ -305,22 +305,24 @@ class PhpFpm
     /**
      * Fixes common problems with php installations from Homebrew.
      */
-    function fix(){
+    function fix($reinstall){
         // Remove old homebrew/php tap packages.
         info('Removing all old php56- packages from homebrew/php tap');
-        $this->cli->passthru('brew list | grep php56- | xargs brew uninstall');
+        output($this->cli->runAsUser('brew list | grep php56- | xargs brew uninstall'));
         info('Removing all old php70- packages from homebrew/php tap');
-        $this->cli->passthru('brew list | grep php70- | xargs brew uninstall');
+        output($this->cli->runAsUser('brew list | grep php70- | xargs brew uninstall'));
         info('Removing all old php71- packages from homebrew/php tap');
-        $this->cli->passthru('brew list | grep php71- | xargs brew uninstall');
+        output($this->cli->runAsUser('brew list | grep php71- | xargs brew uninstall'));
         info('Removing all old php72- packages from homebrew/php tap');
-        $this->cli->passthru('brew list | grep php72- | xargs brew uninstall');
+        output($this->cli->runAsUser('brew list | grep php72- | xargs brew uninstall'));
 
+        // Remove deprecated n98-magerun packages.
         info('Removing all old n98-magerun packages from homebrew/php tap');
-        $this->cli->passthru('brew list | grep n98-magerun | xargs brew uninstall');
+        output($this->cli->runAsUser('brew list | grep n98-magerun | xargs brew uninstall'));
 
+        // Remove homebrew/php tap.
         info('Removing drush package from homebrew/php tap');
-        $this->cli->passthru('brew list | grep drush | xargs brew uninstall');
+        output($this->cli->runAsUser('brew list | grep drush | xargs brew uninstall'));
 
         // Disable extensions that are not managed by the PECL manager or within php core.
         $deprecatedVersions = ['5.6', '7.0', '7.1', '7.2'];
@@ -337,21 +339,25 @@ class PhpFpm
             }
         }
 
-        info('Trying to remove php56...');
-        $this->cli->passthru('brew uninstall php56');
-        info('Trying to remove php70...');
-        $this->cli->passthru('brew uninstall php70');
-        info('Trying to remove php71...');
-        $this->cli->passthru('brew uninstall php71');
-        info('Trying to remove php72...');
-        $this->cli->passthru('brew uninstall php72');
+        // If full reinstall is required remove PHP formulae. This will also uninstall formulae in the following format:
+        // php@{version}.
+        if($reinstall){
+            info('Trying to remove php56...');
+            output($this->cli->runAsUser('brew uninstall php56'));
+            info('Trying to remove php70...');
+            output($this->cli->runAsUser('brew uninstall php70'));
+            info('Trying to remove php71...');
+            output($this->cli->runAsUser('brew uninstall php71'));
+            info('Trying to remove php72...');
+            output($this->cli->runAsUser('brew uninstall php72'));
+        }
 
         // If the current php is not 7.1, link 7.1.
         info('Installing and linking new PHP homebrew/core version.');
-        $this->cli->passthru('brew uninstall ' . Brew::PHP_V71_FORMULAE);
-        $this->cli->passthru('brew install ' . Brew::PHP_V71_FORMULAE);
-        $this->cli->passthru('brew unlink '. Brew::PHP_V71_FORMULAE);
-        $this->cli->passthru('brew link '.Brew::PHP_V71_FORMULAE.' --force --overwrite');
+        output($this->cli->runAsUser('brew uninstall ' . Brew::PHP_V71_FORMULAE));
+        output($this->cli->runAsUser('brew install ' . Brew::PHP_V71_FORMULAE));
+        output($this->cli->runAsUser('brew unlink '. Brew::PHP_V71_FORMULAE));
+        output($this->cli->runAsUser('brew link '.Brew::PHP_V71_FORMULAE.' --force --overwrite'));
 
         if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {
             info('[brew] untapping formulae ' . self::DEPRECATED_PHP_TAP);
@@ -360,7 +366,7 @@ class PhpFpm
 
         warning("Please check your linked php version, you might need to restart your terminal!".
             "\nLinked PHP should be php 7.1:");
-        $this->cli->passthru('php -v');
+        output($this->cli->runAsUser('php -v'));
     }
 
     /**

@@ -64,8 +64,9 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
 /**
  * Fix common problems within the Valet+ installation.
  */
-$app->command('fix', function () {
-    PhpFpm::fix();
+$app->command('fix [--reinstall]', function ($reinstall) {
+    PhpFpm::fix($reinstall);
+    Pecl::fix();
 })->descriptions('Fixes common installation problems that prevent Valet+ from working');
 
 /**
