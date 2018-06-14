@@ -66,9 +66,9 @@ class DevTools
 
         if (!in_array('wp-cli', $skipTools)) {
             info('Installing wp-cli...');
-            if ($this->cli->runAsUser('wp --info')) {
-                info('wp-cli is already installed');
-            } else {
+            //if ($this->cli->runAsUser('wp --info')) {
+                //info('wp-cli is already installed');
+            //} else {
                 $process = new Process(
                     'curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && ' .
                     'php wp-cli.phar --info && ' .
@@ -83,7 +83,7 @@ class DevTools
                         info($buffer);
                     }
                 });
-            }
+            //}
         }
     }
 
