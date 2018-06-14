@@ -4,6 +4,7 @@ namespace Valet;
 
 use Exception;
 use ValetDriver;
+use Symfony\Component\Process\Process;
 
 class DevTools
 {
@@ -65,16 +66,23 @@ class DevTools
 
         if (!in_array('wp-cli', $skipTools)) {
             info('Installing wp-cli...');
-            if (exec('wp --info')) {
+            if ($this->cli->runAsUser('wp --info')) {
                 info('wp-cli is already installed');
             } else {
-                echo shell_exec(
+                $process = new Process(
                     'curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && ' .
                     'php wp-cli.phar --info && ' .
                     'chmod +x wp-cli.phar && ' .
                     'sudo mv wp-cli.phar /usr/local/bin/wp && '.
                     'wp --info'
                 );
+                $process->run(function ($type, $buffer) {
+                    if (Process::ERR === $type) {
+                        warning($buffer);
+                    } else {
+                        info($buffer);
+                    }
+                });
             }
         }
     }
