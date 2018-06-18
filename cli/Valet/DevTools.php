@@ -91,25 +91,8 @@ class DevTools
     function phpstorm()
     {
         info('Opening PHPstorm');
-        $command = false;
 
-        if ($this->files->exists('/usr/local/bin/pstorm')) {
-            $command = '/usr/local/bin/pstorm';
-        }
-
-        if ($this->files->exists('/usr/local/bin/pstorm')) {
-            $command = '/usr/local/bin/pstorm';
-        }
-
-        if (!$command) {
-            throw new Exception('/usr/local/bin/pstorm command not found. Please install pstorm by opening PHPstorm and going to Tools -> Create command line launcher. When asked for the path enter: /usr/local/bin/pstorm');
-        }
-
-        $output = $this->cli->runAsUser($command . ' $(git rev-parse --show-toplevel)');
-
-        if (strpos($output, 'fatal: Not a git repository') !== false) {
-            throw new Exception('Could not find git directory');
-        }
+        $this->cli->runAsUser('open -a PhpStorm ./');
     }
 
     function vscode()
