@@ -39,12 +39,12 @@ class Mysql
     }
 
     function supportedVersions() {
-        return ['mysql', 'mariadb'];
+        return ['mysql@5.7', 'mariadb'];
     }
 
     function verifyType($type) {
         if(!in_array($type, $this->supportedVersions())) {
-            throw new DomainException('Invalid Mysql type given. Available: mysql/mariadb');
+            throw new DomainException('Invalid Mysql type given. Available: mysql@5.7/mariadb');
         }
     }
 
@@ -65,7 +65,7 @@ class Mysql
      * @param $type
      * @return void
      */
-    function install($type = 'mysql')
+    function install($type = 'mysql@5.7')
     {
         $this->verifyType($type);
         $currentlyInstalled = $this->installedVersion();
@@ -96,7 +96,7 @@ class Mysql
      * @param string $type
      * @return void
      */
-    function installConfiguration($type = 'mysql')
+    function installConfiguration($type = 'mysql@5.7')
     {
         info('['.$type.'] Configuring');
 
@@ -117,7 +117,7 @@ class Mysql
         );
     }
 
-    function removeConfiguration($type = 'mysql') {
+    function removeConfiguration($type = 'mysql@5.7') {
         $this->files->unlink(static::MYSQL_CONF);
         $this->files->unlink(static::MYSQL_CONF.'.default');
     }
@@ -129,7 +129,7 @@ class Mysql
      */
     function restart()
     {
-        $version = $this->installedVersion() ?: 'mysql';
+        $version = $this->installedVersion() ?: 'mysql@5.7';
         info('['.$version.'] Restarting');
         $this->cli->quietlyAsUser('brew services restart '.$version);
     }
@@ -141,7 +141,7 @@ class Mysql
      */
     function stop()
     {
-        $version = $this->installedVersion() ?: 'mysql';
+        $version = $this->installedVersion() ?: 'mysql@5.7';
         info('['.$version.'] Stopping');
 
         $this->cli->quietly('sudo brew services stop '.$version);
@@ -183,7 +183,7 @@ class Mysql
         if($name) {
             return $name;
         }
-        
+
         $gitDir = $this->cli->runAsUser('git rev-parse --show-toplevel 2>/dev/null');
 
         if($gitDir) {
@@ -243,7 +243,7 @@ class Mysql
             if($row['Database'] === 'sys' || $row['Database'] === 'performance_schema' || $row['Database'] === 'information_schema' || $row['Database'] === 'mysql') {
                 continue;
             }
-            
+
             $databases[] = [$row['Database']];
         }
 
@@ -262,7 +262,7 @@ class Mysql
         $this->createDatabase($database);
         $gzip = ' | ';
         if (stristr($file, '.gz')) {
-          $gzip = ' | gzip -cd | ';
+            $gzip = ' | gzip -cd | ';
         }
         $this->cli->passthru('pv ' . escapeshellarg($file) . $gzip . 'mysql ' . escapeshellarg($database));
     }

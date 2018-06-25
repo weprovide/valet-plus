@@ -53,7 +53,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
     Nginx::install();
     PhpFpm::install();
     DnsMasq::install();
-    Mysql::install($withMariadb ? 'mariadb' : 'mysql');
+    Mysql::install($withMariadb ? 'mariadb' : 'mysql@5.7');
     RedisTool::install();
     Mailhog::install();
     Nginx::restart();
