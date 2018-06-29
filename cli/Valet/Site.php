@@ -166,12 +166,41 @@ class Site
         $secured = $this->secured();
 
         foreach ($secured as $url) {
+            $proxy = $this->proxied($url);
             $this->unsecure($url);
+            $this->configure(str_replace('.'.$oldDomain, '.'.$domain, $url), true, $proxy);
+        }
+    }
+
+    /**
+     * Retrieves the proxy destination if there is one.
+     *
+     * @param string $url
+     * @return null|string
+     */
+    function proxied($url)
+    {
+        $path = VALET_HOME_PATH.'/Nginx/'.$url;
+        if (!$this->files->exists($path)) {
+            return null;
         }
 
-        foreach ($secured as $url) {
-            $this->secure(str_replace('.'.$oldDomain, '.'.$domain, $url));
+        if (preg_match('/proxy_pass (.*);/', $this->files->get($path), $match)) {
+            return trim($match[1]);
         }
+
+        return null;
+    }
+
+    /**
+     * Configures the domain to proxy to a destination. Null disables the proxy.
+     *
+     * @param string $url
+     * @param string $to
+     */
+    function proxy($url, $to = null)
+    {
+        $this->configure($url, in_array($url, $this->secured()), $to);
     }
 
     /**
@@ -188,22 +217,37 @@ class Site
     }
 
     /**
+     * Configures the site with secure, unsecure, and proxy.
+     *
+     * @param string $url
+     * @param bool $secure
+     * @param null $proxy
+     * @return void
+     */
+    function configure($url, $secure = false, $proxy = null)
+    {
+        $this->unsecure($url);
+
+        if ($secure) {
+            $this->files->ensureDirExists($this->certificatesPath(), user());
+            $this->createCertificate($url);
+        }
+
+        $this->files->putAsUser(
+            VALET_HOME_PATH . '/Nginx/' . $url, $this->buildNginxConfig($url, $secure, $proxy)
+        );
+    }
+
+    /**
      * Secure the given host with TLS.
      *
-     * @param  string  $url
+     * @param  string $url
      * @return void
      */
     function secure($url)
     {
-        $this->unsecure($url);
-
-        $this->files->ensureDirExists($this->certificatesPath(), user());
-
-        $this->createCertificate($url);
-
-        $this->files->putAsUser(
-            VALET_HOME_PATH.'/Nginx/'.$url, $this->buildSecureNginxServer($url)
-        );
+        $proxied = $this->proxied($url);
+        $this->configure($url, true, $proxied);
     }
 
     /**
@@ -282,19 +326,34 @@ class Site
     }
 
     /**
-     * Build the TLS secured Nginx server for the given URL.
-     *
-     * @param  string  $url
+     * Builds the nginx configuration file for a site.
+     * @param string $url
+     * @param bool $secure
+     * @param null|string $proxy
      * @return string
      */
-    function buildSecureNginxServer($url)
+    function buildNginxConfig($url, $secure, $proxy)
     {
         $path = $this->certificatesPath();
 
+        $variables = [
+            'VALET_HOME_PATH' => VALET_HOME_PATH,
+            'VALET_SERVER_PATH' => VALET_SERVER_PATH,
+            'VALET_STATIC_PREFIX' => VALET_STATIC_PREFIX,
+            'VALET_SITE' => $url,
+            'VALET_CERT' => $path.'/'.$url.'.crt',
+            'VALET_KEY' => $path.'/'.$url.'.key',
+            'VALET_PROXY_PASS' => $proxy,
+        ];
+
+        $stub = 'valet.conf';
+        $proxy && $stub = 'proxy.'.$stub;
+        $secure && $stub = 'secure.'.$stub;
+
         return str_replace(
-            ['VALET_HOME_PATH', 'VALET_SERVER_PATH', 'VALET_STATIC_PREFIX', 'VALET_SITE', 'VALET_CERT', 'VALET_KEY'],
-            [VALET_HOME_PATH, VALET_SERVER_PATH, VALET_STATIC_PREFIX, $url, $path.'/'.$url.'.crt', $path.'/'.$url.'.key'],
-            $this->files->get(__DIR__.'/../stubs/secure.valet.conf')
+            array_keys($variables),
+            array_values($variables),
+            $this->files->get(__DIR__.'/../stubs/' . $stub)
         );
     }
 
