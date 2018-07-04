@@ -169,8 +169,27 @@ class Magento2ValetDriver extends ValetDriver
             exit;
         }
 
+        if (file_exists($sitePath . '/stores.json')) {
+            $this->parseStoresConfig(file_get_contents($sitePath . '/stores.json'), $siteName);
+        }
+
         $_SERVER['DOCUMENT_ROOT'] = $sitePath;
 
         return $sitePath . '/pub/index.php';
+    }
+
+    private function parseStoresConfig($json, $siteName)
+    {
+        $stores = json_decode($json, JSON_OBJECT_AS_ARRAY);
+
+        if (json_last_error() !== JSON_ERROR_NONE || empty($stores)) {
+            return;
+        }
+
+        if (!array_key_exists($siteName, $stores)) {
+            return;
+        }
+
+        $_SERVER = array_merge($_SERVER, $stores[$siteName]);
     }
 }
