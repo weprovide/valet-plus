@@ -169,6 +169,10 @@ class Magento2ValetDriver extends ValetDriver
             exit;
         }
 
+        if(strpos($uri, '/dev/tests/acceptance/utils/command.php') !== false) {
+            return $sitePath . '/dev/tests/acceptance/utils/command.php';
+        }
+
         $_SERVER['DOCUMENT_ROOT'] = $sitePath;
 
         return $sitePath . '/pub/index.php';
