@@ -95,6 +95,12 @@ class DevTools
         $this->cli->runAsUser('open -a PhpStorm ./');
     }
 
+    function sourcetree()
+    {
+        info('Opening SourceTree');
+        $this->cli->runAsUser('open -a SourceTree ./');
+    }
+
     function vscode()
     {
         info('Opening Visual Studio Code');
