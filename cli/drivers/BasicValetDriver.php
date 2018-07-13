@@ -44,6 +44,8 @@ class BasicValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         $dynamicCandidates = [
             $this->asActualFile($sitePath, $uri),
             $this->asPhpIndexFileInDirectory($sitePath, $uri),

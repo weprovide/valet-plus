@@ -42,6 +42,8 @@ class KirbyValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         // Needed to force Kirby to use *.test to generate its URLs...
         $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_HOST'];
 

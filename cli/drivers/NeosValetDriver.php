@@ -41,6 +41,8 @@ class NeosValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         putenv('FLOW_CONTEXT=Development');
         putenv('FLOW_REWRITEURLS=1');
         $_SERVER['SCRIPT_FILENAME'] = $sitePath.'/Web/index.php';

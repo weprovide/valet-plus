@@ -188,4 +188,26 @@ abstract class ValetDriver
     {
         return ! is_dir($path) && file_exists($path);
     }
+
+    /**
+     * Load server environment variables if available.
+     *
+     * @param  string  $sitePath
+     * @param  string  $siteName
+     * @return void
+     */
+    protected function loadServerEnvironmentVariables($sitePath, $siteName)
+    {
+        $varFilePath = $sitePath . '/.env.valet';
+        if (! file_exists($varFilePath)) {
+            return;
+        }
+        $variables = include $varFilePath;
+        if (! isset($variables[$siteName])) {
+            return;
+        }
+        foreach ($variables[$siteName] as $key => $value) {
+            $_SERVER[$key] = $value;
+        }
+    }
 }

@@ -114,6 +114,8 @@ class Typo3ValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         // without modifying the URI, redirect if necessary
         $this->handleRedirectBackendShorthandUris($uri);
 
