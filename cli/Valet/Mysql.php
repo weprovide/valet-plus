@@ -51,7 +51,7 @@ class Mysql
      *
      * @param $type
      */
-    public function install($type = 'mysql')
+    public function install($type = 'mysql@5.7')
     {
         $this->verifyType($type);
         $currentlyInstalled = $this->installedVersion();
@@ -86,7 +86,7 @@ class Mysql
     public function verifyType($type)
     {
         if (!\in_array($type, $this->supportedVersions())) {
-            throw new DomainException('Invalid Mysql type given. Available: mysql/mariadb');
+            throw new DomainException('Invalid Mysql type given. Available: mysql@5.7/mariadb');
         }
     }
 
@@ -97,7 +97,7 @@ class Mysql
      */
     public function supportedVersions()
     {
-        return ['mysql', 'mariadb'];
+        return ['mysql@5.7', 'mariadb'];
     }
 
     /**
@@ -119,7 +119,7 @@ class Mysql
      *
      * @param string $type
      */
-    private function removeConfiguration($type = 'mysql')
+    private function removeConfiguration($type = 'mysql@5.7')
     {
         $this->files->unlink(static::MYSQL_CONF);
         $this->files->unlink(static::MYSQL_CONF . '.default');
@@ -142,7 +142,7 @@ class Mysql
      *
      * @param string $type
      */
-    public function installConfiguration($type = 'mysql')
+    public function installConfiguration($type = 'mysql@5.7')
     {
         info('[' . $type . '] Configuring');
 
@@ -162,13 +162,13 @@ class Mysql
             \str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents)
         );
     }
-
+  
     /**
      * Restart the Mysql service.
      */
     public function restart()
     {
-        $version = $this->installedVersion('mysql');
+        $version = $this->installedVersion() ?: 'mysql@5.7';
         info('[' . $version . '] Restarting');
         $this->cli->quietlyAsUser('brew services restart ' . $version);
     }

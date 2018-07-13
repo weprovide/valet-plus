@@ -26,14 +26,14 @@ class Magento2ValetDriver extends ValetDriver
         }
 
         info('Setting base url...');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:set web/unsecure/base_url ' . $url . '/');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:set web/secure/base_url ' . $url . '/');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/unsecure/base_url ' . $url . '/');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/secure/base_url ' . $url . '/');
 
         info('Setting elastic search hostname...');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
         
         info('Enabling URL rewrites...');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:set web/seo/use_rewrites 1');
+        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/seo/use_rewrites 1');
         
         info('Flushing cache...');
         $devtools->cli->quietlyAsUser('n98-magerun2 cache:flush');
@@ -79,6 +79,10 @@ class Magento2ValetDriver extends ValetDriver
     {
         $isMagentoStatic = false;
         $resource = $uri;
+        
+        if(strpos($uri,'/errors') === 0 && file_exists($sitePath.'/pub'.$uri)) {
+            return $sitePath.'/pub'.$uri;
+        }
 
         if(strpos($uri,'/pub') === 0 && file_exists($sitePath.'/setup'.$uri)) {
             return $sitePath.'/setup'.$uri;
@@ -97,12 +101,12 @@ class Magento2ValetDriver extends ValetDriver
             $uri = '/static' . $resource;
         }
 
-        if (strpos($uri, '/js-translation.json') === false && file_exists($staticFilePath = $sitePath . '/pub' . $uri)) {
-            return $staticFilePath;
+        if (strpos($uri, '/js-translation.json') !== false) {
+            header('Cache-Control: no-store, must-revalidate');
         }
 
-        if(strpos($uri, '/js-translation.json') !== false) {
-            header('Cache-Control: no-store, must-revalidate');
+        if (file_exists($staticFilePath = $sitePath . '/pub' . $uri)) {
+            return $staticFilePath;
         }
 
         if (strpos($uri, '/static/') === 0) {
@@ -129,8 +133,18 @@ class Magento2ValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         if(isset($_GET['profile'])) {
             $_SERVER['MAGE_PROFILER'] = 'html';
+        }
+        
+        if(strpos($uri, '/errors') === 0) {
+            $file = $sitePath . '/pub' . $uri;
+            if (file_exists($file)) {
+                return $file;
+            }
+            return $sitePath . '/pub/errors/404.php';
         }
 
         if($uri === '/setup') {
@@ -155,6 +169,10 @@ class Magento2ValetDriver extends ValetDriver
             http_response_code(404);
             require __DIR__.'/../templates/magento2.php';
             exit;
+        }
+
+        if(strpos($uri, '/dev/tests/acceptance/utils/command.php') !== false) {
+            return $sitePath . '/dev/tests/acceptance/utils/command.php';
         }
 
         $_SERVER['DOCUMENT_ROOT'] = $sitePath;

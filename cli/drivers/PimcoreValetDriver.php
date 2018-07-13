@@ -1,6 +1,7 @@
 <?php
 
-class StatamicV1ValetDriver extends ValetDriver
+/** Valet driver for Pimcore 5 */
+class PimcoreValetDriver extends ValetDriver
 {
     /**
      * Determine if the driver serves the request.
@@ -12,7 +13,11 @@ class StatamicV1ValetDriver extends ValetDriver
      */
     public function serves($sitePath, $siteName, $uri)
     {
-        return file_exists($sitePath.'/_app/core/statamic.php');
+        if (file_exists($sitePath.'/pimcore')) {
+             return true;
+        }
+
+        return false;
     }
 
     /**
@@ -25,14 +30,13 @@ class StatamicV1ValetDriver extends ValetDriver
      */
     public function isStaticFile($sitePath, $siteName, $uri)
     {
-        if (strpos($uri, '/_add-ons') === 0 || strpos($uri, '/_app') === 0 || strpos($uri, '/_content') === 0 ||
-            strpos($uri, '/_cache') === 0 || strpos($uri, '/_config') === 0 || strpos($uri, '/_logs') === 0 ||
-            $uri === '/admin'
-        ) {
-            return false;
+        // remove cache busting part from url
+        if(strpos($uri, '/cache-buster') === 0) {
+            // https://stackoverflow.com/questions/25543974/how-to-get-string-after-second-slash-in-url-using-php
+            $last = explode("/", $uri, 3);
+            $uri = '/'.$last[2];
         }
-
-        if ($this->isActualFile($staticFilePath = $sitePath.$uri)) {
+        if (file_exists($staticFilePath = $sitePath.'/var/assets'.$uri) || file_exists($staticFilePath = $sitePath.$uri)) {
             return $staticFilePath;
         }
 
@@ -51,20 +55,10 @@ class StatamicV1ValetDriver extends ValetDriver
     {
         $this->loadServerEnvironmentVariables($sitePath, $siteName);
 
-        if (strpos($uri, '/admin.php') === 0) {
-            $_SERVER['SCRIPT_NAME'] = '/admin.php';
-
-            return $sitePath.'/admin.php';
+        if(strpos($uri, '/install') === 0) {
+            return $sitePath.'/install.php'; 
         }
 
-        if ($uri === '/admin') {
-            $_SERVER['SCRIPT_NAME'] = '/admin/index.php';
-
-            return $sitePath.'/admin/index.php';
-        }
-
-        $_SERVER['SCRIPT_NAME'] = '/index.php';
-
-        return $sitePath.'/index.php';
+        return $sitePath.'/app.php';
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-class StatamicV1ValetDriver extends ValetDriver
+class NeosValetDriver extends ValetDriver
 {
     /**
      * Determine if the driver serves the request.
@@ -12,7 +12,7 @@ class StatamicV1ValetDriver extends ValetDriver
      */
     public function serves($sitePath, $siteName, $uri)
     {
-        return file_exists($sitePath.'/_app/core/statamic.php');
+        return file_exists($sitePath.'/flow') && is_dir($sitePath.'/Web');
     }
 
     /**
@@ -25,17 +25,9 @@ class StatamicV1ValetDriver extends ValetDriver
      */
     public function isStaticFile($sitePath, $siteName, $uri)
     {
-        if (strpos($uri, '/_add-ons') === 0 || strpos($uri, '/_app') === 0 || strpos($uri, '/_content') === 0 ||
-            strpos($uri, '/_cache') === 0 || strpos($uri, '/_config') === 0 || strpos($uri, '/_logs') === 0 ||
-            $uri === '/admin'
-        ) {
-            return false;
-        }
-
-        if ($this->isActualFile($staticFilePath = $sitePath.$uri)) {
+        if ($this->isActualFile($staticFilePath = $sitePath.'/Web'.$uri)) {
             return $staticFilePath;
         }
-
         return false;
     }
 
@@ -51,20 +43,10 @@ class StatamicV1ValetDriver extends ValetDriver
     {
         $this->loadServerEnvironmentVariables($sitePath, $siteName);
 
-        if (strpos($uri, '/admin.php') === 0) {
-            $_SERVER['SCRIPT_NAME'] = '/admin.php';
-
-            return $sitePath.'/admin.php';
-        }
-
-        if ($uri === '/admin') {
-            $_SERVER['SCRIPT_NAME'] = '/admin/index.php';
-
-            return $sitePath.'/admin/index.php';
-        }
-
+        putenv('FLOW_CONTEXT=Development');
+        putenv('FLOW_REWRITEURLS=1');
+        $_SERVER['SCRIPT_FILENAME'] = $sitePath.'/Web/index.php';
         $_SERVER['SCRIPT_NAME'] = '/index.php';
-
-        return $sitePath.'/index.php';
+        return $sitePath.'/Web/index.php';
     }
 }

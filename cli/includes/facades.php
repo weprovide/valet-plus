@@ -30,10 +30,15 @@ class Facade
 }
 
 class Brew extends Facade {}
+class Pecl extends Facade {}
+class PeclCustom extends Facade {}
+class Binaries extends Facade{}
 class Nginx extends Facade {}
 class Mysql extends Facade {}
 class RedisTool extends Facade {}
 class Elasticsearch extends Facade {}
+class RabbitMq extends Facade {}
+class Varnish extends Facade {}
 class Mailhog extends Facade {}
 class CommandLine extends Facade {}
 class Configuration extends Facade {}

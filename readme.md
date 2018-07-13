@@ -1,3 +1,5 @@
+[![Gitter](https://camo.githubusercontent.com/af6b886e3ac898bab012f2a99a3d09e2aa9ef2f9/68747470733a2f2f696d672e736869656c64732e696f2f6769747465722f726f6f6d2f76616c65742d706c75732f4c6f756e67652e7376673f7374796c653d666c61742d737175617265)](https://gitter.im/valet-plus/Lobby)
+
 <p align="center"><img width="200" src="images/logo.png"></p>
 
 ## Introduction
@@ -14,7 +16,7 @@ Since Valet+ is intended to replace Valet, it still uses the same `valet` comman
 
 ### Why Valet/Valet+?
 
-Valet+ configures your Mac to always run Nginx in the background when your machine starts. Then, using [DnsMasq](https://en.wikipedia.org/wiki/Dnsmasq), Valet+ proxies all requests on the `*.dev` domain to point to sites installed on your local machine.
+Valet+ configures your Mac to always run Nginx in the background when your machine starts. Then, using [DnsMasq](https://en.wikipedia.org/wiki/Dnsmasq), Valet+ proxies all requests on the `*.test` domain to point to sites installed on your local machine.
 
 In other words, a blazing fast development environment. Valet+ provides a great alternative if you want flexible basics or prefer extreme speed.
 
@@ -24,7 +26,7 @@ Here are a few key differences compared to the original Valet:
 
 - PHP version switch
 - Xdebug (on/off mode)
-- PHP extensions (mcrypt, intl, opcache, apcu)
+- PHP extensions (mcrypt, intl, opcache)
 - Optimized PHP configuration using opcache
 - MySQL (with optimized configuration)
 - Redis
@@ -58,13 +60,14 @@ Here are a few key differences compared to the original Valet:
 
 > :warning: Valet+ requires macOS and [Homebrew](https://brew.sh/). Before installation, you should make sure that no other programs such as Apache or Nginx are binding to your local machine's port 80.
 
-1. Install or update [Homebrew](https://brew.sh/) to the latest version using brew update.
-2. Install PHP 7.0 using Homebrew via `brew install homebrew/php/php70`.
-3. Install Composer using Homebrew via `brew install homebrew/php/composer`.
+1. Install or update [Homebrew](https://brew.sh/) to the latest version using `brew update`.
+2. Install PHP 7.1 using Homebrew via `brew install php@7.1`.
+3. Install Composer using Homebrew via `brew install composer`.
 4. Install Valet+ with Composer via `composer global require weprovide/valet-plus`.
 5. Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on your shell (`echo $SHELL`)
-6. Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
-7. Once Valet+ is installed, try pinging any `*.dev` domain on your terminal using a command such as `ping foobar.dev`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
+6. Run the `valet fix` command. This will check for common issues preventing Valet+ from installing.
+7. Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
+8. Once Valet+ is installed, try pinging any `*.test` domain on your terminal using a command such as `ping foobar.test`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
 
 > :information_source: Valet+ will automatically start its daemon each time your machine boots. There is no need to run `valet start` or `valet install` ever again once the initial Valet+ installation is complete.
 
@@ -78,14 +81,14 @@ Once Valet+ is installed, you're ready to start serving sites. Valet+ provides a
 2. `cd ~/sites`
 3. `valet park`
 
-That's all there is to it. Now, any project you create within your "parked" directory will automatically be served using the http://folder-name.dev convention.
+That's all there is to it. Now, any project you create within your "parked" directory will automatically be served using the http://folder-name.test convention.
 
 For example:
 
 1. `mkdir ~/sites/example`
 2. `cd ~/sites/example`
 3. `echo "<?php echo 'Valet+ at your service';" > index.php`
-4. Go to `http://example.dev`, you should see `Valet+ at your service`
+4. Go to `http://example.test`, you should see `Valet+ at your service`
 
 ## Switching PHP version
 
@@ -111,16 +114,24 @@ valet use 7.2
 
 Xdebug support is built-in. It works on port `9000` after you enable it.
 
+The `[--remote_autostart=]` option can be used by typing: `valet xdebug --remote_autostart=0` or changing both settings: `valet xdebug on --remote_autostart=1`
+
 Enable Xdebug:
 
 ```
-valet xdebug on
+valet xdebug on [--remote_autostart=]
 ```
 
 Disable Xdebug:
 
 ```
-valet xdebug off
+valet xdebug off [--remote_autostart=]
+```
+
+Enable/disable xdebug.remote_autostart:
+
+```
+valet xdebug --remote_autostart=[true/false]
 ```
 
 > :warning: Xdebug makes your environment slower. That's why we allow to fully enable / disable it. When not debugging it's best to disable it by running `valet xdebug off`.
@@ -260,11 +271,11 @@ For example:
 valet subdomain add welcome
 ```
 
-Will create `welcome.yourproject.dev`.
+Will create `welcome.yourproject.test`.
 
 ## Mailhog
 
-Mailhog is used to catch emails send from PHP. You can access the panel at [http://mailhog.dev](http://mailhog.dev).
+Mailhog is used to catch emails send from PHP. You can access the panel at [http://mailhog.test](http://mailhog.test).
 
 ## Redis
 
@@ -290,7 +301,7 @@ The most recent version of Elasticsearch – 5.6 at the time of writing – can 
 brew install elasticsearch
 ```
 
-It will run on the default port `9200`, and is accessible at [http://elasticsearch.dev/](http://elasticsearch.dev/).
+It will run on the default port `9200`, and is accessible at [http://elasticsearch.test/](http://elasticsearch.test/).
 
 Elasticsearch 2.4 is installed by default because [Magento 2.1 does not support Elasticsearch 5](http://devdocs.magento.com/guides/v2.1/config-guide/elasticsearch/es-overview.html).
 
@@ -316,6 +327,15 @@ Open current git project in [PhpStorm](https://www.jetbrains.com/phpstorm/)
 
 ```
 valet phpstorm
+```
+```
+
+## SourceTree
+
+Open current git project in [SourceTree](https://www.sourcetreeapp.com/)
+
+```
+valet sourcetree
 ```
 
 ## VScode
@@ -361,7 +381,7 @@ Automatically configure the `local.xml` and base url in the database for Magento
 
 ## Securing Sites With TLS
 
-By default, Valet serves sites over plain HTTP. However, if you would like to serve a site over encrypted TLS using HTTP/2, use the secure command. For example, if your site is being served by Valet on the example.dev domain, you should run the following command to secure it:
+By default, Valet serves sites over plain HTTP. However, if you would like to serve a site over encrypted TLS using HTTP/2, use the secure command. For example, if your site is being served by Valet on the example.test domain, you should run the following command to secure it:
 
 ```
 valet secure example
@@ -379,10 +399,15 @@ The `nginx-error.log`, `php.log` and `mysql.log` are located at `~/.valet/Log`.
 
 Other logs are located at `/usr/local/var/log`
 
+## PHP.ini location
+
+The PHP.ini location is `/usr/local/etc/php/VERSION/php.ini`.
+
 ## Valet drivers
 Valet uses drivers to handle requests. You can read more about those [here](https://laravel.com/docs/5.4/valet#custom-valet-drivers).
 
-When using Valet+ drivers are automatically cached using APCu to avoid doing a driver lookup every time there is a request. You can reset the cache for a specific site by running `valet which`.
+~~When using Valet+ drivers are automatically cached using APCu to avoid doing a driver lookup every time there is a request. You can reset the cache for a specific site by running `valet which`.~~
+APCu is temporarily turned off due to a compatibility issue with PHP-FPM, see https://github.com/weprovide/valet-plus/issues/49.
 
 By default these are included:
 
@@ -399,6 +424,12 @@ By default these are included:
 - Slim
 - Statamic
 - Zend Framework
+- Drupal
+- Typo3
+- Neos
+- Craft
+- Pimcore 5
+- Shopware 5
 
 A full list can be found [here](cli/drivers).
 
@@ -529,3 +560,4 @@ This project is a fork of [laravel/valet](https://github.com/laravel/valet). Tha
 ## Valet+ Authors
 
 - Tim Neutkens ([@timneutkens](https://github.com/timneutkens))
+- Lou van der Laarse ([@Neodork](https://github.com/Neodork))

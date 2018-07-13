@@ -42,6 +42,8 @@ class ContaoValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         if ($uri === '/install.php') {
             return $sitePath.'/web/install.php';
         }
