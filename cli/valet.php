@@ -21,7 +21,7 @@ use SebastianBergmann\Version;
 Container::setInstance(new Container);
 
 // get current version based on git describe and tags
-$version = new Version('1.0.17' , __DIR__ . '/../');
+$version = new Version('1.0.18' , __DIR__ . '/../');
 
 $app = new Application('Valet+', $version->getVersion());
 
@@ -51,7 +51,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
     Nginx::install();
     PhpFpm::install();
     DnsMasq::install();
-    Mysql::install($withMariadb ? 'mariadb' : 'mysql');
+    Mysql::install($withMariadb ? 'mariadb' : 'mysql@5.7');
     RedisTool::install();
     Mailhog::install();
     Nginx::restart();
