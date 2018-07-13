@@ -66,7 +66,7 @@ Here are a few key differences compared to the original Valet:
 4. Install Valet+ with Composer via `composer global require weprovide/valet-plus`.
 5. Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on your shell (`echo $SHELL`)
 6. Run the `valet fix` command. This will check for common issues preventing Valet+ from installing.
-7. Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
+7. Run the `valet install` command. Add --with-wpcli to install Wordpress cli also. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
 8. Once Valet+ is installed, try pinging any `*.test` domain on your terminal using a command such as `ping foobar.test`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
 
 > :information_source: Valet+ will automatically start its daemon each time your machine boots. There is no need to run `valet start` or `valet install` ever again once the initial Valet+ installation is complete.

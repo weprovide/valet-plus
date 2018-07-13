@@ -4,16 +4,14 @@ namespace Valet;
 
 use Exception;
 use ValetDriver;
+use Symfony\Component\Process\Process;
 
 class DevTools
 {
-    const WP_CLI_TOOL = 'wp-cli';
     const PV_TOOL = 'pv';
     const GEOIP_TOOL = 'geoip';
 
-
-    const SUPPORTED_TOOLS = [
-        self::WP_CLI_TOOL,
+    const BREW_SUPPORTED_TOOLS = [
         self::PV_TOOL,
         self::GEOIP_TOOL
     ];
@@ -51,15 +49,40 @@ class DevTools
      *
      * @return void
      */
-    function install()
+    function install($skipTools)
     {
         info('[devtools] Installing tools');
 
-        foreach (self::SUPPORTED_TOOLS as $tool) {
+        foreach (self::BREW_SUPPORTED_TOOLS as $tool) {
+            if (in_array($tool, $skipTools)) {
+                continue;
+            }
             if ($this->brew->installed($tool)) {
                 info('[devtools] ' . $tool . ' already installed');
             } else {
                 $this->brew->ensureInstalled($tool, []);
+            }
+        }
+
+        if (!in_array('wp-cli', $skipTools)) {
+            info('Installing wp-cli...');
+            if ($this->cli->runAsUser('wp --info')) {
+                info('wp-cli is already installed');
+            } else {
+                $process = new Process(
+                    'curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && ' .
+                    'php wp-cli.phar --info && ' .
+                    'chmod +x wp-cli.phar && ' .
+                    'sudo mv wp-cli.phar /usr/local/bin/wp && '.
+                    'wp --info'
+                );
+                $process->run(function ($type, $buffer) {
+                    if (Process::ERR === $type) {
+                        warning($buffer);
+                    } else {
+                        info($buffer);
+                    }
+                });
             }
         }
     }
@@ -73,7 +96,7 @@ class DevTools
     {
         info('[devtools] Uninstalling tools');
 
-        foreach (self::SUPPORTED_TOOLS as $tool) {
+        foreach (self::BREW_SUPPORTED_TOOLS as $tool) {
             if (!$this->brew->installed($tool)) {
                 info('[devtools] ' . $tool . ' already uninstalled');
             } else {
