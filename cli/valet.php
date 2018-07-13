@@ -690,6 +690,10 @@ if (is_dir(VALET_HOME_PATH)) {
         DevTools::phpstorm();
     })->descriptions('Open closest git project in PHPstorm');
 
+    $app->command('sourcetree', function () {
+        DevTools::sourcetree();
+    })->descriptions('Open closest git project in SourceTree');
+
     $app->command('vscode', function () {
         DevTools::vscode();
     })->descriptions('Open closest git project in Visual Studio Code');

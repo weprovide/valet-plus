@@ -328,6 +328,15 @@ Open current git project in [PhpStorm](https://www.jetbrains.com/phpstorm/)
 ```
 valet phpstorm
 ```
+```
+
+## SourceTree
+
+Open current git project in [SourceTree](https://www.sourcetreeapp.com/)
+
+```
+valet sourcetree
+```
 
 ## VScode
 
