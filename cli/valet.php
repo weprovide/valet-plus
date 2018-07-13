@@ -147,6 +147,13 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
+        if($action === 'remove') {
+            Site::unlink($name.'.'.basename(getcwd()));
+
+            info('Current working directory unlinked from '.$name.'.'.basename(getcwd()));
+            return;
+        }
+
         throw new DomainException('Specified command not found');
     })->descriptions('Manage subdomains');
 
