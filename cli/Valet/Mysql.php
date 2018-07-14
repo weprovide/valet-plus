@@ -17,7 +17,7 @@ class Mysql
     public $files;
     public $configuration;
     public $site;
-    public $systemDatabase = ['sys', 'performance_schema', 'information_schema', 'mysql'];
+    public $systemDatabase = ['sys', 'performance_schema', 'information_schema', 'mysql@5.7'];
     /**
      * @var Mysqli
      */
@@ -130,7 +130,7 @@ class Mysql
      */
     public function stop()
     {
-        $version = $this->installedVersion('mysql');
+        $version = $this->installedVersion('mysql@5.7');
         info('[' . $version . '] Stopping');
 
         $this->cli->quietly('sudo brew services stop ' . $version);
