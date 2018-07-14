@@ -173,6 +173,7 @@ class PhpFpm
         // PHP 5.6, 7.0 and 7.1 do not show this behaviour probably because they're not the default formulae.
         if(!(!$installed && $version === $this->sanitizeVersion(Brew::PHP_V72_FORMULAE))){
             info("[php@$version] Linking");
+            output($this->cli->runAsUser('brew unlink php@' . $version));
             output($this->cli->runAsUser('brew link php@' . $version.' --force --overwrite'));
         }
 
