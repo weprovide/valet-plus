@@ -328,7 +328,6 @@ Open current git project in [PhpStorm](https://www.jetbrains.com/phpstorm/)
 ```
 valet phpstorm
 ```
-```
 
 ## SourceTree
 
