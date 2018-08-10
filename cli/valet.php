@@ -389,9 +389,6 @@ if (is_dir(VALET_HOME_PATH)) {
     /**
      * Stop the daemon services.
      */
-    /**
-     * Start the daemon services.
-     */
     $app->command('stop [services]*', function ($services) {
         if(empty($services)) {
             DnsMasq::stop();
@@ -575,7 +572,7 @@ if (is_dir(VALET_HOME_PATH)) {
                     return;
                 }
             }
-            
+
             Mysql::importDatabase($name, $optional);
             return;
         }
@@ -711,6 +708,28 @@ if (is_dir(VALET_HOME_PATH)) {
 
         throw new Exception('Sub-command not found. Available: install');
     })->descriptions('Enable / disable Varnish');
+
+    $app->command('mailhog [mode]', function ($mode) {
+        $modes = ['install', 'on', 'enable', 'off', 'disable'];
+
+        if (!in_array($mode, $modes)) {
+            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
+        }
+
+        switch ($mode) {
+            case 'install':
+                Mailhog::install();
+                return;
+            case 'enable':
+            case 'on':
+                Mailhog::enable();
+                return;
+            case 'disable':
+            case 'off':
+                Mailhog::disable();
+                return;
+        }
+    })->descriptions('Enable / disable Mailhog');
 
     $app->command('tower', function () {
         DevTools::tower();

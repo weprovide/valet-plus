@@ -277,6 +277,18 @@ Will create `welcome.yourproject.test`.
 
 Mailhog is used to catch emails send from PHP. You can access the panel at [http://mailhog.test](http://mailhog.test).
 
+Enable Mailhog:
+
+```
+valet mailhog on
+```
+
+Disable Mailhog:
+
+```
+valet mailhog off
+```
+
 ## Redis
 
 Redis is automatically installed and listens on the default port `6379`. The redis socket is located at `/tmp/redis.sock`
