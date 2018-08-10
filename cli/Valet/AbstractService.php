@@ -40,7 +40,7 @@ abstract class AbstractService
     }
 
     /**
-     * Returns wether Mailhog is enabled or not.
+     * Returns wether the service is enabled or not.
      *
      * @return bool
      */
