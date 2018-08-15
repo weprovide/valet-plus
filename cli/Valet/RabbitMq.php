@@ -2,31 +2,34 @@
 
 namespace Valet;
 
-class RabbitMq
+class RabbitMq extends AbstractService
 {
     var $brew;
     var $cli;
     var $files;
-    var $configuration;
     var $site;
 
     /**
      * Create a new instance.
      *
-     * @param  Brew $brew
-     * @param  CommandLine $cli
-     * @param  Filesystem $files
+     * @param  Brew          $brew
+     * @param  CommandLine   $cli
+     * @param  Filesystem    $files
      * @param  Configuration $configuration
-     * @param  Site $site
+     * @param  Site          $site
      */
-    function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
-                         Configuration $configuration, Site $site)
-    {
-        $this->cli = $cli;
-        $this->brew = $brew;
-        $this->site = $site;
+    function __construct(
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
+        Configuration $configuration,
+        Site $site
+    ) {
+        $this->cli   = $cli;
+        $this->brew  = $brew;
+        $this->site  = $site;
         $this->files = $files;
-        $this->configuration = $configuration;
+        parent::__construct($configuration);
     }
 
     /**
@@ -36,11 +39,24 @@ class RabbitMq
      */
     function install()
     {
-        if (!$this->brew->installed('rabbitmq')) {
+        if ($this->installed()) {
+            info('[rabbitmq] already installed');
+        } else {
             $this->brew->installOrFail('rabbitmq');
             $this->cli->quietly('sudo brew services stop rabbitmq');
         }
+        $this->setEnabled(self::STATE_ENABLED);
         $this->restart();
+    }
+
+    /**
+     * Returns wether rabbitmq is installed or not.
+     *
+     * @return bool
+     */
+    function installed()
+    {
+        return $this->brew->installed('rabbitmq');
     }
 
     /**
@@ -50,6 +66,10 @@ class RabbitMq
      */
     function restart()
     {
+        if (!$this->installed() || !$this->isEnabled()) {
+            return;
+        }
+
         info('[rabbitmq] Restarting');
         $this->cli->quietlyAsUser('brew services restart rabbitmq');
     }
@@ -61,6 +81,10 @@ class RabbitMq
      */
     function stop()
     {
+        if (!$this->installed()) {
+            return;
+        }
+
         info('[rabbitmq] Stopping');
         $this->cli->quietlyAsUser('brew services stop rabbitmq');
     }

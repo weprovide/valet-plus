@@ -293,6 +293,18 @@ valet mailhog off
 
 Redis is automatically installed and listens on the default port `6379`. The redis socket is located at `/tmp/redis.sock`
 
+Enable Redis:
+
+```
+valet redis on
+```
+
+Disable Redis:
+
+```
+valet redis off
+```
+
 ## Elasticsearch
 
 Elasticsearch 2.4 can be installed using:

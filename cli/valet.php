@@ -692,21 +692,47 @@ if (is_dir(VALET_HOME_PATH)) {
     })->descriptions('Enable / disable Elasticsearch');
 
     $app->command('rabbitmq [mode]', function ($mode) {
-        if($mode === 'install' || $mode === 'on') {
-            RabbitMq::install();
-            return;
+        $modes = ['install', 'on', 'enable', 'off', 'disable'];
+
+        if (!in_array($mode, $modes)) {
+            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
         }
 
-        throw new Exception('Sub-command not found. Available: install');
+        switch ($mode) {
+            case 'install':
+                RabbitMq::install();
+                return;
+            case 'enable':
+            case 'on':
+                RabbitMq::enable();
+                return;
+            case 'disable':
+            case 'off':
+                RabbitMq::disable();
+                return;
+        }
     })->descriptions('Enable / disable RabbitMq');
 
     $app->command('varnish [mode]', function ($mode) {
-        if($mode === 'install' || $mode === 'on') {
-            Varnish::install();
-            return;
+        $modes = ['install', 'on', 'enable', 'off', 'disable'];
+
+        if (!in_array($mode, $modes)) {
+            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
         }
 
-        throw new Exception('Sub-command not found. Available: install');
+        switch ($mode) {
+            case 'install':
+                Varnish::install();
+                return;
+            case 'enable':
+            case 'on':
+                Varnish::enable();
+                return;
+            case 'disable':
+            case 'off':
+                Varnish::disable();
+                return;
+        }
     })->descriptions('Enable / disable Varnish');
 
     $app->command('mailhog [mode]', function ($mode) {
@@ -730,6 +756,28 @@ if (is_dir(VALET_HOME_PATH)) {
                 return;
         }
     })->descriptions('Enable / disable Mailhog');
+
+    $app->command('redis [mode]', function ($mode) {
+        $modes = ['install', 'on', 'enable', 'off', 'disable'];
+
+        if (!in_array($mode, $modes)) {
+            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
+        }
+
+        switch ($mode) {
+            case 'install':
+                RedisTool::install();
+                return;
+            case 'enable':
+            case 'on':
+                RedisTool::enable();
+                return;
+            case 'disable':
+            case 'off':
+                RedisTool::disable();
+                return;
+        }
+    })->descriptions('Enable / disable Redis');
 
     $app->command('tower', function () {
         DevTools::tower();
