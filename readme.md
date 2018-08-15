@@ -573,3 +573,10 @@ This project is a fork of [laravel/valet](https://github.com/laravel/valet). Tha
 - Tim Neutkens ([@timneutkens](https://github.com/timneutkens))
 - Lou van der Laarse ([@Neodork](https://github.com/Neodork))
 - Sam Granger ([@samgranger](https://github.com/samgranger))
+
+
+## Get in touch
+
+[![slack](https://p9.zdassets.com/hc/theme_assets/138842/200037786/logo.png)](https://join.slack.com/t/valet-plus/shared_invite/enQtNDE2MjU2NzgyNjQwLTc4MmI0ZTlhM2FiODRjNmQxN2RlZDVlN2E2YjUwMDBjNGViYjVkNWQ4ODJjYzI3M2U4ZGM5M2Q3ZGQ3ZDQ2YjY)
+
+We have a slack workspace available [which you can join](https://join.slack.com/t/valet-plus/shared_invite/enQtNDE2MjU2NzgyNjQwLTc4MmI0ZTlhM2FiODRjNmQxN2RlZDVlN2E2YjUwMDBjNGViYjVkNWQ4ODJjYzI3M2U4ZGM5M2Q3ZGQ3ZDQ2YjY).
