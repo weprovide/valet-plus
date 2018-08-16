@@ -165,6 +165,13 @@ Username: `root`
 
 Password: `root`
 
+## Change password
+
+```
+valet db pwd <old> <new>
+```
+
+
 ## List databases
 
 ```

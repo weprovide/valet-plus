@@ -182,16 +182,20 @@ class Mysql
      */
     public function setRootPassword($oldPwd = '', $newPwd = self::MYSQL_ROOT_PASSWORD)
     {
-        $this->cli->runAsUser("mysqladmin -u root --password='".$oldPwd."' password ".$newPwd, function() {
+        $success = true;
+        $this->cli->runAsUser("mysqladmin -u root --password='".$oldPwd."' password ".$newPwd, function() use (&$success) {
             warning('Setting password for root user failed. ');
+            $success = false;
         });
 
-        $config = $this->configuration->read();
-        if (!isset($config['mysql'])) {
-            $config['mysql'] = [];
+        if ($success !== false) {
+            $config = $this->configuration->read();
+            if (!isset($config['mysql'])) {
+                $config['mysql'] = [];
+            }
+            $config['mysql']['password'] = $newPwd;
+            $this->configuration->write($config);
         }
-        $config['mysql']['password'] = $newPwd;
-        $this->configuration->write($config);
     }
 
     /**
