@@ -12,6 +12,8 @@ class Mysql
     const MYSQL_CONF = '/usr/local/etc/my.cnf';
     const MAX_FILES_CONF = '/Library/LaunchDaemons/limit.maxfiles.plist';
     const MYSQL_DIR = '/usr/local/var/mysql';
+    const MYSQL_ROOT_PASSWORD = 'root';
+
     public $brew;
     public $cli;
     public $files;
@@ -162,7 +164,7 @@ class Mysql
             \str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents)
         );
     }
-  
+
     /**
      * Restart the Mysql service.
      */
@@ -175,10 +177,34 @@ class Mysql
 
     /**
      * Set root password of Mysql.
+     * @param string $oldPwd
+     * @param string $newPwd
      */
-    public function setRootPassword()
+    public function setRootPassword($oldPwd = '', $newPwd = self::MYSQL_ROOT_PASSWORD)
     {
-        $this->cli->quietlyAsUser("mysqladmin -u root --password='' password root");
+        $this->cli->runAsUser("mysqladmin -u root --password='".$oldPwd."' password ".$newPwd, function() {
+            warning('Setting password for root user failed. ');
+        });
+
+        $config = $this->configuration->read();
+        if (!isset($config['mysql'])) {
+            $config['mysql'] = [];
+        }
+        $config['mysql']['password'] = $newPwd;
+        $this->configuration->write($config);
+    }
+
+    /**
+     * Returns the stored password from the config. If not configured returns the default root password.
+     */
+    private function getRootPassword()
+    {
+        $config = $this->configuration->read();
+        if (isset($config['mysql']) && isset($config['mysql']['password'])) {
+            return $config['mysql']['password'];
+        }
+
+        return self::MYSQL_ROOT_PASSWORD;
     }
 
     /**
@@ -251,7 +277,7 @@ class Mysql
         }
 
         // Create connection
-        $this->link = new mysqli('localhost', 'root', 'root');
+        $this->link = new mysqli('localhost', 'root', $this->getRootPassword());
 
         // Check connection
         if ($this->link->connect_error) {
@@ -439,7 +465,7 @@ class Mysql
             $tmpName,
             \str_replace(
                 ['DB_NAME', 'DB_HOST', 'DB_USER', 'DB_PASS', 'DB_PORT'],
-                [$this->getDatabaseName($name), '127.0.0.1', 'root', 'root', '3306'],
+                [$this->getDatabaseName($name), '127.0.0.1', 'root', $this->getRootPassword(), '3306'],
                 $contents
             )
         );

@@ -600,6 +600,16 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
+        if ($run === 'pwd' || $run === 'password') {
+            if (!$name || !$optional) {
+                throw new Exception('Missing arguments to change root user password. Use: "valet db pwd <old> <new>"');
+            }
+
+            info('Setting password for root user...');
+            Mysql::setRootPassword($name, $optional);
+            return;
+        }
+
         throw new Exception('Command not found');
     })->descriptions('Database commands (list/ls, create, drop, reset, open, import, reimport, export/dump)');
 

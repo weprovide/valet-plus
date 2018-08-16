@@ -61,7 +61,10 @@ abstract class AbstractService
     {
         $config        = $this->configuration->read();
         $name          = $this->getConfigClassName();
-        $config[$name] = ['enabled' => $state];
+        if (!isset($config[$name])) {
+            $config[$name] = [];
+        }
+        $config[$name]['enabled'] = $state;
         $this->configuration->write($config);
     }
 
