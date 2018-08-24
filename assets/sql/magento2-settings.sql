@@ -1,10 +1,10 @@
--- Update all dev settings to false
+-- Update all dev settings (css merge, js merge, asset minification, static signing) to false
 UPDATE `core_config_data`
 SET `value` = 0
 WHERE (`path` REGEXP '^dev.*')
 AND `value` = 1;
 
--- Update Sphinx when using Mirasvit Sphinx Search
+-- Update sphinx search engine to mysql
 UPDATE `core_config_data`
 SET `value` = 'mysql2'
 WHERE `value` = 'sphinx';
