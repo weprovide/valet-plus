@@ -50,34 +50,16 @@ abstract class ValetDriver
             $drivers[] = $customSiteDriver;
         }
 
-        $drivers = array_merge($drivers, static::driversIn(VALET_HOME_PATH.'/Drivers'));
+        $drivers = array_merge(
+            $drivers,
+            static::driversIn(VALET_HOME_PATH.'/Drivers'),
+            static::driversIn(__DIR__ .'/')
+        );
 
         if(!$noCache && $cachedDriver) {
             $driver = new $cachedDriver;
             return $driver;
         }
-
-        $drivers[] = 'Magento2ValetDriver';
-        $drivers[] = 'MagentoValetDriver';
-        $drivers[] = 'BedrockValetDriver';
-        $drivers[] = 'WordPressValetDriver';
-        $drivers[] = 'LaravelValetDriver';
-        $drivers[] = 'ContaoValetDriver';
-        $drivers[] = 'SymfonyValetDriver';
-        $drivers[] = 'CraftValetDriver';
-        $drivers[] = 'StatamicValetDriver';
-        $drivers[] = 'StatamicV1ValetDriver';
-        $drivers[] = 'CakeValetDriver';
-        $drivers[] = 'SculpinValetDriver';
-        $drivers[] = 'JigsawValetDriver';
-        $drivers[] = 'KirbyValetDriver';
-        $drivers[] = 'KatanaValetDriver';
-        $drivers[] = 'JoomlaValetDriver';
-        $drivers[] = 'DrupalValetDriver';
-        $drivers[] = 'Concrete5ValetDriver';
-        $drivers[] = 'Typo3ValetDriver';
-        $drivers[] = 'NeosValetDriver';
-        $drivers[] = 'BasicValetDriver';
 
         foreach ($drivers as $driver) {
             $driverInstance = new $driver;
@@ -113,19 +95,25 @@ abstract class ValetDriver
     /**
      * Get all of the driver classes in a given path.
      *
-     * @param  string  $path
+     * @param  string $path
+     * @param  array  $blacklist
+     *
      * @return array
      */
-    public static function driversIn($path)
+    public static function driversIn($path, $blacklist = [])
     {
         if (! is_dir($path)) {
             return [];
         }
 
+        $blacklist[] = 'ValetDriver';
+        $blacklist[] = 'BasicValetDriver';
+        $blacklist = array_map(function($i) { return $i.'.php'; }, $blacklist);
+
         $drivers = [];
 
         foreach (scandir($path) as $file) {
-            if ($file !== 'ValetDriver.php' && strpos($file, 'ValetDriver') !== false) {
+            if (!in_array($file, $blacklist) && strpos($file, 'ValetDriver') !== false) {
                 require_once $path.'/'.$file;
 
                 $drivers[] = basename($file, '.php');
