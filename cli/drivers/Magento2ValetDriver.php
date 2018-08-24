@@ -25,16 +25,15 @@ class Magento2ValetDriver extends ValetDriver
             $devtools->cli->quietlyAsUser('bin/magento module:enable --all');
         }
 
-        info('Setting base url...');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/unsecure/base_url ' . $url . '/');
-        $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/secure/base_url ' . $url . '/');
+        info('Preparing Magento 2 for local development...');
+        $devtools->cli->quietlyAsUser("n98-magerun2 db:import {$this->sqlSettingsPath()}");
 
         info('Setting elastic search hostname...');
         $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
-        
+
         info('Enabling URL rewrites...');
         $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/seo/use_rewrites 1');
-        
+
         info('Flushing cache...');
         $devtools->cli->quietlyAsUser('n98-magerun2 cache:flush');
 
@@ -79,7 +78,7 @@ class Magento2ValetDriver extends ValetDriver
     {
         $isMagentoStatic = false;
         $resource = $uri;
-        
+
         if(strpos($uri,'/errors') === 0 && file_exists($sitePath.'/pub'.$uri)) {
             return $sitePath.'/pub'.$uri;
         }
@@ -139,7 +138,7 @@ class Magento2ValetDriver extends ValetDriver
         if(isset($_GET['profile'])) {
             $_SERVER['MAGE_PROFILER'] = 'html';
         }
-        
+
         if(strpos($uri, '/errors') === 0) {
             $file = $sitePath . '/pub' . $uri;
             if (file_exists($file)) {
@@ -180,4 +179,21 @@ class Magento2ValetDriver extends ValetDriver
 
         return $sitePath . '/pub/index.php';
     }
+
+    public function valetDir()
+    {
+        $currentPath = realpath(dirname(__FILE__));
+        $valetPath = dirname(dirname($currentPath));
+        return $valetPath;
+    }
+
+    protected function sqlSettingsPath()
+    {
+        $location = $this->valetDir() . '/assets/sql/magento2-settings.sql';
+        if(!file_exists($location)) {
+            throw new \Exception('Settings Sql file missing');
+        }
+        return $location;
+    }
+
 }
