@@ -109,12 +109,16 @@ class Magento2ValetDriver extends ValetDriver
         $isMagentoStatic = false;
         $resource = $uri;
 
-        if(strpos($uri,'/errors') === 0 && file_exists($sitePath.'/pub'.$uri)) {
-            return $sitePath.'/pub'.$uri;
+        if(strpos($uri,'/pub') === 0 ) {
+            $uri = str_replace('/pub','',$uri);
         }
 
-        if(strpos($uri,'/pub') === 0 && file_exists($sitePath.'/setup'.$uri)) {
-            return $sitePath.'/setup'.$uri;
+        if(strpos($uri,'/setup') === 0 && file_exists($sitePath.$uri)) {
+            return $sitePath.$uri;
+        }
+
+        if(strpos($uri,'/errors') === 0 && file_exists($sitePath.'/pub'.$uri)) {
+            return $sitePath.'/pub'.$uri;
         }
 
         if (strpos($uri, '/static/') !== false) {
@@ -127,7 +131,7 @@ class Magento2ValetDriver extends ValetDriver
             $isMagentoStatic = true;
         }
 
-        if (!$isMagentoStatic && strpos($uri, '/media/') === false && strpos($uri, '/errors/') === false) {
+        if (!$isMagentoStatic && strpos($uri, '/media/') === false) {
             return false;
         }
 
