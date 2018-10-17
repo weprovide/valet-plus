@@ -9,13 +9,13 @@ class Brew
     const PHP_V56_FORMULAE = 'php@5.6';
     const PHP_V70_FORMULAE = 'php@7.0';
     const PHP_V71_FORMULAE = 'php@7.1';
-    const PHP_V72_FORMULAE = 'php';
+    const PHP_V72_FORMULAE = 'php@7.2';
 
     const SUPPORTED_PHP_FORMULAE = [
         self::PHP_V56_FORMULAE,
         self::PHP_V70_FORMULAE,
         self::PHP_V71_FORMULAE,
-        self::PHP_V72_FORMULAE,
+        self::PHP_V72_FORMULAE
     ];
 
     var $cli, $files;
