@@ -161,9 +161,13 @@ class PhpFpm
         info('[libjpeg] Relinking');
         $this->cli->passthru('sudo ln -fs /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib');
 
-        $installed = $this->brew->installed('php@' . $version);
-        if (!$installed) {
-            $this->brew->ensureInstalled('php@' . $version);
+        if ($version == "7.2") {
+            $this->brew->ensureInstalled(Brew::PHP_V72_FORMULAE);
+        } else {
+            $installed = $this->brew->installed('php@' . $version);
+            if (!$installed) {
+                $this->brew->ensureInstalled('php@' . $version);
+            }
         }
 
         // If php@7.2 was not installed, it installed and automagically linked itself.
