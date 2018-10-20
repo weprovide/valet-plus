@@ -6,16 +6,20 @@ use DomainException;
 
 class Brew
 {
-    const PHP_V56_FORMULAE = 'php@5.6';
-    const PHP_V70_FORMULAE = 'php@7.0';
-    const PHP_V71_FORMULAE = 'php@7.1';
-    const PHP_V72_FORMULAE = 'php@7.2';
+    const PHP_V56_VERSION = '5.6';
+    const PHP_V56_BREWNAME = 'php@5.6';
+    const PHP_V70_VERSION = '7.0';
+    const PHP_V70_BREWNAME = 'php@7.0';
+    const PHP_V71_VERSION = '7.1';
+    const PHP_V71_BREWNAME = 'php@7.1';
+    const PHP_V72_VERSION = '7.2';
+    const PHP_V72_BREWNAME = 'php';
 
     const SUPPORTED_PHP_FORMULAE = [
-        self::PHP_V56_FORMULAE,
-        self::PHP_V70_FORMULAE,
-        self::PHP_V71_FORMULAE,
-        self::PHP_V72_FORMULAE
+        self::PHP_V56_VERSION => self::PHP_V56_BREWNAME,
+        self::PHP_V70_VERSION => self::PHP_V70_BREWNAME,
+        self::PHP_V71_VERSION => self::PHP_V71_BREWNAME,
+        self::PHP_V72_VERSION => self::PHP_V72_BREWNAME
     ];
 
     var $cli, $files;
@@ -50,8 +54,8 @@ class Brew
      */
     function hasInstalledPhp()
     {
-        foreach (Brew::SUPPORTED_PHP_FORMULAE as $version) {
-            if ($this->installed($version)) {
+        foreach (Brew::SUPPORTED_PHP_FORMULAE as $version => $brewname) {
+            if ($this->installed($brewname)) {
                 return true;
             }
         }
@@ -213,8 +217,7 @@ class Brew
         $services = is_array($services) ? $services : func_get_args();
 
         foreach ($services as $service) {
-            // Brew list doesn't show php@7.2 eventhough it is installed.
-            if ($this->installed($service) || $service === self::PHP_V72_FORMULAE) {
+            if ($this->installed($service)) {
                 info('[' . $service . '] Restarting');
 
                 $this->cli->quietly('sudo brew services stop ' . $service);
@@ -233,8 +236,7 @@ class Brew
         $services = is_array($services) ? $services : func_get_args();
 
         foreach ($services as $service) {
-            // Brew list doesn't show php@7.2 eventhough it is installed.
-            if ($this->installed($service) || $service === self::PHP_V72_FORMULAE) {
+            if ($this->installed($service)) {
                 info('[' . $service . '] Stopping');
 
                 $this->cli->quietly('sudo brew services stop ' . $service);
@@ -249,7 +251,7 @@ class Brew
      *
      * @return string
      */
-    function linkedPhp($asFormula = false)
+    function linkedPhp()
     {
         if (!$this->files->isLink('/usr/local/bin/php')) {
             throw new DomainException("Unable to determine linked PHP.");
@@ -259,13 +261,8 @@ class Brew
 
         $versions = self::SUPPORTED_PHP_FORMULAE;
 
-        foreach ($versions as $version) {
-            $version = str_replace('php@', '', $version);
-            if (strpos($resolvedPath, $version) !== false) {
-                if ($asFormula) {
-                    $version = 'php@' . $version;
-                }
-
+        foreach ($versions as $version => $brewname) {
+            if (strpos($resolvedPath, '/'.$brewname.'/') !== false) {
                 return $version;
             }
         }
@@ -281,6 +278,6 @@ class Brew
      */
     function restartLinkedPhp()
     {
-        $this->restartService($this->linkedPhp(true));
+        $this->restartService(Brew::SUPPORTED_PHP_FORMULAE[$this->linkedPhp()]);
     }
 }
