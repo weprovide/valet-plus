@@ -18,6 +18,10 @@ class Brew
         self::PHP_V72_FORMULAE
     ];
 
+    const PHP_FORMULAE_INSTALLED_ALIASES = [
+        self::PHP_V72_FORMULAE => 'php'
+    ];
+
     var $cli, $files;
 
     /**
@@ -40,6 +44,9 @@ class Brew
      */
     function installed($formula)
     {
+        if (array_key_exists($formula, self::PHP_FORMULAE_INSTALLED_ALIASES)) {
+            $formula = self::PHP_FORMULAE_INSTALLED_ALIASES[$formula];
+        }
         return in_array($formula, explode(PHP_EOL, $this->cli->runAsUser('brew list | grep ' . $formula)));
     }
 

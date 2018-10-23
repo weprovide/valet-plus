@@ -13,6 +13,7 @@ class Pecl
     const APCU_EXTENSION = 'apcu';
     const APCU_BC_EXTENSION = 'apcu_bc';
     const GEOIP_EXTENSION = 'geoip';
+    const IMAGICK_EXTENSION = 'imagick';
     const IONCUBE_LOADER_EXTENSION = 'ioncube_loader_dar';
 
     // File extensions.
@@ -121,6 +122,9 @@ class Pecl
             'default' => false,
             'extension_type' => self::ZEND_EXTENSION_TYPE,
             'extension_php_name' => 'the ionCube PHP Loader'
+        ],
+        self::IMAGICK_EXTENSION => [
+
         ]
     ];
 
