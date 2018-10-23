@@ -10,12 +10,16 @@ class DevTools
     const WP_CLI_TOOL = 'wp-cli';
     const PV_TOOL = 'pv';
     const GEOIP_TOOL = 'geoip';
+    const IMAGEMAGICK_TOOL = 'imagemagick';
+    const PKGCONFIG_TOOL = 'pkgconfig';
 
 
     const SUPPORTED_TOOLS = [
         self::WP_CLI_TOOL,
         self::PV_TOOL,
-        self::GEOIP_TOOL
+        self::GEOIP_TOOL,
+        self::IMAGEMAGICK_TOOL,
+        self::PKGCONFIG_TOOL
     ];
 
     var $brew;
