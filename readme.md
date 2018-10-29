@@ -58,14 +58,17 @@ Here are a few key differences compared to the original Valet:
 
 > :warning: Valet+ requires macOS and [Homebrew](https://brew.sh/). Before installation, you should make sure that no other programs such as Apache or Nginx are binding to your local machine's port 80.
 
-1. Install or update [Homebrew](https://brew.sh/) to the latest version using brew update.
-2. Install PHP 7.1 using Homebrew via `brew install php@7.1`.
-3. Install Composer using Homebrew via `brew install composer`.
-4. Install Valet+ with Composer via `composer global require techdivision/valet-plus`.
-5. Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on your shell (`echo $SHELL`)
-6. Run the `valet fix` command. This will check for common issues preventing Valet+ from installing.
-7. Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
-8. Once Valet+ is installed, try pinging any `*.test` domain on your terminal using a command such as `ping foobar.test`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
+1.  Install or update [Homebrew](https://brew.sh/) to the latest version using brew update.
+2.  Install PHP 7.1 using Homebrew via `brew install php@7.1`.
+3.  Link PHP 7.1 using Homebrew via `brew link --force --override php@7.1`.
+4.  Install Composer using Homebrew via `brew install composer`.
+5.  Install Valet+ with Composer via `composer global require techdivision/valet-plus`.
+6.  Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on your shell (`echo $SHELL`)
+7.  Run the `valet fix` command. This will check for common issues preventing Valet+ from installing.
+8.  Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
+9.  Link MySQL Binaries via `brew link --force --override mysql@5.7`
+10. Once Valet+ is installed, try pinging any `*.test` domain on your terminal using a command such as `ping foobar.test`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
+
 
 > :information_source: Valet+ will automatically start its daemon each time your machine boots. There is no need to run `valet start` or `valet install` ever again once the initial Valet+ installation is complete.
 
