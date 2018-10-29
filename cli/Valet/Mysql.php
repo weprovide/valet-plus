@@ -85,6 +85,11 @@ class Mysql
             $this->brew->installOrFail('mysql-utilities');
         }
 
+        // link installed binaries via brew
+        if ($this->installedVersion()) {
+            $this->brew->link($type);
+        }
+
         $this->stop();
         $this->installConfiguration($type);
         $this->restart();
@@ -117,6 +122,27 @@ class Mysql
         );
     }
 
+    /**
+     * Fixing mysql installation
+     *
+     * @return void
+     */
+    function fix($withMariadb)
+    {
+        // Remove old mysql packages.
+        info('Reinstall and remove main mysql package and reinstall mysql@5.7');
+        $this->brew->stopService(array('mysql', 'mysql@5.7'));
+        $this->cli->runAsUser('brew uninstall mysql mysql@5.7 --force');
+        $this::install($withMariadb ? 'mariadb' : 'mysql@5.7');
+    }
+
+    /**
+     * Unlink mysql configuration
+     *
+     * @param string $type
+     *
+     * @return void
+     */
     function removeConfiguration($type = 'mysql@5.7') {
         $this->files->unlink(static::MYSQL_CONF);
         $this->files->unlink(static::MYSQL_CONF.'.default');
@@ -148,6 +174,11 @@ class Mysql
         $this->cli->quietlyAsUser('brew services stop '.$version);
     }
 
+    /**
+     * Sets root password
+     *
+     * @return void
+     */
     function setRootPassword() {
         $this->cli->quietlyAsUser("mysqladmin -u root --password='' password root");
     }
