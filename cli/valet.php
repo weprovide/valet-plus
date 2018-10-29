@@ -21,7 +21,7 @@ use SebastianBergmann\Version;
 Container::setInstance(new Container);
 
 // get current version based on git describe and tags
-$version = new Version('1.5.1' , __DIR__ . '/../');
+$version = new Version('1.5.2' , __DIR__ . '/../');
 
 $app = new Application('Valet+', $version->getVersion());
 
@@ -66,9 +66,10 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
 /**
  * Fix common problems within the Valet+ installation.
  */
-$app->command('fix', function () {
+$app->command('fix [--with-mariadb]', function ($withMariadb) {
     PhpFpm::fix();
     Pecl::fix();
+    Mysql::fix($withMariadb);
 })->descriptions('Fixes common installation problems that prevent Valet+ from working');
 
 /**
