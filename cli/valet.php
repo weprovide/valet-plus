@@ -854,7 +854,7 @@ if (is_dir(VALET_HOME_PATH)) {
         }
 
         $path = $logs[$service];
-        if (!file_exists($path)) {
+        if (!Logs::exists($path)) {
             warning('The path `' . $path . '` does not (yet) exists');
             return;
         }

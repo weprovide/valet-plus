@@ -10,6 +10,19 @@ class Logs
 
     public function open($file)
     {
-        $this->cli->quietly('open ' . $file);
+
+        $this->cli->quietly('open ' . $this->resolvePath($file));
+    }
+
+    public function exists($file)
+    {
+        $file = $this->resolvePath($file);
+
+        return file_exists($file);
+    }
+
+    private function resolvePath($file)
+    {
+        return str_replace('$HOME', $_SERVER['HOME'], $file);
     }
 }
