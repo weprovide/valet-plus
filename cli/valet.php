@@ -837,6 +837,30 @@ if (is_dir(VALET_HOME_PATH)) {
 
         info("The [$url] will no longer proxy traffic and will use the Valet driver instead.");
     })->descriptions('Disable proxying for a site re-instating handling with a Valet driver.');
+
+    $app->command('logs [service]', function ($service) {
+        $logs = [
+            'php' => '$HOME/.valet/Log/php.log',
+            'php-fpm' => '/usr/local/var/log/php-fpm.log',
+            'nginx' => '$HOME/.valet/Log/nginx-error.log',
+            'mysql' => '$HOME/.valet/Log/mysqlll.log',
+            'mailhog' => '/usr/local/var/log/mailhog.log',
+            'redis' => '/usr/local/var/log/redis.log',
+        ];
+
+        if (!isset($logs[$service])) {
+            warning('No logs found for [' . $service . ']');
+            return;
+        }
+
+        $path = $logs[$service];
+        if (!Logs::exists($path)) {
+            warning('The path `' . $path . '` does not (yet) exists');
+            return;
+        }
+
+        Logs::open($path);
+    })->descriptions('Open the logs for the specified service. (php, php-fpm, nginx, mysql, mailhog, redis)');
 }
 
 /**
