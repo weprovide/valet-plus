@@ -67,7 +67,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
  */
 $app->command('fix [--reinstall]', function ($reinstall) {
     if (file_exists($_SERVER['HOME'] . '/.my.cnf')) {
-        warning('You have an .my.cnf file in you home directory. This can affect the mysql installation negatively.');
+        warning('You have an .my.cnf file in your home directory. This can affect the mysql installation negatively.');
     }
 
     PhpFpm::fix($reinstall);
