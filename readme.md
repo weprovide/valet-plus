@@ -260,6 +260,13 @@ When no name is given it'll try to find the closest git repository directory nam
 valet db open
 ```
 
+## Logging
+
+To easily read the log file of php, php-fpm, nginx, mysql, mailhog or redis you can use command below.
+```
+valet logs <logname>
+```
+
 ## Subdomains
 
 You can manage subdomains for the current working directory using:

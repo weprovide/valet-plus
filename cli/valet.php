@@ -849,7 +849,7 @@ if (is_dir(VALET_HOME_PATH)) {
         ];
 
         if (!isset($logs[$service])) {
-            warning('No logs found for [' . $service . ']');
+            warning('No logs found for [' . $service . ']. Available logs: '.implode(', ', array_keys($logs)));
             return;
         }
 
