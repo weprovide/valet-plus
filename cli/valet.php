@@ -66,6 +66,10 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
  * Fix common problems within the Valet+ installation.
  */
 $app->command('fix [--reinstall]', function ($reinstall) {
+    if (file_exists($_SERVER['HOME'] . '/.my.cnf')) {
+        warning('You have an .my.cnf file in you home directory. This can affect the mysql installation negatively.');
+    }
+
     PhpFpm::fix($reinstall);
     Pecl::fix();
 })->descriptions('Fixes common installation problems that prevent Valet+ from working');
