@@ -847,7 +847,7 @@ if (is_dir(VALET_HOME_PATH)) {
             'php' => '$HOME/.valet/Log/php.log',
             'php-fpm' => '/usr/local/var/log/php-fpm.log',
             'nginx' => '$HOME/.valet/Log/nginx-error.log',
-            'mysql' => '$HOME/.valet/Log/mysqlll.log',
+            'mysql' => '$HOME/.valet/Log/mysql.log',
             'mailhog' => '/usr/local/var/log/mailhog.log',
             'redis' => '/usr/local/var/log/redis.log',
         ];
