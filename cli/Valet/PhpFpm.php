@@ -140,13 +140,15 @@ class PhpFpm
     }
 
     /**
-     * Switch between versions of installed PHP
+     * Switch between versions of installed PHP. Switch to the provided version.
+     *
+     * @param $version
      */
     function switchTo($version)
     {
         $currentVersion = $this->brew->linkedPhp();
 
-        if(!isset(BREW::SUPPORTED_PHP_FORMULAE[$version])){
+        if (!array_key_exists($version, BREW::SUPPORTED_PHP_FORMULAE)) {
             throw new DomainException("This version of PHP not available. The following versions are available: " . implode(' ', array_keys(BREW::SUPPORTED_PHP_FORMULAE)));
         }
 
