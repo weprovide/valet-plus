@@ -130,25 +130,26 @@ class PhpFpm
     function fpmConfigPath()
     {
         $confLookup = [
-            $this->sanitizeVersion(Brew::PHP_V72_FORMULAE) => '/usr/local/etc/php/7.2/php-fpm.d/www.conf',
-            $this->sanitizeVersion(Brew::PHP_V71_FORMULAE) => '/usr/local/etc/php/7.1/php-fpm.d/www.conf',
-            $this->sanitizeVersion(Brew::PHP_V70_FORMULAE) => '/usr/local/etc/php/7.0/php-fpm.d/www.conf',
-            $this->sanitizeVersion(Brew::PHP_V56_FORMULAE) => '/usr/local/etc/php/5.6/php-fpm.conf',
+            Brew::PHP_V72_VERSION => '/usr/local/etc/php/7.2/php-fpm.d/www.conf',
+            Brew::PHP_V71_VERSION => '/usr/local/etc/php/7.1/php-fpm.d/www.conf',
+            Brew::PHP_V70_VERSION => '/usr/local/etc/php/7.0/php-fpm.d/www.conf',
+            Brew::PHP_V56_VERSION => '/usr/local/etc/php/5.6/php-fpm.conf',
         ];
 
         return $confLookup[$this->brew->linkedPhp()];
     }
 
     /**
-     * Switch between versions of installed PHP
+     * Switch between versions of installed PHP. Switch to the provided version.
+     *
+     * @param $version
      */
     function switchTo($version)
     {
-        $versions = $this->sanitizeVersion(Brew::SUPPORTED_PHP_FORMULAE);
         $currentVersion = $this->brew->linkedPhp();
 
-        if(!in_array($version, $versions)){
-            throw new DomainException("This version of PHP not available. The following versions are available: " . implode(' ', $versions));
+        if (!array_key_exists($version, BREW::SUPPORTED_PHP_FORMULAE)) {
+            throw new DomainException("This version of PHP not available. The following versions are available: " . implode(' ', array_keys(BREW::SUPPORTED_PHP_FORMULAE)));
         }
 
         // If the current version equals that of the current PHP version, do not switch.
@@ -158,27 +159,25 @@ class PhpFpm
         }
 
         info("[php@$currentVersion] Unlinking");
-        output($this->cli->runAsUser('brew unlink php@' . $currentVersion));
+        output($this->cli->runAsUser('brew unlink ' . BREW::SUPPORTED_PHP_FORMULAE[$currentVersion]));
 
         info('[libjpeg] Relinking');
         $this->cli->passthru('sudo ln -fs /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib');
 
-        $installed = $this->brew->installed('php@' . $version);
+        $installed = $this->brew->installed(BREW::SUPPORTED_PHP_FORMULAE[$version]);
         if (!$installed) {
-            $this->brew->ensureInstalled('php@' . $version);
+            $this->brew->ensureInstalled(BREW::SUPPORTED_PHP_FORMULAE[$version]);
         }
 
-        // If php@7.2 was not installed, it installed and automagically linked itself.
-        // If we try to link it again it will throw an already linked warning.
-        // PHP 5.6, 7.0 and 7.1 do not show this behaviour probably because they're not the default formulae.
-        if(!(!$installed && $version === $this->sanitizeVersion(Brew::PHP_V72_FORMULAE))){
+        if($installed){
             info("[php@$version] Linking");
-            output($this->cli->runAsUser('brew link php@' . $version.' --force --overwrite'));
+            output($this->cli->runAsUser('brew unlink ' . BREW::SUPPORTED_PHP_FORMULAE[$version]));
+            output($this->cli->runAsUser('brew link ' . BREW::SUPPORTED_PHP_FORMULAE[$version].' --force --overwrite'));
         }
 
         $this->stop();
         $this->install();
-        info("Valet is now using php@$version");
+        info("Valet is now using ".BREW::SUPPORTED_PHP_FORMULAE[$version]);
     }
 
     /**
@@ -360,10 +359,10 @@ class PhpFpm
 
         // If the current php is not 7.1, link 7.1.
         info('Installing and linking new PHP homebrew/core version.');
-        output($this->cli->runAsUser('brew uninstall ' . Brew::PHP_V71_FORMULAE));
-        output($this->cli->runAsUser('brew install ' . Brew::PHP_V71_FORMULAE));
-        output($this->cli->runAsUser('brew unlink '. Brew::PHP_V71_FORMULAE));
-        output($this->cli->runAsUser('brew link '.Brew::PHP_V71_FORMULAE.' --force --overwrite'));
+        output($this->cli->runAsUser('brew uninstall ' . Brew::PHP_V71_BREWNAME));
+        output($this->cli->runAsUser('brew install ' . Brew::PHP_V71_BREWNAME));
+        output($this->cli->runAsUser('brew unlink '. Brew::PHP_V71_BREWNAME));
+        output($this->cli->runAsUser('brew link '.Brew::PHP_V71_BREWNAME.' --force --overwrite'));
 
         if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {
             info('[brew] untapping formulae ' . self::DEPRECATED_PHP_TAP);
@@ -373,25 +372,5 @@ class PhpFpm
         warning("Please check your linked php version, you might need to restart your terminal!".
             "\nLinked PHP should be php 7.1:");
         output($this->cli->runAsUser('php -v'));
-    }
-
-    /**
-     * Strips 'php@' from a string or array of strings.
-     *
-     * @param $argument
-     * @return array|mixed
-     */
-    private function sanitizeVersion($argument)
-    {
-        if(is_array($argument)){
-            foreach($argument as $key => $version){
-                $argument[$key] = str_replace('php@', '', $version);
-            }
-        }else{
-            $argument = str_replace('php@', '', $argument);
-        }
-
-
-        return $argument;
     }
 }

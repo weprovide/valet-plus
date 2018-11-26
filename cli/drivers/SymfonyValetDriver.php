@@ -45,6 +45,8 @@ class SymfonyValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         if (file_exists($frontControllerPath = $sitePath.'/web/app_dev.php')) {
             return $frontControllerPath;
         } elseif (file_exists($frontControllerPath = $sitePath.'/web/app.php')) {

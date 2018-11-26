@@ -2,32 +2,36 @@
 
 namespace Valet;
 
-class RedisTool
+class RedisTool extends AbstractService
 {
     var $brew;
     var $cli;
     var $files;
-    var $configuration;
     var $site;
+
     const REDIS_CONF = '/usr/local/etc/redis.conf';
 
     /**
      * Create a new instance.
      *
-     * @param  Brew $brew
-     * @param  CommandLine $cli
-     * @param  Filesystem $files
+     * @param  Brew          $brew
+     * @param  CommandLine   $cli
+     * @param  Filesystem    $files
      * @param  Configuration $configuration
-     * @param  Site $site
+     * @param  Site          $site
      */
-    function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
-                         Configuration $configuration, Site $site)
-    {
-        $this->cli = $cli;
-        $this->brew = $brew;
-        $this->site = $site;
+    function __construct(
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
+        Configuration $configuration,
+        Site $site
+    ) {
+        $this->cli   = $cli;
+        $this->brew  = $brew;
+        $this->site  = $site;
         $this->files = $files;
-        $this->configuration = $configuration;
+        parent::__construct($configuration);
     }
 
     /**
@@ -37,13 +41,26 @@ class RedisTool
      */
     function install()
     {
-        if (!$this->brew->installed('redis')) {
+        if ($this->installed()) {
+            info('[redis] already installed');
+        } else {
             $this->brew->installOrFail('redis');
             $this->cli->quietly('sudo brew services stop redis');
         }
 
         $this->installConfiguration();
+        $this->setEnabled(self::STATE_ENABLED);
         $this->restart();
+    }
+
+    /**
+     * Returns wether redis is installed or not.
+     *
+     * @return bool
+     */
+    function installed()
+    {
+        return $this->brew->installed('redis');
     }
 
     /**
@@ -63,6 +80,10 @@ class RedisTool
      */
     function restart()
     {
+        if (!$this->installed() || !$this->isEnabled()) {
+            return;
+        }
+
         info('[redis] Restarting');
         $this->cli->quietlyAsUser('brew services restart redis');
     }
@@ -74,6 +95,10 @@ class RedisTool
      */
     function stop()
     {
+        if (!$this->installed()) {
+            return;
+        }
+
         info('[redis] Stopping');
         $this->cli->quietly('sudo brew services stop redis');
         $this->cli->quietlyAsUser('brew services stop redis');
