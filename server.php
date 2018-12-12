@@ -50,7 +50,7 @@ if(!$valetSitePath) {
         }
     }
 
-    if (is_null($valetSitePath)) {
+    if (!$valetSitePath) {
         http_response_code(404);
         require __DIR__.'/cli/templates/404.php';
         exit;
