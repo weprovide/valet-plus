@@ -32,6 +32,20 @@ if (strpos($siteName, 'www.') === 0) {
 }
 
 /**
+ * Determine a possible rewrite.
+ */
+if (isset($valetConfig['rewrites'])) {
+    foreach ($valetConfig['rewrites'] as $site => $rewrites) {
+        foreach ($rewrites as $rewrite) {
+            if ($rewrite == $siteName) {
+                $siteName = $site;
+                break;
+            }
+        }
+    }
+}
+
+/**
  * Determine the fully qualified path to the site.
  */
 $valetSitePath = apcu_fetch('valet_site_path'.$siteName);

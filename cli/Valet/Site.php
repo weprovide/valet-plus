@@ -396,4 +396,79 @@ class Site
     {
         return VALET_HOME_PATH.'/Certificates';
     }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    function rewrites()
+    {
+        $config   = $this->config->read();
+        $rewrites = [];
+
+        if (isset($config['rewrites']) && isset($config['rewrites'])) {
+            foreach ($config['rewrites'] as $site => $_rewrites) {
+                foreach ($_rewrites as $rewrite) {
+                    $rewrites[] = [$site, $rewrite];
+                }
+            }
+        }
+
+        return collect($rewrites);
+    }
+
+    /**
+     * @param $url
+     * @param $host
+     * @return bool|string
+     */
+    function rewrite($url, $host)
+    {
+        $url    = (strpos($url, 'www.') === 0 ? substr($url, 4) : $url);
+        $config = $this->config->read();
+
+        // Store config
+        if (!isset($config['rewrites'])) {
+            $config['rewrites'] = [];
+        }
+        if (!isset($config['rewrites'][$host])) {
+            $config['rewrites'][$host] = [];
+        }
+        if (in_array($url, $config['rewrites'][$host])) {
+            return false;
+        }
+        $config['rewrites'][$host][] = $url;
+        $this->config->write($config);
+
+        // Add rewrite to /etc/hosts file
+        $this->files->append('/etc/hosts', "\n127.0.0.1  www.$url  $url");
+
+        return $url;
+    }
+
+    /**
+     * @param $url
+     * @return bool|string
+     */
+    function unrewrite($url)
+    {
+        $url    = (strpos($url, 'www.') === 0 ? substr($url, 4) : $url);
+        $config = $this->config->read();
+        if (isset($config['rewrites'])) {
+            // Remove from config
+            foreach ($config['rewrites'] as $site => $rewrites) {
+                $config['rewrites'][$site] = array_filter(array_diff($config['rewrites'][$site], [$url]));
+            }
+            $config['rewrites'] = array_filter($config['rewrites']);
+            $this->config->write($config);
+
+            // Remove from /etc/hosts file
+            $hosts = $this->files->get('/etc/hosts');
+            $hosts = str_replace("\n127.0.0.1  www.$url  $url", "", $hosts);
+            $this->files->put('/etc/hosts', $hosts);
+
+            return $url;
+        }
+
+        return false;
+    }
 }
