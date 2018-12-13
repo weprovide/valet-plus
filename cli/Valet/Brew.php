@@ -13,13 +13,16 @@ class Brew
     const PHP_V71_VERSION = '7.1';
     const PHP_V71_BREWNAME = 'php@7.1';
     const PHP_V72_VERSION = '7.2';
-    const PHP_V72_BREWNAME = 'php';
+    const PHP_V72_BREWNAME = 'php@7.2';
+    const PHP_V73_VERSION = '7.3';
+    const PHP_V73_BREWNAME = 'php';
 
     const SUPPORTED_PHP_FORMULAE = [
         self::PHP_V56_VERSION => self::PHP_V56_BREWNAME,
         self::PHP_V70_VERSION => self::PHP_V70_BREWNAME,
         self::PHP_V71_VERSION => self::PHP_V71_BREWNAME,
-        self::PHP_V72_VERSION => self::PHP_V72_BREWNAME
+        self::PHP_V72_VERSION => self::PHP_V72_BREWNAME,
+        self::PHP_V73_VERSION => self::PHP_V73_BREWNAME
     ];
 
     var $cli, $files;
