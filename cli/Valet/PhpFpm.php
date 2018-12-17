@@ -128,6 +128,7 @@ class PhpFpm
     function fpmConfigPath()
     {
         $confLookup = [
+            $this->sanitizeVersion(Brew::PHP_V73_FORMULAE) => '/usr/local/etc/php/7.3/php-fpm.d/www.conf',
             $this->sanitizeVersion(Brew::PHP_V72_FORMULAE) => '/usr/local/etc/php/7.2/php-fpm.d/www.conf',
             $this->sanitizeVersion(Brew::PHP_V71_FORMULAE) => '/usr/local/etc/php/7.1/php-fpm.d/www.conf',
             $this->sanitizeVersion(Brew::PHP_V70_FORMULAE) => '/usr/local/etc/php/7.0/php-fpm.d/www.conf',
@@ -166,10 +167,10 @@ class PhpFpm
             $this->brew->ensureInstalled('php@' . $version);
         }
 
-        // If php@7.2 was not installed, it installed and automagically linked itself.
+        // If php@7.3 was not installed, it installed and automagically linked itself.
         // If we try to link it again it will throw an already linked warning.
         // PHP 5.6, 7.0 and 7.1 do not show this behaviour probably because they're not the default formulae.
-        if(!(!$installed && $version === $this->sanitizeVersion(Brew::PHP_V72_FORMULAE))){
+        if(!(!$installed && $version === $this->sanitizeVersion(Brew::PHP_V73_FORMULAE))){
             info("[php@$version] Linking");
             output($this->cli->runAsUser('brew link php@' . $version.' --force --overwrite'));
         }

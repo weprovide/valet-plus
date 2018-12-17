@@ -66,6 +66,7 @@ class Pecl
      * @formatter:off
      *
      * 'extension_key_name' => [
+     *    '7.3' => 'https://example.com/packagename.extension',
      *    '7.2' => 'https://example.com/packagename.extension',
      *    '7.1' => 'https://example.com/packagename.extension',
      *    '7.0' => 'https://example.com/packagename.extension',
@@ -101,17 +102,20 @@ class Pecl
             '5.6' => false
         ],
         self::APCU_EXTENSION => [
+            '7.3' => false,
             '7.2' => false,
             '7.1' => false,
             '7.0' => false,
             '5.6' => '4.0.11'
         ],
         self::GEOIP_EXTENSION => [
+            '7.3' => '1.1.1',
             '7.2' => '1.1.1',
             '7.1' => '1.1.1',
             '7.0' => '1.1.1'
         ],
         self::IONCUBE_LOADER_EXTENSION => [
+            '7.3' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
             '7.2' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
             '7.1' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
             '7.0' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
@@ -172,7 +176,7 @@ class Pecl
      * Get the current PHP version from the PECL config.
      *
      * @return string
-     *    The php version as string: 5.6, 7.0, 7.1, 7.2
+     *    The php version as string: 5.6, 7.0, 7.1, 7.2, 7.3
      */
     function getPhpVersion()
     {
@@ -200,7 +204,7 @@ class Pecl
         // Check if pear config is set correctly as per:
         // https://github.com/kabel/homebrew-core/blob/2564749d8f73e43cbb8cfc449bca4f564ac0e9e1/Formula/php%405.6.rb
         // Brew installation standard.
-        foreach (['5.6', '7.0', '7.1', '7.2'] as $phpVersion){
+        foreach (['5.6', '7.0', '7.1', '7.2', '7.3'] as $phpVersion){
             output("Checking php $phpVersion...");
 
             $pearConfigPath = "/usr/local/etc/php/$phpVersion/pear.conf";
@@ -242,8 +246,8 @@ class Pecl
             $pearTestDirPath = "/usr/local/share/pear@$phpVersion/test";
             $phpBinDirPath = "/usr/local/opt/php@$phpVersion/bin/php";
 
-            // PhP 7.2 doesn't work with a @ version annotation.
-            if($phpVersion === '7.2'){
+            // PhP 7.3 doesn't work with a @ version annotation.
+            if($phpVersion === '7.3'){
                 $phpDirPath = str_replace("@$phpVersion", '', $phpDirPath);
                 $pearDocDirPath = str_replace("@$phpVersion", '', $pearDocDirPath);
                 $phpBinPath = str_replace("@$phpVersion", '', $phpBinPath);

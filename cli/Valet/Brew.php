@@ -262,8 +262,8 @@ class Brew
         $services = is_array($services) ? $services : func_get_args();
 
         foreach ($services as $service) {
-            // Brew list doesn't show php@7.2 eventhough it is installed.
-            if ($this->installed($service) || $service === self::PHP_V72_FORMULAE) {
+            // Brew list doesn't show php@7.3 eventhough it is installed.
+            if ($this->installed($service) || $service === self::PHP_V73_FORMULAE) {
                 info('[' . $service . '] Restarting');
 
                 $this->cli->quietly('sudo brew services stop ' . $service);
@@ -282,8 +282,8 @@ class Brew
         $services = is_array($services) ? $services : func_get_args();
 
         foreach ($services as $service) {
-            // Brew list doesn't show php@7.2 eventhough it is installed.
-            if ($this->installed($service) || $service === self::PHP_V72_FORMULAE) {
+            // Brew list doesn't show php@7.3 eventhough it is installed.
+            if ($this->installed($service) || $service === self::PHP_V73_FORMULAE) {
                 info('[' . $service . '] Stopping');
 
                 $this->cli->quietly('sudo brew services stop ' . $service);
