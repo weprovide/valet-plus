@@ -87,7 +87,7 @@ class Mysql
 
         // link installed binaries via brew
         if ($this->installedVersion()) {
-            $this->brew->link($type);
+            $this->brew->link($type, true, true);
         }
 
         $this->stop();
