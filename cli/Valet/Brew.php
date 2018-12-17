@@ -10,16 +10,22 @@ class Brew
     const PHP_V70_FORMULAE = 'php@7.0';
     const PHP_V71_FORMULAE = 'php@7.1';
     const PHP_V72_FORMULAE = 'php@7.2';
+    const PHP_V73_FORMULAE = 'php@7.3';
 
     const SUPPORTED_PHP_FORMULAE = [
         self::PHP_V56_FORMULAE,
         self::PHP_V70_FORMULAE,
         self::PHP_V71_FORMULAE,
-        self::PHP_V72_FORMULAE
+        self::PHP_V72_FORMULAE,
+        self::PHP_V73_FORMULAE
     ];
 
     const PHP_FORMULAE_INSTALLED_ALIASES = [
-        self::PHP_V72_FORMULAE => 'php'
+        self::PHP_V73_FORMULAE => 'php'
+    ];
+
+    const ADDITIONAL_FORMULAE = [
+        'techdivision/brew'
     ];
 
     var $cli, $files;
@@ -234,6 +240,16 @@ class Brew
     function hasTap($formula)
     {
         return strpos($this->cli->runAsUser("brew tap | grep $formula"), $formula) !== false;
+    }
+
+    /**
+     * Taps additional formulae
+     *
+     * @return void
+     */
+    function tapAdditionalFormulae()
+    {
+        $this->tap(self::ADDITIONAL_FORMULAE);
     }
 
     /**
