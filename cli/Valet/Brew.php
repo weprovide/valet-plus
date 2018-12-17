@@ -180,11 +180,11 @@ class Brew
      *
      * @param $formula string
      * @param $force boolean
-     * @param $override boolean
+     * @param $overwrite boolean
      *
      * @return void
      */
-    function link($formula, $force=true, $override=true)
+    function link($formula, $force=true, $overwrite=true)
     {
         if (empty($formula)) {
             throw new DomainException('No formula given to link');
@@ -194,8 +194,8 @@ class Brew
         if ($force === true) {
             $options .= " --force";
         }
-        if ($override === true) {
-            $options .= " --override";
+        if ($overwrite === true) {
+            $options .= " --overwrite";
         }
 
         $this->cli->runAsUser("brew link $formula $options");
