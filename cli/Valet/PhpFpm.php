@@ -149,7 +149,7 @@ class PhpFpm
     {
         $currentVersion = $this->brew->linkedPhp();
 
-        if (!array_key_exists($version, $this->brew->supported_php_formulae)) {
+        if (!isset($this->brew->supported_php_formulae[$version])) {
             throw new DomainException("This version of PHP not available. The following versions are available: " . implode(' ', array_keys($this->brew->supported_php_formulae)));
         }
 

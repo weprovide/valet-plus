@@ -40,26 +40,25 @@ class Pecl extends AbstractPecl
     const EXTENSIONS = [
         self::XDEBUG_EXTENSION => [
             '5.6' => '2.2.7',
-            'default' => false,
+            '7' => true,
             'extension_type' => self::ZEND_EXTENSION_TYPE
         ],
         self::APCU_BC_EXTENSION => [
+            'default' => true,
             '5.6' => false,
+            '7' => true,
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
         self::APCU_EXTENSION => [
-            '7.3' => false,
-            '7.2' => false,
-            '7.1' => false,
-            '7.0' => false,
+            'default' => true,
             '5.6' => '4.0.11',
+            '7' => false,
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
         self::GEOIP_EXTENSION => [
-            '7.3' => '1.1.1',
-            '7.2' => '1.1.1',
-            '7.1' => '1.1.1',
-            '7.0' => '1.1.1',
+            'default' => true,
+            '5.6' => true,
+            '7' => '1.1.1',
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ]
     ];
@@ -122,7 +121,11 @@ class Pecl extends AbstractPecl
      */
     protected function install($extension, $version = null)
     {
-        if ($version === null) {
+        if($version === false) {
+            return;
+        }
+
+        if (is_null($version) || is_bool($version)) {
             $result = $this->cli->runAsUser("pecl install $extension");
         } else {
             $result = $this->cli->runAsUser("pecl install $extension-$version");
@@ -188,9 +191,11 @@ class Pecl extends AbstractPecl
     {
         info("[PECL] Removing extensions");
         foreach (self::EXTENSIONS as $extension => $versions) {
-            if($this->getVersion($extension) !== false){
-                $this->disableExtension($extension);
+            if($this->getVersion($extension) === false) {
+                continue;
             }
+
+            $this->disableExtension($extension);
         }
     }
 
@@ -286,7 +291,7 @@ class Pecl extends AbstractPecl
      */
     private function uninstall($extension, $version = null)
     {
-        if ($version === null || $version === false) {
+        if (is_null($version) || is_bool($version)) {
             $this->cli->passthru("pecl uninstall $extension");
         } else {
             $this->cli->passthru("pecl uninstall $extension-$version");
@@ -481,13 +486,11 @@ class Pecl extends AbstractPecl
      */
     private function isDefaultExtension($extension)
     {
-        if (array_key_exists('default', self::EXTENSIONS[$extension])) {
-            return false;
-        } elseif (array_key_exists('default', self::EXTENSIONS[$extension]) === false) {
-            return true;
-        } else {
+        if (!isset(self::EXTENSIONS[$extension]['default'])) {
             return false;
         }
+
+        return self::EXTENSIONS[$extension]['default'];
     }
 
     /**
@@ -513,10 +516,16 @@ class Pecl extends AbstractPecl
     private function getVersion($extension)
     {
         $phpVersion = $this->getPhpVersion();
-        if (array_key_exists($phpVersion, self::EXTENSIONS[$extension])) {
+        if (isset(self::EXTENSIONS[$extension][$phpVersion])) {
             return self::EXTENSIONS[$extension][$phpVersion];
         }
-        return null;
+
+        $phpVersion = $this->getMajorPhpVersion();
+        if (isset(self::EXTENSIONS[$extension][$phpVersion])) {
+            return self::EXTENSIONS[$extension][$phpVersion];
+        }
+
+        return false;
     }
 
     /**

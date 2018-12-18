@@ -39,11 +39,8 @@ class PeclCustom extends AbstractPecl
      * @formatter:off
      *
      * 'extension_key_name' => [
-     *    '7.3' => 'https://example.com/packagename.extension',
-     *    '7.2' => 'https://example.com/packagename.extension',
-     *    '7.1' => 'https://example.com/packagename.extension',
-     *    '7.0' => 'https://example.com/packagename.extension',
      *    '5.6' => 'https://example.com/packagename.extension',
+     *    '7.*' => 'https://example.com/packagename.extension',
      *    'file_extension' => self::TAR_GZ_FILE_EXTENSION,
      *    'extension_type' => self::ZEND_EXTENSION_TYPE,
      *    'extension_php_name' => 'the ionCube PHP Loader',
@@ -53,14 +50,11 @@ class PeclCustom extends AbstractPecl
      */
     const EXTENSIONS = [
         self::IONCUBE_LOADER_EXTENSION => [
-            '7.3' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
-            '7.2' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
-            '7.1' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
-            '7.0' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
+            'default' => false,
             '5.6' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
+            '7' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
             'file_extension' => self::TAR_GZ_FILE_EXTENSION,
             'packaged_directory' => 'ioncube',
-            'default' => false,
             'extension_type' => self::ZEND_EXTENSION_TYPE,
             'extension_php_name' => 'the ionCube PHP Loader'
         ]
@@ -354,13 +348,11 @@ class PeclCustom extends AbstractPecl
      */
     private function isDefaultExtension($extension)
     {
-        if (array_key_exists('default', self::EXTENSIONS[$extension])) {
-            return false;
-        } elseif (array_key_exists('default', self::EXTENSIONS[$extension]) === false) {
-            return true;
-        } else {
+        if (!isset(self::EXTENSIONS[$extension]['default'])) {
             return false;
         }
+
+        return self::EXTENSIONS[$extension]['default'];
     }
 
     /**
@@ -401,7 +393,7 @@ class PeclCustom extends AbstractPecl
      */
     private function getFileExtension($extension)
     {
-        if (array_key_exists('file_extension', self::EXTENSIONS[$extension])) {
+        if (isset(self::EXTENSIONS[$extension]['file_extension'])) {
             return self::EXTENSIONS[$extension]['file_extension'];
         }
         throw new DomainException('file_extension key is required for custom PECL packages');
@@ -416,7 +408,7 @@ class PeclCustom extends AbstractPecl
      */
     private function getPackagedDirectory($extension)
     {
-        if (array_key_exists('packaged_directory', self::EXTENSIONS[$extension])) {
+        if (isset(self::EXTENSIONS[$extension]['packaged_directory'])) {
             return self::EXTENSIONS[$extension]['packaged_directory'];
         }
         throw new DomainException('packaged_directory key is required for custom PECL packages');
@@ -431,7 +423,7 @@ class PeclCustom extends AbstractPecl
      */
     private function getExtensionName($extension)
     {
-        if (array_key_exists('extension_php_name', self::EXTENSIONS[$extension])) {
+        if (isset(self::EXTENSIONS[$extension]['extension_php_name'])) {
             return self::EXTENSIONS[$extension]['extension_php_name'];
         }
         throw new DomainException('extension_php_name key is required for custom PECL packages');

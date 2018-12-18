@@ -179,7 +179,7 @@ class Binaries
      */
     private function getUrl($binary)
     {
-        if (array_key_exists('url', self::SUPPORTED_CUSTOM_BINARIES[$binary])) {
+        if (isset(self::SUPPORTED_CUSTOM_BINARIES[$binary]['url'])) {
             return self::SUPPORTED_CUSTOM_BINARIES[$binary]['url'];
         }
         throw new DomainException('url key is required for binaries.');
@@ -195,7 +195,7 @@ class Binaries
      */
     private function getShasum($binary)
     {
-        if (array_key_exists('shasum', self::SUPPORTED_CUSTOM_BINARIES[$binary])) {
+        if (isset(self::SUPPORTED_CUSTOM_BINARIES[$binary]['shasum'])) {
             return self::SUPPORTED_CUSTOM_BINARIES[$binary]['shasum'];
         }
         throw new DomainException('shasum key is required for binaries.');
@@ -211,7 +211,7 @@ class Binaries
      */
     private function getBinLocation($binary)
     {
-        if (array_key_exists('bin_location', self::SUPPORTED_CUSTOM_BINARIES[$binary])) {
+        if (isset(self::SUPPORTED_CUSTOM_BINARIES[$binary]['bin_location'])) {
             return self::SUPPORTED_CUSTOM_BINARIES[$binary]['bin_location'] . $binary;
         }
         throw new DomainException('bin_location key is required for binaries.');

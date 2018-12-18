@@ -26,9 +26,7 @@ abstract class AbstractPecl
      *
      * @formatter:on
      **/
-    const EXTENSIONS = [
-
-    ];
+    const EXTENSIONS = [];
 
     var $cli, $files;
 
@@ -50,7 +48,7 @@ abstract class AbstractPecl
      */
     protected function getExtensionType($extension)
     {
-        if (array_key_exists('extension_type', $this::EXTENSIONS[$extension])) {
+        if (isset($this::EXTENSIONS[$extension]['extension_type'])) {
             return $this::EXTENSIONS[$extension]['extension_type'];
         }
         throw new DomainException('extension_type key is required for PECL packages');
@@ -84,16 +82,32 @@ abstract class AbstractPecl
     /**
      * Get the current PHP version from the PECL config.
      *
+     * @param $part_count
+     *    The number of version parts to return (default = 2)
+     *
      * @return string
-     *    The php version as string: 5.6, 7.0, 7.1, 7.2, 7.3
+     *    The php version as string: 5.6, 7.0, 7.1, 7.2, 7.3, etc..
      */
-    protected function getPhpVersion()
+    protected function getPhpVersion($part_count = 2)
     {
         $version = $this->cli->runAsUser('pecl version | grep PHP');
         $version = str_replace('PHP Version:', '', $version);
-        $version = str_replace(' ', '', $version);
-        $version = substr($version, 0, 3);
-        return $version;
+
+        $parts = explode('.', trim($version));
+        $parts = array_slice($parts, 0, $part_count);
+
+        return implode('.', $parts);
+    }
+
+    /**
+     * Get the current major PHP version from the PECL config.
+     *
+     * @return string
+     *    The php version as string: 5, 7
+     */
+    protected function getMajorPhpVersion()
+    {
+        return $this->getPhpVersion(1);
     }
 
     /**

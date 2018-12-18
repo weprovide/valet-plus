@@ -294,6 +294,10 @@ class Brew
     function linkedPhp()
     {
         if (!$this->files->isLink('/usr/local/bin/php')) {
+            $this->cli->runAsUser('brew link php');
+        }
+
+        if (!$this->files->isLink('/usr/local/bin/php')) {
             throw new DomainException("Unable to determine linked PHP.");
         }
 
@@ -306,7 +310,6 @@ class Brew
                 return $version;
             }
         }
-
 
         throw new DomainException("Unable to determine linked PHP.");
     }
