@@ -2,8 +2,8 @@
 
 namespace Valet;
 
-use Exception;
 use DomainException;
+use Exception;
 
 abstract class AbstractPecl
 {
@@ -63,14 +63,29 @@ abstract class AbstractPecl
      */
     public function getPhpIniPath()
     {
-        return str_replace("\n", '', $this->cli->runAsUser('pecl config-get php_ini'));
+    	$file = str_replace("\n", '', $this->cli->runAsUser('pecl config-get php_ini'));
+
+    	if($file) {
+    		return $file;
+	    }
+
+    	$grep = $this->cli->runAsUser('php -i | grep php.ini');
+    	preg_match('/Path => ([^\s]*)/',$grep, $match);
+
+	    if(empty($match[1])) {
+		    return '';
+	    }
+
+    	$path = trim($match[1]);
+
+        return $path . '/php.ini';
     }
 
     /**
      * Get the current PHP version from the PECL config.
      *
      * @return string
-     *    The php version as string: 5.6, 7.0, 7.1, 7.2
+     *    The php version as string: 5.6, 7.0, 7.1, 7.2, 7.3
      */
     protected function getPhpVersion()
     {
@@ -103,7 +118,13 @@ abstract class AbstractPecl
      */
     public function getExtensionDirectory()
     {
-        return str_replace("\n", '', $this->cli->runAsUser('pecl config-get ext_dir'));
+        $dir = trim(str_replace("\n", '', $this->cli->runAsUser('pecl config-get ext_dir')));
+
+        if (strpos($dir, '/Cellar/') !== false) {
+            $dir = str_replace('/lib/php/', '/pecl/', $dir);
+        }
+
+        return $dir;
     }
 
     /**
