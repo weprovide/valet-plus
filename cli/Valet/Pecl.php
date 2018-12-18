@@ -2,12 +2,10 @@
 
 namespace Valet;
 
-use Exception;
 use DomainException;
 
 class Pecl extends AbstractPecl
 {
-
     // Extensions.
     const XDEBUG_EXTENSION = 'xdebug';
     const APCU_EXTENSION = 'apcu';
@@ -50,6 +48,7 @@ class Pecl extends AbstractPecl
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
         self::APCU_EXTENSION => [
+            '7.3' => false,
             '7.2' => false,
             '7.1' => false,
             '7.0' => false,
@@ -57,6 +56,7 @@ class Pecl extends AbstractPecl
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
         self::GEOIP_EXTENSION => [
+            '7.3' => '1.1.1',
             '7.2' => '1.1.1',
             '7.1' => '1.1.1',
             '7.0' => '1.1.1',
@@ -64,14 +64,15 @@ class Pecl extends AbstractPecl
         ]
     ];
 
-    var $peclCustom;
+    var $brew, $peclCustom;
 
     /**
      * @inheritdoc
      */
-    function __construct(CommandLine $cli, Filesystem $files, PeclCustom $peclCustom)
+    function __construct(Brew $brew, CommandLine $cli, Filesystem $files, PeclCustom $peclCustom)
     {
         parent::__construct($cli, $files);
+        $this->brew = $brew;
         $this->peclCustom = $peclCustom;
     }
 
@@ -311,7 +312,7 @@ class Pecl extends AbstractPecl
         // Check if pear config is set correctly as per:
         // https://github.com/kabel/homebrew-core/blob/2564749d8f73e43cbb8cfc449bca4f564ac0e9e1/Formula/php%405.6.rb
         // Brew installation standard.
-        foreach (Brew::SUPPORTED_PHP_FORMULAE as $phpVersion => $brewname) {
+        foreach ($this->brew->supported_php_formulae as $phpVersion => $brewname) {
             output("Checking php $phpVersion...");
 
             $pearConfigPath = "/usr/local/etc/php/$phpVersion/pear.conf";

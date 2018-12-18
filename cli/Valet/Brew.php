@@ -6,25 +6,13 @@ use DomainException;
 
 class Brew
 {
-    const PHP_V56_VERSION = '5.6';
-    const PHP_V56_BREWNAME = 'php@5.6';
-    const PHP_V70_VERSION = '7.0';
-    const PHP_V70_BREWNAME = 'php@7.0';
-    const PHP_V71_VERSION = '7.1';
-    const PHP_V71_BREWNAME = 'php@7.1';
-    const PHP_V72_VERSION = '7.2';
-    const PHP_V72_BREWNAME = 'php@7.2';
-    const PHP_V73_VERSION = '7.3';
-    const PHP_V73_BREWNAME = 'php';
-
-    const SUPPORTED_PHP_FORMULAE = [
-        self::PHP_V56_VERSION => self::PHP_V56_BREWNAME,
-        self::PHP_V70_VERSION => self::PHP_V70_BREWNAME,
-        self::PHP_V71_VERSION => self::PHP_V71_BREWNAME,
-        self::PHP_V72_VERSION => self::PHP_V72_BREWNAME,
-        self::PHP_V73_VERSION => self::PHP_V73_BREWNAME
+    const PHP_DEFAULT_BREWNAME = 'php';
+    const SUPPORTED_PHP_VERSIONS = [
+        '5.6',
+        '7' // will dynamically add all minor versions of 7
     ];
 
+    var $supported_php_formulae = [];
     var $cli, $files;
 
     /**
@@ -37,6 +25,38 @@ class Brew
     {
         $this->cli = $cli;
         $this->files = $files;
+
+        $core_php_version = $this->corePhpVersion();
+
+        $supported_php_versions = [];
+
+        foreach (self::SUPPORTED_PHP_VERSIONS as $version) {
+            // reached core php version, so stop
+            if ($version > $core_php_version) {
+                break;
+            }
+
+            if (strpos($version, '.') !== false) {
+                $supported_php_versions[] = $version;
+                continue;
+            }
+
+            // add all minor versions of major number, with the core php version as max
+            for ($i = 0; $i < 10; $i++) {
+                $supported_php_versions[] = $version . '.' . $i;
+
+                // reached core php version, so stop
+                if ($version . '.' . $i >= $core_php_version) {
+                    break;
+                }
+            }
+        }
+
+        foreach ($supported_php_versions as $version) {
+            $this->supported_php_formulae[$version] = 'php@' . $version;
+        }
+
+        $this->supported_php_formulae[$this->corePhpVersion()] = self::PHP_DEFAULT_BREWNAME;
     }
 
     /**
@@ -57,7 +77,7 @@ class Brew
      */
     function hasInstalledPhp()
     {
-        foreach (Brew::SUPPORTED_PHP_FORMULAE as $version => $brewname) {
+        foreach ($this->supported_php_formulae as $version => $brewname) {
             if ($this->installed($brewname)) {
                 return true;
             }
@@ -128,6 +148,7 @@ class Brew
     function installOrFail($formula, $options = [], $taps = [])
     {
         info('[' . $formula . '] Installing');
+        info('brew install ' . $formula . ' ' . implode(' ', $options));
 
         if (count($taps) > 0) {
             $this->tap($taps);
@@ -248,9 +269,25 @@ class Brew
     }
 
     /**
-     * Determine which version of PHP is linked in Homebrew.
+     * Determine which version of PHP is the default in Homebrew.
      *
-     * @param bool $asFormula
+     * @return string
+     */
+    function corePhpVersion()
+    {
+        $grep = $this->cli->runAsUser('brew info php | grep Cellar');
+        preg_match('/Cellar\/php\/([0-9]+\.[0-9]+)/', $grep, $match);
+
+        if (empty($match[1])) {
+            // Fall back to 7.3 if no version is found
+            return '7.3';
+        }
+
+        return trim($match[1]);
+    }
+
+    /**
+     * Determine which version of PHP is linked in Homebrew.
      *
      * @return string
      */
@@ -262,10 +299,10 @@ class Brew
 
         $resolvedPath = $this->files->readLink('/usr/local/bin/php');
 
-        $versions = self::SUPPORTED_PHP_FORMULAE;
+        $versions = $this->supported_php_formulae;
 
         foreach ($versions as $version => $brewname) {
-            if (strpos($resolvedPath, '/'.$brewname.'/') !== false) {
+            if (strpos($resolvedPath, '/' . $brewname . '/') !== false) {
                 return $version;
             }
         }
@@ -281,6 +318,6 @@ class Brew
      */
     function restartLinkedPhp()
     {
-        $this->restartService(Brew::SUPPORTED_PHP_FORMULAE[$this->linkedPhp()]);
+        $this->restartService($this->supported_php_formulae[$this->linkedPhp()]);
     }
 }
