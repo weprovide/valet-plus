@@ -8,8 +8,8 @@ class Brew
 {
     const PHP_DEFAULT_BREWNAME = 'php';
     const SUPPORTED_PHP_VERSIONS = [
-        '5.6',
-        '7' // will dynamically add all minor versions of 7
+        '5[6]',
+        '7[0-99]'
     ];
 
     var $supported_php_formulae = [];
@@ -31,22 +31,18 @@ class Brew
         $supported_php_versions = [];
 
         foreach (self::SUPPORTED_PHP_VERSIONS as $version) {
-            // reached core php version, so stop
-            if ($version > $core_php_version) {
-                break;
-            }
+            preg_match('/([0-9]+)\[([0-9]+)(?:-([0-9]+))?\]/', $version, $match);
 
-            if (strpos($version, '.') !== false) {
-                $supported_php_versions[] = $version;
-                continue;
-            }
+            $major = $match[1];
+            $minor_from = $match[2];
+            $minor_to = isset($match[3]) ? $match[3] : $minor_from;
 
             // add all minor versions of major number, with the core php version as max
-            for ($i = 0; $i < 10; $i++) {
-                $supported_php_versions[] = $version . '.' . $i;
+            for ($i = $minor_from; $i <= $minor_to; $i++) {
+                $supported_php_versions[] = $major . '.' . $i;
 
                 // reached core php version, so stop
-                if ($version . '.' . $i >= $core_php_version) {
+                if ($major . '.' . $i >= $core_php_version) {
                     break;
                 }
             }

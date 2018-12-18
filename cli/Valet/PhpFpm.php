@@ -147,6 +147,7 @@ class PhpFpm
      */
     function switchTo($version)
     {
+        $version = $version == 'latest' ? $this->brew->corePhpVersion() : $version;
         $currentVersion = $this->brew->linkedPhp();
 
         if (!isset($this->brew->supported_php_formulae[$version])) {
