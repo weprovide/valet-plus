@@ -39,10 +39,8 @@ if (is_dir(VALET_HOME_PATH)) {
  */
 $app->command('install [--with-mariadb]', function ($withMariadb) {
     PhpFpm::checkInstallation();
-
     Brew::tapAdditionalFormulae();
-    Pecl::uninstallExtensions();
-    
+
     Nginx::stop();
     PhpFpm::stop();
     Mysql::stop();
