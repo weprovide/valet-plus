@@ -34,7 +34,7 @@ class PhpFpm
     function install()
     {
         if (! $this->brew->hasInstalledPhp()) {
-            $this->brew->ensureInstalled(Brew::PHP_DEFAULT_BREWNAME);
+            $this->brew->ensureInstalled(Brew::DEFAULT_PHP_NAME);
         }
 
         $version = $this->brew->linkedPhp();
@@ -318,7 +318,7 @@ class PhpFpm
         // Remove old homebrew/php tap packages.
         foreach ($this->brew->supported_php_formulae as $version => $brew_version) {
             // Skip core php version
-            if ($brew_version == BREW::PHP_DEFAULT_BREWNAME) {
+            if ($brew_version == BREW::DEFAULT_PHP_NAME) {
                 continue;
             }
 
@@ -340,7 +340,7 @@ class PhpFpm
         $deprecatedExtensions = ['apcu', 'intl', 'mcrypt'];
         foreach ($this->brew->supported_php_formulae as $version => $brew_version) {
             // Skip core php version
-            if ($brew_version == BREW::PHP_DEFAULT_BREWNAME) {
+            if ($brew_version == BREW::DEFAULT_PHP_NAME) {
                 continue;
             }
 
@@ -361,7 +361,7 @@ class PhpFpm
         if ($reinstall) {
             foreach ($this->brew->supported_php_formulae as $version => $brew_version) {
                 // Skip core php version
-                if ($brew_version == BREW::PHP_DEFAULT_BREWNAME) {
+                if ($brew_version == BREW::DEFAULT_PHP_NAME) {
                     continue;
                 }
 
@@ -372,10 +372,10 @@ class PhpFpm
 
         // If the current php is not the default.
         info('Installing and linking new PHP homebrew/core version.');
-        output($this->cli->runAsUser('brew uninstall ' . Brew::PHP_DEFAULT_BREWNAME));
-        output($this->cli->runAsUser('brew install ' . Brew::PHP_DEFAULT_BREWNAME));
-        output($this->cli->runAsUser('brew unlink '. Brew::PHP_DEFAULT_BREWNAME));
-        output($this->cli->runAsUser('brew link '.Brew::PHP_DEFAULT_BREWNAME.' --force --overwrite'));
+        output($this->cli->runAsUser('brew uninstall ' . Brew::DEFAULT_PHP_NAME));
+        output($this->cli->runAsUser('brew install ' . Brew::DEFAULT_PHP_NAME));
+        output($this->cli->runAsUser('brew unlink '. Brew::DEFAULT_PHP_NAME));
+        output($this->cli->runAsUser('brew link '.Brew::DEFAULT_PHP_NAME.' --force --overwrite'));
 
         if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {
             info('[brew] untapping formulae ' . self::DEPRECATED_PHP_TAP);

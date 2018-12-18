@@ -6,7 +6,7 @@ use DomainException;
 
 class Brew
 {
-    const PHP_DEFAULT_BREWNAME = 'php';
+    const DEFAULT_PHP_NAME = 'php';
     const SUPPORTED_PHP_VERSIONS = [
         '5[6]',
         '7[0-99]'
@@ -52,7 +52,7 @@ class Brew
             $this->supported_php_formulae[$version] = 'php@' . $version;
         }
 
-        $this->supported_php_formulae[$this->corePhpVersion()] = self::PHP_DEFAULT_BREWNAME;
+        $this->supported_php_formulae[$this->corePhpVersion()] = self::DEFAULT_PHP_NAME;
     }
 
     /**
