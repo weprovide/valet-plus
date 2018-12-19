@@ -48,10 +48,10 @@ class Magento2ValetDriver extends ValetDriver
 
         info('Setting elastic search hostname...');
         $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
-        
+
         info('Enabling URL rewrites...');
         $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/seo/use_rewrites 1');
-        
+
         info('Flushing cache...');
         $devtools->cli->quietlyAsUser('n98-magerun2 cache:flush');
 
@@ -137,22 +137,33 @@ class Magento2ValetDriver extends ValetDriver
 
         $staticFilePath = $sitePath . '/pub' . $uri;
 
-        if (strpos($uri, '/js-translation.json') === false && file_exists($staticFilePath)) {
-            return $staticFilePath;
-        }
-
-        if (strpos($uri, '/js-translation.json') !== false) {
-            // check if production mode is set and load as static
-            if ($this->isMode($sitePath, self::MAGE_MODE_PRODUCTION)) {
+        if (file_exists($staticFilePath)) {
+            if (strpos($uri, '/js-translation.json') === false) {
                 return $staticFilePath;
+            } else {
+                // check if production mode is set and load js-translation.json files as static too
+                if ($this->isMode($sitePath, self::MAGE_MODE_PRODUCTION)) {
+                    return $staticFilePath;
+                }
             }
-            // otherwise generate file on demand via php
-            header('Cache-Control: no-store, must-revalidate');
         }
 
         if (strpos($uri, '/static/') === 0) {
             $_GET['resource'] = $resource;
-            include($sitePath . DIRECTORY_SEPARATOR . 'pub' . DIRECTORY_SEPARATOR . 'static.php');
+            // load everything except js-translation.json files
+            if (strpos($uri, '/js-translation.json') === false) {
+                include($sitePath . DIRECTORY_SEPARATOR . 'pub' . DIRECTORY_SEPARATOR . 'static.php');
+            } else {
+                // start output buffering
+                ob_start();
+                // generate file on demand via php by including staticScript
+                include($sitePath . DIRECTORY_SEPARATOR . 'pub' . DIRECTORY_SEPARATOR . 'static.php');
+                // remove set-cookie headers in this case (magento 2.3 behaviour)
+                header_remove('set-cookie');
+                header('Cache-Control: no-store, must-revalidate');
+                // send output buffer
+                echo ob_get_clean();
+            }
             exit;
         }
 
@@ -209,7 +220,7 @@ class Magento2ValetDriver extends ValetDriver
         if(isset($_GET['profile'])) {
             $_SERVER['MAGE_PROFILER'] = 'html';
         }
-        
+
         if(strpos($uri, '/errors') === 0) {
             $file = $sitePath . '/pub' . $uri;
             if (file_exists($file)) {
