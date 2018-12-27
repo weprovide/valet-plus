@@ -61,20 +61,20 @@ abstract class AbstractPecl
      */
     public function getPhpIniPath()
     {
-    	$file = str_replace("\n", '', $this->cli->runAsUser('pecl config-get php_ini'));
+        $file = str_replace("\n", '', $this->cli->runAsUser('pecl config-get php_ini'));
 
-    	if($file) {
-    		return $file;
-	    }
+        if ($file) {
+            return $file;
+        }
 
-    	$grep = $this->cli->runAsUser('php -i | grep php.ini');
-    	preg_match('/Path => ([^\s]*)/',$grep, $match);
+        $grep = $this->cli->runAsUser('php -i | grep php.ini');
+        preg_match('/Path => ([^\s]*)/', $grep, $match);
 
-	    if(empty($match[1])) {
-		    return '';
-	    }
+        if (empty($match[1])) {
+            return '';
+        }
 
-    	$path = trim($match[1]);
+        $path = trim($match[1]);
 
         return $path . '/php.ini';
     }
@@ -146,7 +146,7 @@ abstract class AbstractPecl
      */
     function uninstallExtensions()
     {
-        throw new \Exception(__METHOD__.' not implemented!');
+        throw new \Exception(__METHOD__ . ' not implemented!');
     }
 
     /**
@@ -155,8 +155,9 @@ abstract class AbstractPecl
      * @param bool $onlyDefaults
      * @throws Exception if not overridden but used.
      */
-    public function installExtensions($onlyDefaults = true){
-        throw new \Exception(__METHOD__.' not implemented!');
+    public function installExtensions($onlyDefaults = true)
+    {
+        throw new \Exception(__METHOD__ . ' not implemented!');
     }
 
     /**
@@ -170,7 +171,7 @@ abstract class AbstractPecl
      */
     protected function isInstalled($extension)
     {
-        throw new \Exception(__METHOD__.' not implemented!');
+        throw new \Exception(__METHOD__ . ' not implemented!');
     }
 
     /**
@@ -184,6 +185,6 @@ abstract class AbstractPecl
      */
     protected function getExtensionAlias($extension)
     {
-        throw new \Exception(__METHOD__.' not implemented!');
+        throw new \Exception(__METHOD__ . ' not implemented!');
     }
 }

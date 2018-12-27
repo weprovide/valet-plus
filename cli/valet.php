@@ -822,6 +822,7 @@ if (is_dir(VALET_HOME_PATH)) {
         $question = new Question('Where would you like to proxy this url to? ');
         if (!$to = $helper->ask($input, $output, $question)) {
             warning('Aborting, url is required');
+            return;
         }
 
         Site::proxy($url, $to);
@@ -841,6 +842,47 @@ if (is_dir(VALET_HOME_PATH)) {
 
         info("The [$url] will no longer proxy traffic and will use the Valet driver instead.");
     })->descriptions('Disable proxying for a site re-instating handling with a Valet driver.');
+
+    /**
+     * Rewrite commands
+     */
+    $app->command('rewrite [url]', function ($url = null) {
+        $host = Site::host(getcwd());
+
+        if (!$url) {
+            warning('Aborting, url is required');
+            return;
+        }
+
+        $url = Site::rewrite($url, $host);
+        if ($url === false) {
+            warning('Aborting, url rewrite failed, might already exist');
+            return;
+        }
+
+        info("The [$url] will now rewrite traffic to [$host].");
+    })->descriptions('Rewrite any URL to your local site instance.');
+
+    $app->command('unrewrite [url]', function ($url = null) {
+        if (!$url) {
+            warning('Aborting, url is required');
+            return;
+        }
+
+        $url = Site::unrewrite($url);
+        if ($url === false) {
+            warning('Aborting, url unrewrite failed, might not exist');
+            return;
+        }
+
+        info("The [$url] will no longer rewrite traffic.");
+    })->descriptions('Remove a rewrite of an URL to your local site instance.');
+
+    $app->command('rewrites', function () {
+        $rewrites = Site::rewrites();
+
+        table(['Site', 'URL'], $rewrites->all());
+    })->descriptions('Display all of the registered Valet rewrites');
 
     $app->command('logs [service]', function ($service) {
         $logs = [
