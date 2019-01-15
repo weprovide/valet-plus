@@ -37,8 +37,8 @@ class Binaries
             'bin_location' => '/usr/local/bin/'
         ],
         self::N98_MAGERUN_2 => [
-            'url' => 'https://files.magerun.net/n98-magerun2-2.2.0.phar',
-            'shasum' => '8b2739eca75c888dc9d1d74c90195988a2394e4d4970051a3f99769f229f91b5',
+            'url' => 'https://files.magerun.net/n98-magerun2-3.0.3.phar',
+            'shasum' => 'b7666f8fa9b0662e830edb9b7608c15b0b91859f0cc765acac24a88c02e5aa6d',
             'bin_location' => '/usr/local/bin/'
         ],
         self::DRUSH_LAUNCHER => [
