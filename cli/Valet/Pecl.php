@@ -316,7 +316,7 @@ class Pecl extends AbstractPecl
         foreach (PhpFpm::SUPPORTED_PHP_FORMULAE as $phpVersion => $brewname) {
             output("Checking php $phpVersion...");
 
-            $pearConfigPath = "/usr/local/etc/valet-php/$phpVersion/pear.conf";
+            $pearConfigPath = PhpFpm::LOCAL_PHP_FOLDER . "$phpVersion/pear.conf";
 
             if(!$this->files->exists($pearConfigPath)){
                 warning("    Skipping $phpVersion, Pear config path could not be found at: $pearConfigPath");
