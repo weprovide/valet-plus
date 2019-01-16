@@ -59,7 +59,10 @@ class PhpFpm
         }
 
         if (!$this->brew->hasTap(self::VALET_PHP_BREW_TAP)) {
+            info("[BREW TAP] Installing " . self::VALET_PHP_BREW_TAP);
             $this->brew->tap(self::VALET_PHP_BREW_TAP);
+        }else{
+            info("[BREW TAP] " . self::VALET_PHP_BREW_TAP . " already installed");
         }
 
         $version = $this->linkedPhp();
