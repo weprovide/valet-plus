@@ -313,7 +313,7 @@ class Pecl extends AbstractPecl
         // Check if pear config is set correctly as per:
         // https://github.com/kabel/homebrew-core/blob/2564749d8f73e43cbb8cfc449bca4f564ac0e9e1/Formula/php%405.6.rb
         // Brew installation standard.
-        foreach (Brew::SUPPORTED_PHP_FORMULAE as $phpVersion => $brewname) {
+        foreach (PhpFpm::SUPPORTED_PHP_FORMULAE as $phpVersion => $brewname) {
             output("Checking php $phpVersion...");
 
             $pearConfigPath = "/usr/local/etc/php/$phpVersion/pear.conf";

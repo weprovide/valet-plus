@@ -29,7 +29,7 @@ class PhpFpm
     var $brew, $cli, $files, $pecl, $peclCustom;
 
     const DEPRECATED_PHP_TAP = 'homebrew/php';
-    const VALET_PHP_BREW_TAP = 'henkrehorst/homebrew-php';
+    const VALET_PHP_BREW_TAP = 'henkrehorst/php';
 
     /**
      * Create a new PHP FPM class instance.
@@ -451,10 +451,10 @@ class PhpFpm
 
         // If the current php is not 7.1, link 7.1.
         info('Installing and linking new PHP homebrew/core version.');
-        output($this->cli->runAsUser('brew uninstall ' . Brew::PHP_V71_FORMULA));
-        output($this->cli->runAsUser('brew install ' . Brew::PHP_V71_FORMULA));
-        output($this->cli->runAsUser('brew unlink ' . Brew::PHP_V71_FORMULA));
-        output($this->cli->runAsUser('brew link ' . Brew::PHP_V71_FORMULA . ' --force --overwrite'));
+        output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
+        output($this->cli->runAsUser('brew install ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
+        output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
+        output($this->cli->runAsUser('brew link ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION] . ' --force --overwrite'));
 
         if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {
             info('[brew] untapping formulae ' . self::DEPRECATED_PHP_TAP);
