@@ -1,5 +1,3 @@
-[![Gitter](https://camo.githubusercontent.com/af6b886e3ac898bab012f2a99a3d09e2aa9ef2f9/68747470733a2f2f696d672e736869656c64732e696f2f6769747465722f726f6f6d2f76616c65742d706c75732f4c6f756e67652e7376673f7374796c653d666c61742d737175617265)](https://gitter.im/valet-plus/Lobby)
-
 <p align="center"><img width="200" src="images/logo.png"></p>
 
 ## Introduction
