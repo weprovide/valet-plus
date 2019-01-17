@@ -26,10 +26,12 @@ class PhpFpm
         self::PHP_V70_VERSION
     ];
 
+    const LOCAL_PHP_FOLDER = '/usr/local/etc/valet-php/';
+
     var $brew, $cli, $files, $pecl, $peclCustom;
 
     const DEPRECATED_PHP_TAP = 'homebrew/php';
-    const VALET_PHP_BREW_TAP = 'henkrehorst/homebrew-php';
+    const VALET_PHP_BREW_TAP = 'henkrehorst/php';
 
     /**
      * Create a new PHP FPM class instance.
@@ -59,7 +61,10 @@ class PhpFpm
         }
 
         if (!$this->brew->hasTap(self::VALET_PHP_BREW_TAP)) {
+            info("[BREW TAP] Installing " . self::VALET_PHP_BREW_TAP);
             $this->brew->tap(self::VALET_PHP_BREW_TAP);
+        } else {
+            info("[BREW TAP] " . self::VALET_PHP_BREW_TAP . " already installed");
         }
 
         $version = $this->linkedPhp();
@@ -109,11 +114,11 @@ class PhpFpm
     function fpmConfigPath()
     {
         $confLookup = [
-            self::PHP_V73_VERSION => '/usr/local/etc/valet-php/7.3/php-fpm.d/www.conf',
-            self::PHP_V72_VERSION => '/usr/local/etc/valet-php/7.2/php-fpm.d/www.conf',
-            self::PHP_V71_VERSION => '/usr/local/etc/valet-php/7.1/php-fpm.d/www.conf',
-            self::PHP_V70_VERSION => '/usr/local/etc/valet-php/7.0/php-fpm.d/www.conf',
-            self::PHP_V56_VERSION => '/usr/local/etc/valet-php/5.6/php-fpm.conf',
+            self::PHP_V73_VERSION => self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
+            self::PHP_V72_VERSION => self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
+            self::PHP_V71_VERSION => self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
+            self::PHP_V70_VERSION => self::LOCAL_PHP_FOLDER . '7.0/php-fpm.d/www.conf',
+            self::PHP_V56_VERSION => self::LOCAL_PHP_FOLDER . '5.6/php-fpm.conf',
         ];
 
         return $confLookup[$this->linkedPhp()];
@@ -150,7 +155,7 @@ class PhpFpm
             return;
         }
 
-        if(in_array($version, self::EOL_PHP_VERSIONS)){
+        if (in_array($version, self::EOL_PHP_VERSIONS)) {
             warning('Caution! The PHP version you\'re switching to is EOL.');
             warning('Please check http://php.net/supported-versions.php for more information.');
         }
@@ -377,18 +382,18 @@ class PhpFpm
             $this->brew->installed('n98-magerun') &&
             $this->brew->installed('n98-magerun2') &&
             $this->brew->installed('drush') &&
-            $this->files->exists('/usr/local/etc/php/5.6/ext-intl.ini') &&
-            $this->files->exists('/usr/local/etc/php/5.6/ext-mcrypt.ini') &&
-            $this->files->exists('/usr/local/etc/php/5.6/ext-apcu.ini') &&
-            $this->files->exists('/usr/local/etc/php/7.0/ext-intl.ini') &&
-            $this->files->exists('/usr/local/etc/php/7.0/ext-mcrypt.ini') &&
-            $this->files->exists('/usr/local/etc/php/7.0/ext-apcu.ini') &&
-            $this->files->exists('/usr/local/etc/php/7.1/ext-intl.ini') &&
-            $this->files->exists('/usr/local/etc/php/7.1/ext-mcrypt.ini') &&
-            $this->files->exists('/usr/local/etc/php/7.1/ext-apcu.ini') &&
-            $this->files->exists('/usr/local/etc/php/7.2/ext-intl.ini') &&
-            $this->files->exists('/usr/local/etc/php/7.2/ext-mcrypt.ini') &&
-            $this->files->exists('/usr/local/etc/php/7.2/ext-apcu.ini') &&
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '5.6/ext-intl.ini') &&
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '5.6/ext-mcrypt.ini') &&
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '5.6/ext-apcu.ini') &&
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.0/ext-intl.ini') &&
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.0/ext-mcrypt.ini') &&
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.0/ext-apcu.ini') &&
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.1/ext-intl.ini') &&
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.1/ext-mcrypt.ini') &&
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.1/ext-apcu.ini') &&
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.2/ext-intl.ini') &&
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.2/ext-mcrypt.ini') &&
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.2/ext-apcu.ini') &&
             $this->brew->hasTap(self::DEPRECATED_PHP_TAP)
         ) {
             // No errors found return, do not run fix logic.
@@ -427,10 +432,10 @@ class PhpFpm
         foreach ($deprecatedVersions as $phpVersion) {
             info('[php' . $phpVersion . '] Disabling modules: ' . implode(', ', $deprecatedExtensions));
             foreach ($deprecatedExtensions as $extension) {
-                if ($this->files->exists("/usr/local/etc/php/$phpVersion/ext-$extension.ini")) {
+                if ($this->files->exists(self::LOCAL_PHP_FOLDER . "$phpVersion/ext-$extension.ini")) {
                     $this->files->move(
-                        "/usr/local/etc/php/$phpVersion/ext-$extension.ini",
-                        "/usr/local/etc/php/$phpVersion/ext-$extension.ini.disabled"
+                        self::LOCAL_PHP_FOLDER . "$phpVersion/ext-$extension.ini",
+                        self::LOCAL_PHP_FOLDER . "$phpVersion/ext-$extension.ini.disabled"
                     );
                 }
             }
@@ -451,10 +456,10 @@ class PhpFpm
 
         // If the current php is not 7.1, link 7.1.
         info('Installing and linking new PHP homebrew/core version.');
-        output($this->cli->runAsUser('brew uninstall ' . Brew::PHP_V71_FORMULA));
-        output($this->cli->runAsUser('brew install ' . Brew::PHP_V71_FORMULA));
-        output($this->cli->runAsUser('brew unlink ' . Brew::PHP_V71_FORMULA));
-        output($this->cli->runAsUser('brew link ' . Brew::PHP_V71_FORMULA . ' --force --overwrite'));
+        output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
+        output($this->cli->runAsUser('brew install ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
+        output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
+        output($this->cli->runAsUser('brew link ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION] . ' --force --overwrite'));
 
         if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {
             info('[brew] untapping formulae ' . self::DEPRECATED_PHP_TAP);
