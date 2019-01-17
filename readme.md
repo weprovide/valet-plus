@@ -438,7 +438,7 @@ Other logs are located at `/usr/local/var/log`
 
 ## PHP.ini location
 
-The PHP.ini location is `/usr/local/etc/php/VERSION/php.ini`.
+The PHP.ini location is `/usr/local/etc/valet-php/VERSION/php.ini`.
 
 ## Valet drivers
 Valet uses drivers to handle requests. You can read more about those [here](https://laravel.com/docs/5.4/valet#custom-valet-drivers).
