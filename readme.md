@@ -60,7 +60,7 @@ Here are a few key differences compared to the original Valet:
 
 1. Install or update [Homebrew](https://brew.sh/) to the latest version using `brew update`.
 3. Add the Homebrew PHP tap for Valet+ via `henkrehorst/php`.
-3. Install PHP 7.2 using Homebrew via `brew install php@7.2`.
+3. Install PHP 7.2 using Homebrew via `brew install valet-php@7.2`.
 4. Install Composer using Homebrew via `brew install composer`.
 5. Install Valet+ with Composer via `composer global require weprovide/valet-plus`.
 6. Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on your shell (`echo $SHELL`)
