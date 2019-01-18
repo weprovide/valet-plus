@@ -286,6 +286,38 @@ valet subdomain add welcome
 
 Will create `welcome.yourproject.test`.
 
+## Domain Alias / Symlinks
+
+Display all of the registered symbolic links based on the current folder.:
+
+```
+valet links
+```
+
+Add new alias:
+```
+valet link <domain>
+```
+
+For example:
+
+```
+valet link yourproject2
+```
+
+Will create a symbolic link to the current folder `yourproject2.test`.
+
+Remove alias:
+```
+valet unlink <domain>
+```
+
+For example:
+
+```
+valet unlink yourproject2
+```
+
 ## Mailhog
 
 Mailhog is used to catch emails send from PHP. You can access the panel at [http://mailhog.test](http://mailhog.test).
