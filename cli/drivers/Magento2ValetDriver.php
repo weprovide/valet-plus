@@ -180,4 +180,94 @@ class Magento2ValetDriver extends ValetDriver
 
         return $sitePath . '/pub/index.php';
     }
+
+    /**
+     * @param $app
+     * @param $config
+     * @param $domain
+     * @param string $edition
+     * @throws Exception
+     */
+    public function createWebsite($app, $config, $domain, $edition = 'community') {
+
+        $app->runCommand('db create '. $domain);
+        // Magento2 2.3 requires at least PHP 7.1
+        $app->runCommand('use 7.1');
+
+        $version = ($edition == 'enterprise') ? 'magento/project-enterprise-edition' : 'magento/project-community-edition';
+        $paths = $config['paths'];
+        $sitesDirectory = end($paths);
+        $directory = rtrim($sitesDirectory, '/') . DIRECTORY_SEPARATOR . ltrim($domain, '/');
+        $url = 'https://' . rtrim($domain, '/') . '.' . rtrim($config['domain'], '/') . '/';
+
+        if (file_exists($directory)) {
+            throw new Exception('Directory already exists.');
+        }
+        $app->runCommand('secure '. $domain);
+
+        $cli = new \Valet\CommandLine();
+        $cli->runAsUser("mkdir {$directory}");
+
+        info('Composer Create Project...');
+        $cli->runAsUser("composer create-project --repository-url=https://repo.magento.com/ {$version} {$directory}");
+
+        info('Deploy Sample Data...');
+        $cli->runAsUser("n98-magerun2 sampledata:deploy");
+
+        info('Installing Magento 2...');
+        $install = [
+            'admin' => [
+                'firstname' => 'Admin',
+                'lastname' => 'Admin',
+                'email' => "info@{$domain}.{$config['domain']}",
+                'user' => 'admin',
+                'password' => "{$domain}123",
+                'frontname' => 'admin'
+            ]
+        ];
+
+        $cli->runAsUser("n98-magerun2 setup:install --root-dir={$directory} --backend-frontname={$install['admin']['frontname']} --admin-firstname='{$install['admin']['firstname']}' --admin-lastname='{$install['admin']['lastname']}' --admin-email='{$install['admin']['email']}' --admin-user='{$install['admin']['user']}' --admin-password='{$install['admin']['password']}' --base-url='{$url}' --db-host='localhost' --db-name='{$domain}' --db-user='root' --db-password='{$this->getRootPassword($config)}' --use-rewrites=1 --session-save=files --use-sample-data");
+
+
+
+        $cli->runAsUser('n98-magerun2 setup:upgrade');
+
+        info('Enabling Developer Settings...');
+        $cli->runAsUser('n98-magerun2 deploy:mode:set developer');
+        $cli->runAsUser('n98-magerun2 cache:disable layout block_html collections full_page');
+
+        $developerConfig = [
+            'dev/static/sign' => '0',
+            'dev/css/merge_css_files' => '0',
+            'dev/js/merge_files' => '0',
+            'dev/js/minify_files' => '0',
+            'dev/js/enable_js_bundling' => '0',
+            'system/smtp/disable' => '1',
+        ];
+
+        foreach ($developerConfig as $path => $value) {
+            $cli->runAsUser("n98-magerun2 config:store:set {$path} {$value}");
+        }
+
+        info("Admin information:");
+        info("\turl: {$url}{$install['admin']['frontname']} ");
+        info("\tuser: {$install['admin']['user']} ");
+        info("\tpassword: {$install['admin']['password']} ");
+
+    }
+
+    /**
+     * Returns the stored password from the config. If not configured returns the default root password.
+     *
+     * @param $config
+     * @return string
+     */
+    private function getRootPassword($config)
+    {
+        if (isset($config['mysql']) && isset($config['mysql']['password'])) {
+            return $config['mysql']['password'];
+        }
+
+        return \Valet\Mysql::MYSQL_ROOT_PASSWORD;
+    }
 }

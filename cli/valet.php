@@ -907,6 +907,27 @@ if (is_dir(VALET_HOME_PATH)) {
 
         Logs::open($path);
     })->descriptions('Open the logs for the specified service. (php, php-fpm, nginx, mysql, mailhog, redis)');
+
+    /**
+     * Create Magento 2 Website Command
+     */
+    $app->command('create_website [domain] [edition] [type]', function ($domain = null, $edition = 'community', $type = 'm2') {
+        if (!$domain) {
+            warning('Please enter a domain name.');
+            return;
+        }
+
+        if ($type != 'm2') {
+            warning('Only supported type is m2.');
+            return;
+        }
+        require __DIR__.'/drivers/require.php';
+
+        info("Start installation of a new Magento 2 website.");
+        (new \Magento2ValetDriver())->createWebsite($this, Configuration::read(), $domain, $edition);
+        info("Succesfully installed Magento 2.");
+
+    })->descriptions('Install a New Magento 2 Website.');
 }
 
 /**

@@ -259,6 +259,20 @@ When no name is given it'll try to find the closest git repository directory nam
 valet db open
 ```
 
+## Create Magento 2 Website Command
+
+```
+valet create_website <domain> <edition>
+```
+
+Example:
+
+```
+valet create_website yourproject community
+```
+
+After installation the website will be available on `https://yourproject.test/`.
+
 ## Logging
 
 To easily read the log file of php, php-fpm, nginx, mysql, mailhog or redis you can use command below.
