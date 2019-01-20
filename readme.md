@@ -59,7 +59,7 @@ Here are a few key differences compared to the original Valet:
 > :warning: Valet+ requires macOS and [Homebrew](https://brew.sh/). Before installation, you should make sure that no other programs such as Apache or Nginx are binding to your local machine's port 80.
 
 1. Install or update [Homebrew](https://brew.sh/) to the latest version using `brew update`.
-3. Add the Homebrew PHP tap for Valet+ via `henkrehorst/php`.
+3. Add the Homebrew PHP tap for Valet+ via `brew tap henkrehorst/php`.
 3. Install PHP 7.2 using Homebrew via `brew install valet-php@7.2`.
 4. Install Composer using Homebrew via `brew install composer`.
 5. Install Valet+ with Composer via `composer global require weprovide/valet-plus`.
