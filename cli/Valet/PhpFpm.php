@@ -57,7 +57,7 @@ class PhpFpm
     function install()
     {
         if (!$this->hasInstalledPhp()) {
-            $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V71_VERSION), [], array(self::VALET_PHP_BREW_TAP));
+            $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V71_VERSION), [], self::VALET_PHP_BREW_TAP);
         }
 
         $version = $this->linkedPhp();
@@ -445,17 +445,32 @@ class PhpFpm
             output($this->cli->runAsUser('brew uninstall php71'));
             info('Trying to remove php72...');
             output($this->cli->runAsUser('brew uninstall php72'));
+            info('Trying to remove valet-php56...');
+            output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V56_VERSION]));
+            info('Trying to remove valet-php70...');
+            output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V70_VERSION]));
+            info('Trying to remove valet-php71...');
+            output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
+            info('Trying to remove valet-php72...');
+            output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]));
+            info('Trying to remove valet-php73...');
+            output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V73_VERSION]));
+        }
+
+        if ($this->brew->hasTap(self::VALET_PHP_BREW_TAP)) {
+            info('[BREW] tapping formulae ' . self::VALET_PHP_BREW_TAP);
+            $this->brew->tap(self::VALET_PHP_BREW_TAP);
         }
 
         // If the current php is not 7.1, link 7.1.
-        info('Installing and linking new PHP homebrew/core version.');
-        output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
+        info('Installing and linking new PHP ' . self::VALET_PHP_BREW_TAP . ' version.');
         output($this->cli->runAsUser('brew install ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
+        $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V71_VERSION), [], self::VALET_PHP_BREW_TAP);
         output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
         output($this->cli->runAsUser('brew link ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION] . ' --force --overwrite'));
 
         if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {
-            info('[brew] untapping formulae ' . self::DEPRECATED_PHP_TAP);
+            info('[BREW] untapping formulae ' . self::DEPRECATED_PHP_TAP);
             $this->brew->unTap(self::DEPRECATED_PHP_TAP);
         }
 
