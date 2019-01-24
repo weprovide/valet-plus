@@ -57,14 +57,7 @@ class PhpFpm
     function install()
     {
         if (!$this->hasInstalledPhp()) {
-            $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V71_VERSION));
-        }
-
-        if (!$this->brew->hasTap(self::VALET_PHP_BREW_TAP)) {
-            info("[BREW TAP] Installing " . self::VALET_PHP_BREW_TAP);
-            $this->brew->tap(self::VALET_PHP_BREW_TAP);
-        } else {
-            info("[BREW TAP] " . self::VALET_PHP_BREW_TAP . " already installed");
+            $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V71_VERSION), [], array(self::VALET_PHP_BREW_TAP));
         }
 
         $version = $this->linkedPhp();
@@ -142,12 +135,12 @@ class PhpFpm
      */
     function switchTo($version)
     {
-        $currentVersion = $this->linkedPhp();
-
         if (!array_key_exists($version, self::SUPPORTED_PHP_FORMULAE)) {
             throw new DomainException("This version of PHP not available. The following versions are available: " . implode(' ',
                     array_keys(self::SUPPORTED_PHP_FORMULAE)));
         }
+
+        $currentVersion = $this->linkedPhp();
 
         // If the current version equals that of the current PHP version, do not switch.
         if ($version === $currentVersion) {
@@ -352,7 +345,7 @@ class PhpFpm
 
         $iniPath = $this->iniPath();
         $this->files->ensureDirExists($iniPath, user());
-        $this->files->putAsUser($this->iniPath() . 'z-performance.ini', $contents);
+        $this->files->putAsUser($iniPath . 'z-performance.ini', $contents);
 
         // Get php.ini file.
         $extensionDirectory = $this->pecl->getExtensionDirectory();

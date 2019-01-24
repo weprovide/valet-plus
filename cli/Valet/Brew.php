@@ -146,6 +146,7 @@ class Brew
         $formulas = is_array($formulas) ? $formulas : func_get_args();
 
         foreach ($formulas as $formula) {
+            info("[BREW] Installing tap " . $formula);
             $this->cli->passthru('sudo -u ' . user() . ' brew tap ' . $formula);
         }
     }
@@ -208,7 +209,7 @@ class Brew
             if ($this->installed($service)) {
                 info('[' . $service . '] Stopping');
 
-                $this->cli->quietly('sudo brew services stop ' . $service);
+                $this->cli->run('sudo brew services stop ' . $service);
             }
         }
     }

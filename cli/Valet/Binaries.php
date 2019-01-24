@@ -32,8 +32,8 @@ class Binaries
      */
     const SUPPORTED_CUSTOM_BINARIES = [
         self::N98_MAGERUN => [
-            'url' => 'https://files.magerun.net/n98-magerun-1.101.1.phar',
-            'shasum' => '3c48fb685e569f2c7c97cca1dfbe2d20e6d7841db594b0d706924f517d8d3fd3',
+            'url' => 'https://files.magerun.net/n98-magerun-1.102.0.phar',
+            'shasum' => 'a97f0487cc2e7973090ab9c1137376fe1e439c2195cc97545695576b9098e032',
             'bin_location' => '/usr/local/bin/'
         ],
         self::N98_MAGERUN_2 => [
