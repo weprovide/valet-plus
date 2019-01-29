@@ -153,18 +153,15 @@ class PhpFpm
             warning('Please check http://php.net/supported-versions.php for more information.');
         }
 
-        $installed = $this->brew->installed(self::SUPPORTED_PHP_FORMULAE[$version]);
-        if (!$installed) {
-            $this->brew->ensureInstalled(self::SUPPORTED_PHP_FORMULAE[$version]);
-        }
+        $this->brew->ensureInstalled(self::SUPPORTED_PHP_FORMULAE[$version]);
 
-        info("[php@$currentVersion] Unlinking");
+        info("[" . self::SUPPORTED_PHP_FORMULAE[$currentVersion] . "] Unlinking");
         output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[$currentVersion]));
 
         info('[libjpeg] Relinking');
         $this->cli->passthru('sudo ln -fs /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib');
 
-        info("[php@$version] Linking");
+        info("[" . self::SUPPORTED_PHP_FORMULAE[$currentVersion] . "] Linking");
         output($this->cli->runAsUser('brew link ' . self::SUPPORTED_PHP_FORMULAE[$version] . ' --force --overwrite'));
 
         $this->stop();
