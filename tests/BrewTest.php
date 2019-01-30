@@ -30,36 +30,36 @@ class BrewTest extends PHPUnit_Framework_TestCase
     public function test_installed_returns_true_when_given_formula_is_installed()
     {
         $cli = Mockery::mock(CommandLine::class);
-        $cli->shouldReceive('runAsUser')->once()->with('brew list | grep valet-php@7.1')->andReturn('php71');
+        $cli->shouldReceive('runAsUser')->once()->with('brew list | grep php71')->andReturn('php71');
         swap(CommandLine::class, $cli);
         $this->assertTrue(resolve(Brew::class)->installed('php71'));
 
         $cli = Mockery::mock(CommandLine::class);
-        $cli->shouldReceive('runAsUser')->once()->with('brew list | grep valet-php@7.1')->andReturn('php71-mcrypt
+        $cli->shouldReceive('runAsUser')->once()->with('brew list | grep php71')->andReturn('php71-mcrypt
 php71');
         swap(CommandLine::class, $cli);
-        $this->assertTrue(resolve(Brew::class)->installed('valet-php@7.1'));
+        $this->assertTrue(resolve(Brew::class)->installed('php71'));
     }
 
 
     public function test_installed_returns_false_when_given_formula_is_not_installed()
     {
         $cli = Mockery::mock(CommandLine::class);
-        $cli->shouldReceive('runAsUser')->once()->with('brew list | grep valet-php@7.1')->andReturn('');
+        $cli->shouldReceive('runAsUser')->once()->with('brew list | grep php71')->andReturn('');
         swap(CommandLine::class, $cli);
         $this->assertFalse(resolve(Brew::class)->installed('php71'));
 
         $cli = Mockery::mock(CommandLine::class);
-        $cli->shouldReceive('runAsUser')->once()->with('brew list | grep valet-php@7.1')->andReturn('php71-mcrypt');
+        $cli->shouldReceive('runAsUser')->once()->with('brew list | grep php71')->andReturn('php71-mcrypt');
         swap(CommandLine::class, $cli);
         $this->assertFalse(resolve(Brew::class)->installed('php71'));
 
         $cli = Mockery::mock(CommandLine::class);
-        $cli->shouldReceive('runAsUser')->once()->with('brew list | grep valet-php@7.1')->andReturn('php71-mcrypt
+        $cli->shouldReceive('runAsUser')->once()->with('brew list | grep php71')->andReturn('php71-mcrypt
 php71-something-else
 php7');
         swap(CommandLine::class, $cli);
-        $this->assertFalse(resolve(Brew::class)->installed('valet-php@7.1'));
+        $this->assertFalse(resolve(Brew::class)->installed('php71'));
     }
 
 
@@ -118,9 +118,11 @@ php7');
     public function test_tap_taps_the_given_homebrew_repository()
     {
         $cli = Mockery::mock(CommandLine::class);
-        $cli->shouldReceive('passthru')->once()->with('sudo -u '.user().' brew tap henkrehorst/php');
+        $cli->shouldReceive('passthru')->once()->with('sudo -u '.user().' brew tap php71');
+        $cli->shouldReceive('passthru')->once()->with('sudo -u '.user().' brew tap php70');
+        $cli->shouldReceive('passthru')->once()->with('sudo -u '.user().' brew tap php56');
         swap(CommandLine::class, $cli);
-        resolve(Brew::class)->tap('valet-php@7.1', 'valet-php@7.0', 'valet-php@5.6');
+        resolve(Brew::class)->tap('php71', 'php70', 'php56');
     }
 
 
@@ -149,15 +151,15 @@ php7');
     {
         $files = Mockery::mock(Filesystem::class);
         $files->shouldReceive('isLink')->once()->with('/usr/local/bin/php')->andReturn(true);
-        $files->shouldReceive('readLink')->once()->with('/usr/local/bin/php')->andReturn('/test/path/valet-php@7.1/test');
+        $files->shouldReceive('readLink')->once()->with('/usr/local/bin/php')->andReturn('/test/path/php@7.1/test');
         swap(Filesystem::class, $files);
-        $this->assertSame('valet-php@7.1', resolve(PhpFpm::class)->linkedPhp(true));
+        $this->assertSame('php@7.1', resolve(Brew::class)->linkedPhp(true));
 
         $files = Mockery::mock(Filesystem::class);
         $files->shouldReceive('isLink')->once()->with('/usr/local/bin/php')->andReturn(true);
-        $files->shouldReceive('readLink')->once()->with('/usr/local/bin/php')->andReturn('/test/path/valet-php@5.6/test');
+        $files->shouldReceive('readLink')->once()->with('/usr/local/bin/php')->andReturn('/test/path/php@5.6/test');
         swap(Filesystem::class, $files);
-        $this->assertSame('valet-php@5.6', resolve(PhpFpm::class)->linkedPhp(true));
+        $this->assertSame('php@5.6', resolve(Brew::class)->linkedPhp(true));
     }
 
 
@@ -169,7 +171,7 @@ php7');
         $files = Mockery::mock(Filesystem::class);
         $files->shouldReceive('isLink')->once()->with('/usr/local/bin/php')->andReturn(false);
         swap(Filesystem::class, $files);
-        resolve(PhpFpm::class)->linkedPhp();
+        resolve(Brew::class)->linkedPhp();
     }
 
 
@@ -182,7 +184,7 @@ php7');
         $files->shouldReceive('isLink')->once()->with('/usr/local/bin/php')->andReturn(true);
         $files->shouldReceive('readLink')->once()->with('/usr/local/bin/php')->andReturn('/test/path/php42/test');
         swap(Filesystem::class, $files);
-        resolve(PhpFpm::class)->linkedPhp();
+        resolve(Brew::class)->linkedPhp();
     }
 
 
