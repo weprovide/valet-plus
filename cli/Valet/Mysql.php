@@ -69,6 +69,9 @@ class Mysql
             $this->brew->installOrFail($type);
         }
 
+        info("[" . $type . "] Linking");
+        output($this->cli->runAsUser('brew link ' . $type . ' --force --overwrite'));
+
         if (!$this->brew->installed('mysql-utilities')) {
             $this->brew->installOrFail('mysql-utilities');
         }

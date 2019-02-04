@@ -434,6 +434,8 @@ class PhpFpm
         // If full reinstall is required remove PHP formulae. This will also uninstall formulae in the following format:
         // php@{version}.
         if ($reinstall) {
+            info('Trying to remove php...');
+            output($this->cli->runAsUser('brew uninstall php'));
             info('Trying to remove php56...');
             output($this->cli->runAsUser('brew uninstall php56'));
             info('Trying to remove php70...');
@@ -454,25 +456,25 @@ class PhpFpm
             output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V73_VERSION]));
         }
 
-        if ($this->brew->hasTap(self::VALET_PHP_BREW_TAP)) {
-            info('[BREW] tapping formulae ' . self::VALET_PHP_BREW_TAP);
-            $this->brew->tap(self::VALET_PHP_BREW_TAP);
-        }
-
-        // If the current php is not 7.1, link 7.1.
-        info('Installing and linking new PHP ' . self::VALET_PHP_BREW_TAP . ' version.');
-        output($this->cli->runAsUser('brew install ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
-        $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V71_VERSION), [], self::VALET_PHP_BREW_TAP);
-        output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
-        output($this->cli->runAsUser('brew link ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION] . ' --force --overwrite'));
-
         if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {
             info('[BREW] untapping formulae ' . self::DEPRECATED_PHP_TAP);
             $this->brew->unTap(self::DEPRECATED_PHP_TAP);
         }
 
+        if (!$this->brew->hasTap(self::VALET_PHP_BREW_TAP)) {
+            info('[BREW] tapping formulae ' . self::VALET_PHP_BREW_TAP);
+            $this->brew->tap(self::VALET_PHP_BREW_TAP);
+        }
+
+        // If the current php is not 7.2, link 7.2.
+        info('Installing and linking new PHP ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION] . ' version.');
+        output($this->cli->runAsUser('brew install ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]));
+        $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V72_VERSION), [], self::VALET_PHP_BREW_TAP);
+        output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]));
+        output($this->cli->runAsUser('brew link ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION] . ' --force --overwrite'));
+
         warning("Please check your linked php version, you might need to restart your terminal!" .
-            "\nLinked PHP should be php 7.1:");
+            "\nLinked PHP should be php " . self::PHP_V72_VERSION . ":");
         output($this->cli->runAsUser('php -v'));
     }
 }
