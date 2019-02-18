@@ -55,6 +55,8 @@ class CraftValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         $frontControllerDirectory = $this->frontControllerDirectory($sitePath);
 
         // Default index path

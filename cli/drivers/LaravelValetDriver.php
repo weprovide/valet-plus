@@ -53,6 +53,8 @@ class LaravelValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         // Shortcut for getting the "local" hostname as the HTTP_HOST
         if (isset($_SERVER['HTTP_X_ORIGINAL_HOST'], $_SERVER['HTTP_X_FORWARDED_HOST'])) {
             $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_X_FORWARDED_HOST'];

@@ -23,6 +23,8 @@ class Concrete5ValetDriver extends BasicValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         if (!getenv('CONCRETE5_ENV')) {
             putenv('CONCRETE5_ENV=valet');
         }

@@ -46,6 +46,7 @@ class Shopware5ValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
 
         if ($this->isRecoveryPath($sitePath, $uri)) {
             $installPath = $this->buildInstallPath($sitePath, $uri);

@@ -42,6 +42,8 @@ class CakeValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         $_SERVER['DOCUMENT_ROOT'] = $sitePath.'/webroot';
         $_SERVER['SCRIPT_FILENAME'] = $sitePath.'/webroot/index.php';
         $_SERVER['SCRIPT_NAME'] = '/index.php';

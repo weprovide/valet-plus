@@ -50,7 +50,11 @@ abstract class ValetDriver
             $drivers[] = $customSiteDriver;
         }
 
-        $drivers = array_merge($drivers, static::driversIn(VALET_HOME_PATH.'/Drivers'));
+        $drivers = array_merge(
+            $drivers,
+            static::driversIn(VALET_HOME_PATH.'/Drivers'),
+            static::driversIn(__DIR__ .'/')
+        );
 
         if(!$noCache && $cachedDriver) {
             $driver = new $cachedDriver;
@@ -113,19 +117,25 @@ abstract class ValetDriver
     /**
      * Get all of the driver classes in a given path.
      *
-     * @param  string  $path
+     * @param  string $path
+     * @param  array  $blacklist
+     *
      * @return array
      */
-    public static function driversIn($path)
+    public static function driversIn($path, $blacklist = [])
     {
         if (! is_dir($path)) {
             return [];
         }
 
+        $blacklist[] = 'ValetDriver';
+        $blacklist[] = 'BasicValetDriver';
+        $blacklist = array_map(function($i) { return $i.'.php'; }, $blacklist);
+
         $drivers = [];
 
         foreach (scandir($path) as $file) {
-            if ($file !== 'ValetDriver.php' && strpos($file, 'ValetDriver') !== false) {
+            if (!in_array($file, $blacklist) && strpos($file, 'ValetDriver') !== false) {
                 require_once $path.'/'.$file;
 
                 $drivers[] = basename($file, '.php');
@@ -187,5 +197,27 @@ abstract class ValetDriver
     protected function isActualFile($path)
     {
         return ! is_dir($path) && file_exists($path);
+    }
+
+    /**
+     * Load server environment variables if available.
+     *
+     * @param  string  $sitePath
+     * @param  string  $siteName
+     * @return void
+     */
+    protected function loadServerEnvironmentVariables($sitePath, $siteName)
+    {
+        $varFilePath = $sitePath . '/.env.valet';
+        if (! file_exists($varFilePath)) {
+            return;
+        }
+        $variables = include $varFilePath;
+        if (! isset($variables[$siteName])) {
+            return;
+        }
+        foreach ($variables[$siteName] as $key => $value) {
+            $_SERVER[$key] = $value;
+        }
     }
 }

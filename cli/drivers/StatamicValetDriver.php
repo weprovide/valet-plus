@@ -48,6 +48,8 @@ class StatamicValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         if ($this->isActualFile($staticPath = $this->getStaticPath($sitePath))) {
             return $staticPath;
         }

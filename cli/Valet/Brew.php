@@ -6,27 +6,6 @@ use DomainException;
 
 class Brew
 {
-    const PHP_V56_FORMULAE = 'php@5.6';
-    const PHP_V70_FORMULAE = 'php@7.0';
-    const PHP_V71_FORMULAE = 'php@7.1';
-    const PHP_V72_FORMULAE = 'php@7.2';
-    const PHP_V73_FORMULAE = 'php@7.3';
-
-    const SUPPORTED_PHP_FORMULAE = [
-        self::PHP_V56_FORMULAE,
-        self::PHP_V70_FORMULAE,
-        self::PHP_V71_FORMULAE,
-        self::PHP_V72_FORMULAE,
-        self::PHP_V73_FORMULAE
-    ];
-
-    const PHP_FORMULAE_INSTALLED_ALIASES = [
-        self::PHP_V73_FORMULAE => 'php'
-    ];
-
-    const ADDITIONAL_FORMULAE = [
-        'techdivision/brew'
-    ];
 
     var $cli, $files;
 
@@ -50,26 +29,7 @@ class Brew
      */
     function installed($formula)
     {
-        if (array_key_exists($formula, self::PHP_FORMULAE_INSTALLED_ALIASES)) {
-            $formula = self::PHP_FORMULAE_INSTALLED_ALIASES[$formula];
-        }
         return in_array($formula, explode(PHP_EOL, $this->cli->runAsUser('brew list | grep ' . $formula)));
-    }
-
-    /**
-     * Determine if a compatible PHP version is Homebrewed.
-     *
-     * @return bool
-     */
-    function hasInstalledPhp()
-    {
-        foreach (Brew::SUPPORTED_PHP_FORMULAE as $version) {
-            if ($this->installed($version)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -176,32 +136,6 @@ class Brew
     }
 
     /**
-     * Link formula
-     *
-     * @param $formula string
-     * @param $force boolean
-     * @param $overwrite boolean
-     *
-     * @return void
-     */
-    function link($formula, $force=true, $overwrite=true)
-    {
-        if (empty($formula)) {
-            throw new DomainException('No formula given to link');
-        }
-        $options = "";
-
-        if ($force === true) {
-            $options .= " --force";
-        }
-        if ($overwrite === true) {
-            $options .= " --overwrite";
-        }
-
-        $this->cli->runAsUser("brew link $formula $options");
-    }
-
-    /**
      * Tap the given formulas.
      *
      * @param  dynamic [string]  $formula
@@ -243,16 +177,6 @@ class Brew
     }
 
     /**
-     * Taps additional formulae
-     *
-     * @return void
-     */
-    function tapAdditionalFormulae()
-    {
-        $this->tap(self::ADDITIONAL_FORMULAE);
-    }
-
-    /**
      * Restart the given Homebrew services.
      *
      * @param
@@ -262,8 +186,7 @@ class Brew
         $services = is_array($services) ? $services : func_get_args();
 
         foreach ($services as $service) {
-            // Brew list doesn't show php@7.3 eventhough it is installed.
-            if ($this->installed($service) || $service === self::PHP_V73_FORMULAE) {
+            if ($this->installed($service)) {
                 info('[' . $service . '] Restarting');
 
                 $this->cli->quietly('sudo brew services stop ' . $service);
@@ -282,54 +205,11 @@ class Brew
         $services = is_array($services) ? $services : func_get_args();
 
         foreach ($services as $service) {
-            // Brew list doesn't show php@7.3 eventhough it is installed.
-            if ($this->installed($service) || $service === self::PHP_V73_FORMULAE) {
+            if ($this->installed($service)) {
                 info('[' . $service . '] Stopping');
 
                 $this->cli->quietly('sudo brew services stop ' . $service);
             }
         }
-    }
-
-    /**
-     * Determine which version of PHP is linked in Homebrew.
-     *
-     * @param bool $asFormula
-     *
-     * @return string
-     */
-    function linkedPhp($asFormula = false)
-    {
-        if (!$this->files->isLink('/usr/local/bin/php')) {
-            throw new DomainException("Unable to determine linked PHP.");
-        }
-
-        $resolvedPath = $this->files->readLink('/usr/local/bin/php');
-
-        $versions = self::SUPPORTED_PHP_FORMULAE;
-
-        foreach ($versions as $version) {
-            $version = str_replace('php@', '', $version);
-            if (strpos($resolvedPath, $version) !== false) {
-                if ($asFormula) {
-                    $version = 'php@' . $version;
-                }
-
-                return $version;
-            }
-        }
-
-
-        throw new DomainException("Unable to determine linked PHP.");
-    }
-
-    /**
-     * Restart the linked PHP-FPM Homebrew service.
-     *
-     * @return void
-     */
-    function restartLinkedPhp()
-    {
-        $this->restartService($this->linkedPhp(true));
     }
 }

@@ -2,35 +2,45 @@
 
 namespace Valet;
 
-use DateTime;
-use MYSQLI_ASSOC;
 use DomainException;
 use mysqli;
+use MYSQLI_ASSOC;
 
 class Mysql
 {
-    var $brew;
-    var $cli;
-    var $files;
-    var $configuration;
-    var $site;
     const MYSQL_CONF_DIR = '/usr/local/etc';
     const MYSQL_CONF = '/usr/local/etc/my.cnf';
     const MAX_FILES_CONF = '/Library/LaunchDaemons/limit.maxfiles.plist';
     const MYSQL_DIR = '/usr/local/var/mysql';
+    const MYSQL_ROOT_PASSWORD = 'root';
+
+    public $brew;
+    public $cli;
+    public $files;
+    public $configuration;
+    public $site;
+    public $systemDatabase = ['sys', 'performance_schema', 'information_schema', 'mysql@5.7'];
+    /**
+     * @var Mysqli
+     */
+    protected $link = false;
 
     /**
      * Create a new instance.
      *
-     * @param  Brew $brew
-     * @param  CommandLine $cli
-     * @param  Filesystem $files
-     * @param  Configuration $configuration
-     * @param  Site $site
+     * @param Brew          $brew
+     * @param CommandLine   $cli
+     * @param Filesystem    $files
+     * @param Configuration $configuration
+     * @param Site          $site
      */
-    function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
-                         Configuration $configuration, Site $site)
-    {
+    public function __construct(
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
+        Configuration $configuration,
+        Site $site
+    ) {
         $this->cli = $cli;
         $this->brew = $brew;
         $this->site = $site;
@@ -38,44 +48,22 @@ class Mysql
         $this->configuration = $configuration;
     }
 
-    function supportedVersions() {
-        return ['mysql@5.7', 'mariadb'];
-    }
-
-    function verifyType($type) {
-        if(!in_array($type, $this->supportedVersions())) {
-            throw new DomainException('Invalid Mysql type given. Available: mysql@5.7/mariadb');
-        }
-    }
-
-    function installedVersion() {
-        $versions = $this->supportedVersions();
-        foreach($versions as $version) {
-            if($this->brew->installed($version)) {
-                return $version;
-            }
-        }
-
-        return false;
-    }
-
     /**
-     * Install the service..
+     * Install the service.
      *
      * @param $type
-     * @return void
      */
-    function install($type = 'mysql@5.7')
+    public function install($type = 'mysql@5.7')
     {
         $this->verifyType($type);
         $currentlyInstalled = $this->installedVersion();
-        if($currentlyInstalled) {
+        if ($currentlyInstalled) {
             $type = $currentlyInstalled;
         }
 
         $this->removeConfiguration($type);
-        $this->files->copy(__DIR__.'/../stubs/limit.maxfiles.plist', static::MAX_FILES_CONF);
-        $this->cli->quietly('launchctl load -w '.static::MAX_FILES_CONF);
+        $this->files->copy(__DIR__ . '/../stubs/limit.maxfiles.plist', static::MAX_FILES_CONF);
+        $this->cli->quietly('launchctl load -w ' . static::MAX_FILES_CONF);
 
         if (!$this->installedVersion()) {
             $this->brew->installOrFail($type);
@@ -85,259 +73,405 @@ class Mysql
             $this->brew->installOrFail('mysql-utilities');
         }
 
-        // link installed binaries via brew
-        if ($this->installedVersion()) {
-            $this->brew->link($type, true, true);
-        }
-
         $this->stop();
         $this->installConfiguration($type);
         $this->restart();
     }
 
     /**
+     * check if type is valid.
+     *
+     * @param $type
+     *
+     * @throws DomainException
+     */
+    public function verifyType($type)
+    {
+        if (!\in_array($type, $this->supportedVersions())) {
+            throw new DomainException('Invalid Mysql type given. Available: mysql@5.7/mariadb');
+        }
+    }
+
+    /**
+     * Get supported version of database.
+     *
+     * @return array
+     */
+    public function supportedVersions()
+    {
+        return ['mysql@5.7', 'mariadb'];
+    }
+
+    /**
+     * Get installed version of database system.
+     *
+     * @param bool $default
+     *
+     * @return bool|string
+     */
+    public function installedVersion($default = false)
+    {
+        return collect($this->supportedVersions())->filter(function ($version) {
+            return $this->brew->installed($version);
+        })->first(null, $default);
+    }
+
+    /**
+     * Remove current configuration before install new version.
+     *
+     * @param string $type
+     */
+    private function removeConfiguration($type = 'mysql@5.7')
+    {
+        $this->files->unlink(static::MYSQL_CONF);
+        $this->files->unlink(static::MYSQL_CONF . '.default');
+    }
+
+    /**
+     * Stop the Mysql service.
+     */
+    public function stop()
+    {
+        $version = $this->installedVersion('mysql@5.7');
+        info('[' . $version . '] Stopping');
+
+        $this->cli->quietly('sudo brew services stop ' . $version);
+        $this->cli->quietlyAsUser('brew services stop ' . $version);
+    }
+
+    /**
      * Install the configuration files.
      *
      * @param string $type
-     * @return void
      */
-    function installConfiguration($type = 'mysql@5.7')
+    public function installConfiguration($type = 'mysql@5.7')
     {
-        info('['.$type.'] Configuring');
+        info('[' . $type . '] Configuring');
 
         $this->files->chmodPath(static::MYSQL_DIR, 0777);
 
-        if (! $this->files->isDir($directory = static::MYSQL_CONF_DIR)) {
+        if (!$this->files->isDir($directory = static::MYSQL_CONF_DIR)) {
             $this->files->mkdirAsUser($directory);
         }
 
-        $contents = $this->files->get(__DIR__.'/../stubs/my.cnf');
-        if($type === 'mariadb') {
-            $contents = str_replace('show_compatibility_56=ON', '', $contents);
+        $contents = $this->files->get(__DIR__ . '/../stubs/my.cnf');
+        if ($type === 'mariadb') {
+            $contents = \str_replace('show_compatibility_56=ON', '', $contents);
         }
 
         $this->files->putAsUser(
             static::MYSQL_CONF,
-            str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents)
+            \str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents)
         );
     }
 
     /**
-     * Fixing mysql installation
-     *
-     * @return void
-     */
-    function fix($withMariadb)
-    {
-        // Remove old mysql packages.
-        info('Reinstall and remove main mysql package and reinstall mysql@5.7');
-        $this->brew->stopService(array('mysql', 'mysql@5.7'));
-        $this->cli->runAsUser('brew uninstall mysql mysql@5.7 --force');
-        $this::install($withMariadb ? 'mariadb' : 'mysql@5.7');
-    }
-
-    /**
-     * Unlink mysql configuration
-     *
-     * @param string $type
-     *
-     * @return void
-     */
-    function removeConfiguration($type = 'mysql@5.7') {
-        $this->files->unlink(static::MYSQL_CONF);
-        $this->files->unlink(static::MYSQL_CONF.'.default');
-    }
-
-    /**
      * Restart the Mysql service.
-     *
-     * @return void
      */
-    function restart()
+    public function restart()
     {
         $version = $this->installedVersion() ?: 'mysql@5.7';
-        info('['.$version.'] Restarting');
-        $this->cli->quietlyAsUser('brew services restart '.$version);
+        info('[' . $version . '] Restarting');
+        $this->cli->quietlyAsUser('brew services restart ' . $version);
     }
 
     /**
-     * Stop the Nginx service.
-     *
-     * @return void
+     * Set root password of Mysql.
+     * @param string $oldPwd
+     * @param string $newPwd
      */
-    function stop()
+    public function setRootPassword($oldPwd = '', $newPwd = self::MYSQL_ROOT_PASSWORD)
     {
-        $version = $this->installedVersion() ?: 'mysql@5.7';
-        info('['.$version.'] Stopping');
+        $success = true;
+        $this->cli->runAsUser("mysqladmin -u root --password='".$oldPwd."' password ".$newPwd, function() use (&$success) {
+            warning('Setting password for root user failed. ');
+            $success = false;
+        });
 
-        $this->cli->quietly('sudo brew services stop '.$version);
-        $this->cli->quietlyAsUser('brew services stop '.$version);
+        if ($success !== false) {
+            $config = $this->configuration->read();
+            if (!isset($config['mysql'])) {
+                $config['mysql'] = [];
+            }
+            $config['mysql']['password'] = $newPwd;
+            $this->configuration->write($config);
+        }
     }
 
     /**
-     * Sets root password
-     *
-     * @return void
+     * Returns the stored password from the config. If not configured returns the default root password.
      */
-    function setRootPassword() {
-        $this->cli->quietlyAsUser("mysqladmin -u root --password='' password root");
+    private function getRootPassword()
+    {
+        $config = $this->configuration->read();
+        if (isset($config['mysql']) && isset($config['mysql']['password'])) {
+            return $config['mysql']['password'];
+        }
+
+        return self::MYSQL_ROOT_PASSWORD;
     }
 
     /**
      * Prepare Mysql for uninstallation.
-     *
-     * @return void
      */
-    function uninstall()
+    public function uninstall()
     {
         $this->stop();
     }
 
     /**
-     * Return Mysql connection
-     *
-     * @return boolean|mysqli
+     * Print table of exists databases.
      */
-    function getConnection() {
-        // Create connection
-        $link = new mysqli('localhost', 'root', 'root');
-        // Check connection
-        if ($link->connect_error) {
-            warning('Failed to connect to database');
-            return false;
-        }
-
-        return $link;
-    }
-
-    function getDirName($name = '') {
-        if($name) {
-            return $name;
-        }
-
-        $gitDir = $this->cli->runAsUser('git rev-parse --show-toplevel 2>/dev/null');
-
-        if($gitDir) {
-            return trim(basename($gitDir));
-        }
-
-        return trim(basename(getcwd()));
+    public function listDatabases()
+    {
+        table(['Database'], $this->getDatabases());
     }
 
     /**
-     * Create Mysql database
+     * Get exists databases.
      *
-     * @param string $name
-     * @return boolean|string
+     * @return array|bool
      */
-    function createDatabase($name) {
-        $name = $this->getDirName($name);
-        $link = $this->getConnection();
-        $sql = mysqli_real_escape_string($link, 'CREATE DATABASE `' . $name . '`');
+    protected function getDatabases()
+    {
+        $result = $this->query('SHOW DATABASES');
 
-        if(!$link->query($sql)) {
+        if (!$result) {
             return false;
         }
 
-        return $name;
+        return collect($result->fetch_all(MYSQLI_ASSOC))->reject(function ($row) {
+            return \in_array($row['Database'], $this->getSystemDatabase());
+        })->map(function ($row) {
+            return [$row['Database']];
+        })->toArray();
     }
 
     /**
-     * Create Mysql database
+     * Run Mysql query.
      *
-     * @param string $name
-     * @return bool|string
+     * @param $query
+     * @param bool $escape
+     *
+     * @return bool|\mysqli_result
      */
-    function dropDatabase($name) {
-        $name = $this->getDirName($name);
+    protected function query($query, $escape = true)
+    {
         $link = $this->getConnection();
-        $sql = mysqli_real_escape_string($link, 'DROP DATABASE `' . $name . '`');
-        if(!$link->query($sql)) {
-            return false;
-        }
 
-        return $name;
-    }
+        $query = $escape ? $this->escape($query) : $query;
 
-    function getDatabases() {
-        $link = $this->getConnection();
-        $sql = mysqli_real_escape_string($link, 'SHOW DATABASES');
-        $result = $link->query($sql);
-
-        if(!$result) {
-            return false;
-        }
-
-        $databases = [];
-
-        foreach($result->fetch_all(MYSQLI_ASSOC) as $row) {
-            if($row['Database'] === 'sys' || $row['Database'] === 'performance_schema' || $row['Database'] === 'information_schema' || $row['Database'] === 'mysql') {
-                continue;
+        return tap($link->query($query), function ($result) use ($link) {
+            if (!$result) { // throw mysql error
+                warning(\mysqli_error($link));
             }
+        });
+    }
 
-            $databases[] = [$row['Database']];
+    /**
+     * Return Mysql connection.
+     *
+     * @return bool|mysqli
+     */
+    public function getConnection()
+    {
+        // if connection already exists return it early.
+        if ($this->link) {
+            return $this->link;
         }
 
-        $result->free();
+        // Create connection
+        $this->link = new mysqli('localhost', 'root', $this->getRootPassword());
 
-        return $databases;
+        // Check connection
+        if ($this->link->connect_error) {
+            warning('Failed to connect to database');
+
+            return false;
+        }
+
+        return $this->link;
     }
 
-    function listDatabases() {
-        $databases = $this->getDatabases();
-        table(['Database'], $databases);
+    /**
+     * escape string of query via myslqi.
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    protected function escape($string)
+    {
+        return \mysqli_real_escape_string($this->getConnection(), $string);
     }
 
-    function importDatabase($file, $database) {
-        $database = $database ?: $this->getDirName();
+    /**
+     * Get default databases of mysql.
+     *
+     * @return array
+     */
+    protected function getSystemDatabase()
+    {
+        return $this->systemDatabase;
+    }
+
+    /**
+     * Drop current Mysql database & re-import it from file.
+     *
+     * @param $file
+     * @param $database
+     */
+    public function reimportDatabase($file, $database)
+    {
+        $this->importDatabase($file, $database, true);
+    }
+
+    /**
+     * Import Mysql database from file.
+     *
+     * @param string $file
+     * @param string $database
+     * @param bool   $dropDatabase
+     */
+    public function importDatabase($file, $database, $dropDatabase = false)
+    {
+        $database = $this->getDatabaseName($database);
+
+        // drop database first
+        if ($dropDatabase) {
+            $this->dropDatabase($database);
+        }
+
         $this->createDatabase($database);
+
         $gzip = ' | ';
-        if (stristr($file, '.gz')) {
+        if (\stristr($file, '.gz')) {
             $gzip = ' | gzip -cd | ';
         }
-        $this->cli->passthru('pv ' . escapeshellarg($file) . $gzip . 'mysql ' . escapeshellarg($database));
+        $this->cli->passthru('pv ' . \escapeshellarg($file) . $gzip . 'mysql ' . \escapeshellarg($database));
     }
 
-    function reimportDatabase($file, $database) {
-        $database = $database ?: $this->getDirName();
-        $this->dropDatabase($database);
-        $this->createDatabase($database);
-
-        $this->importDatabase($file, $database);
+    /**
+     * Get database name via name or current dir.
+     *
+     * @param $database
+     *
+     * @return string
+     */
+    protected function getDatabaseName($database = '')
+    {
+        return $database ?: $this->getDirName();
     }
 
-    function exportDatabase($filename, $database) {
-        $database = $database ?: $this->getDirName();
+    /**
+     * Get current dir name.
+     *
+     * @return string
+     */
+    public function getDirName()
+    {
+        $gitDir = $this->cli->runAsUser('git rev-parse --show-toplevel 2>/dev/null');
 
-        if(!$filename || $filename === '-') {
-            $filename = $database.'-'.date('Y-m-d-His', time());
+        if ($gitDir) {
+            return \trim(\basename($gitDir));
         }
 
-        if(!stristr($filename, '.sql')) {
-            $filename = $filename.'.sql.gz';
+        return \trim(\basename(\getcwd()));
+    }
+
+    /**
+     * Drop Mysql database.
+     *
+     * @param string $name
+     *
+     * @return bool|string
+     */
+    public function dropDatabase($name)
+    {
+        $name = $this->getDatabaseName($name);
+
+        return $this->query('DROP DATABASE `' . $name . '`') ? $name : false;
+    }
+
+    /**
+     * Create Mysql database.
+     *
+     * @param string $name
+     *
+     * @return bool|string
+     */
+    public function createDatabase($name)
+    {
+        $name = $this->getDatabaseName($name);
+
+        return $this->query('CREATE DATABASE IF NOT EXISTS `' . $name . '`') ? $name : false;
+    }
+
+    /**
+     * Check if database already exists.
+     *
+     * @param string $name
+     *
+     * @return bool|\mysqli_result
+     */
+    public function isDatabaseExists($name)
+    {
+        $name = $this->getDatabaseName($name);
+
+        $query = $this->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" . $this->escape($name) . "'", false);
+
+        return (bool) $query->num_rows;
+    }
+
+    /**
+     * Export Mysql database.
+     *
+     * @param $filename
+     * @param $database
+     *
+     * @return array
+     */
+    public function exportDatabase($filename, $database)
+    {
+        $database = $this->getDatabaseName($database);
+
+        if (!$filename || $filename === '-') {
+            $filename = $database . '-' . \date('Y-m-d-His', \time());
         }
 
-        if(!stristr($filename, '.gz')) {
-            $filename = $filename.'.gz';
+        if (!\stristr($filename, '.sql')) {
+            $filename = $filename . '.sql.gz';
+        }
+        if (!\stristr($filename, '.gz')) {
+            $filename = $filename . '.gz';
         }
 
-        $this->cli->passthru('mysqldump ' . escapeshellarg($database) . ' | gzip > ' . escapeshellarg($filename ?: $database));
+        $this->cli->passthru('mysqldump ' . \escapeshellarg($database) . ' | gzip > ' . \escapeshellarg($filename ?: $database));
 
         return [
             'database' => $database,
-            'filename' => $filename
+            'filename' => $filename,
         ];
     }
 
-    function openSequelPro($name = '') {
-        $name = $this->getDirName($name);
-        $tmpName = tempnam(sys_get_temp_dir(), 'sequelpro').'.spf';
+    /**
+     * Open Mysql database via Sequel pro.
+     *
+     * @param string $name
+     */
+    public function openSequelPro($name = '')
+    {
+        $tmpName = \tempnam(\sys_get_temp_dir(), 'sequelpro') . '.spf';
 
-        $contents = $this->files->get(__DIR__.'/../stubs/sequelpro.spf');
+        $contents = $this->files->get(__DIR__ . '/../stubs/sequelpro.spf');
 
         $this->files->putAsUser(
             $tmpName,
-            str_replace(['DB_NAME', 'DB_HOST', 'DB_USER', 'DB_PASS', 'DB_PORT'], [$name, '127.0.0.1', 'root', 'root', '3306'], $contents)
+            \str_replace(
+                ['DB_NAME', 'DB_HOST', 'DB_USER', 'DB_PASS', 'DB_PORT'],
+                [$this->getDatabaseName($name), '127.0.0.1', 'root', $this->getRootPassword(), '3306'],
+                $contents
+            )
         );
 
         $this->cli->quietly('open ' . $tmpName);

@@ -217,6 +217,9 @@ class Magento2ValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+        $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_HOST'];
+
         if(isset($_GET['profile'])) {
             $_SERVER['MAGE_PROFILER'] = 'html';
         }
@@ -253,10 +256,12 @@ class Magento2ValetDriver extends ValetDriver
             exit;
         }
 
-        $_SERVER['DOCUMENT_ROOT']   = $sitePath . '/pub';
-        $_SERVER['SCRIPT_FILENAME'] = $sitePath . '/pub/index.php';
-        $_SERVER['SCRIPT_NAME']     = substr($_SERVER['SCRIPT_FILENAME'], strlen($_SERVER['DOCUMENT_ROOT']));
+        if(strpos($uri, '/dev/tests/acceptance/utils/command.php') !== false) {
+            return $sitePath . '/dev/tests/acceptance/utils/command.php';
+        }
 
-        return $_SERVER['SCRIPT_FILENAME'];
+        $_SERVER['DOCUMENT_ROOT'] = $sitePath;
+
+        return $sitePath . '/pub/index.php';
     }
 }

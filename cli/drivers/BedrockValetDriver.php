@@ -47,6 +47,8 @@ class BedrockValetDriver extends BasicValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         $_SERVER['PHP_SELF'] = $uri;
 
         if (strpos($uri, '/wp/') === 0) {

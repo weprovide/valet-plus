@@ -97,7 +97,7 @@ class Nginx
             str_replace(
                 ['VALET_DOMAIN'],
                 [$domain],
-                $this->files->get(__DIR__ . '/../stubs/mailhog.conf')
+                $this->files->get(__DIR__ . '/../stubs/elasticsearch.conf')
             )
         );
 
