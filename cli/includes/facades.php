@@ -31,6 +31,7 @@ class Facade
 
 class Brew extends Facade {}
 class Pecl extends Facade {}
+class PeclCustom extends Facade {}
 class Binaries extends Facade{}
 class Nginx extends Facade {}
 class Mysql extends Facade {}
@@ -47,4 +48,5 @@ class Ngrok extends Facade {}
 class PhpFpm extends Facade {}
 class DevTools extends Facade {}
 class Site extends Facade {}
+class Logs extends Facade {}
 class Valet extends Facade {}

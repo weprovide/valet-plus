@@ -53,6 +53,8 @@ class PimcoreValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         if(strpos($uri, '/install') === 0) {
             return $sitePath.'/install.php'; 
         }

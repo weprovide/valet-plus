@@ -2,31 +2,34 @@
 
 namespace Valet;
 
-class Mailhog
+class Mailhog extends AbstractService
 {
     var $brew;
     var $cli;
     var $files;
-    var $configuration;
     var $site;
 
     /**
      * Create a new instance.
      *
-     * @param  Brew $brew
-     * @param  CommandLine $cli
-     * @param  Filesystem $files
+     * @param  Brew          $brew
+     * @param  CommandLine   $cli
+     * @param  Filesystem    $files
      * @param  Configuration $configuration
-     * @param  Site $site
+     * @param  Site          $site
      */
-    function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
-                         Configuration $configuration, Site $site)
-    {
-        $this->cli = $cli;
-        $this->brew = $brew;
-        $this->site = $site;
+    function __construct(
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
+        Configuration $configuration,
+        Site $site
+    ) {
+        $this->cli   = $cli;
+        $this->brew  = $brew;
+        $this->site  = $site;
         $this->files = $files;
-        $this->configuration = $configuration;
+        parent::__construct($configuration);
     }
 
     /**
@@ -38,14 +41,20 @@ class Mailhog
     {
         if ($this->installed()) {
             info('[mailhog] already installed');
-            return;
+        } else {
+            $this->brew->installOrFail('mailhog');
         }
-
-        $this->brew->installOrFail('mailhog');
+        $this->setEnabled(self::STATE_ENABLED);
         $this->restart();
     }
 
-    function installed() {
+    /**
+     * Returns wether mailhog is installed or not.
+     *
+     * @return bool
+     */
+    function installed()
+    {
         return $this->brew->installed('mailhog');
     }
 
@@ -56,7 +65,7 @@ class Mailhog
      */
     function restart()
     {
-        if (!$this->installed()) {
+        if (!$this->installed() || !$this->isEnabled()) {
             return;
         }
 

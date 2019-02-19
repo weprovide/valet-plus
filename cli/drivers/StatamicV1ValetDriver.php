@@ -49,6 +49,8 @@ class StatamicV1ValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
         if (strpos($uri, '/admin.php') === 0) {
             $_SERVER['SCRIPT_NAME'] = '/admin.php';
 

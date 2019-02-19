@@ -40,7 +40,7 @@ class Nginx
     function install()
     {
         if (!$this->brew->hasInstalledNginx()) {
-            $this->brew->installOrFail('nginx', ['--with-http2']);
+            $this->brew->installOrFail('nginx');
         }
 
         $this->installConfiguration();
@@ -97,7 +97,7 @@ class Nginx
             str_replace(
                 ['VALET_DOMAIN'],
                 [$domain],
-                $this->files->get(__DIR__ . '/../stubs/mailhog.conf')
+                $this->files->get(__DIR__ . '/../stubs/elasticsearch.conf')
             )
         );
 

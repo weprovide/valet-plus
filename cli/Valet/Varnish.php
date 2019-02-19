@@ -2,31 +2,34 @@
 
 namespace Valet;
 
-class Varnish
+class Varnish extends AbstractService
 {
     var $brew;
     var $cli;
     var $files;
-    var $configuration;
     var $site;
 
     /**
      * Create a new instance.
      *
-     * @param  Brew $brew
-     * @param  CommandLine $cli
-     * @param  Filesystem $files
+     * @param  Brew          $brew
+     * @param  CommandLine   $cli
+     * @param  Filesystem    $files
      * @param  Configuration $configuration
-     * @param  Site $site
+     * @param  Site          $site
      */
-    function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
-                         Configuration $configuration, Site $site)
-    {
-        $this->cli = $cli;
-        $this->brew = $brew;
-        $this->site = $site;
+    function __construct(
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
+        Configuration $configuration,
+        Site $site
+    ) {
+        $this->cli   = $cli;
+        $this->brew  = $brew;
+        $this->site  = $site;
         $this->files = $files;
-        $this->configuration = $configuration;
+        parent::__construct($configuration);
     }
 
     /**
@@ -36,11 +39,24 @@ class Varnish
      */
     function install()
     {
-        if (!$this->brew->installed('varnish')) {
+        if ($this->installed()) {
+            info('[varnish] already installed');
+        } else {
             $this->brew->installOrFail('varnish');
             $this->cli->quietly('sudo brew services stop varnish');
         }
+        $this->setEnabled(self::STATE_ENABLED);
         $this->restart();
+    }
+
+    /**
+     * Returns wether varnish is installed or not.
+     *
+     * @return bool
+     */
+    function installed()
+    {
+        return $this->brew->installed('varnish');
     }
 
     /**
@@ -50,6 +66,10 @@ class Varnish
      */
     function restart()
     {
+        if (!$this->installed() || !$this->isEnabled()) {
+            return;
+        }
+
         info('[varnish] Restarting');
         $this->cli->quietlyAsUser('brew services restart varnish');
     }
@@ -61,6 +81,10 @@ class Varnish
      */
     function stop()
     {
+        if (!$this->installed()) {
+            return;
+        }
+
         info('[varnish] Stopping');
         $this->cli->quietlyAsUser('brew services stop varnish');
     }

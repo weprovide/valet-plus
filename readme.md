@@ -58,17 +58,15 @@ Here are a few key differences compared to the original Valet:
 
 > :warning: Valet+ requires macOS and [Homebrew](https://brew.sh/). Before installation, you should make sure that no other programs such as Apache or Nginx are binding to your local machine's port 80.
 
-1.  Install or update [Homebrew](https://brew.sh/) to the latest version using brew update.
-2.  Install PHP 7.1 using Homebrew via `brew install php@7.1`.
-3.  Link PHP 7.1 using Homebrew via `brew link --force --overwrite php@7.1`.
-4.  Install Composer using Homebrew via `brew install composer`.
-5.  Install Valet+ with Composer via `composer global require techdivision/valet-plus`.
-6.  Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on your shell (`echo $SHELL`)
-7.  Run the `valet fix` command. This will check for common issues preventing Valet+ from installing.
-8.  Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
-9.  Link MySQL Binaries via `brew link --force --overwrite mysql@5.7`
-10. Once Valet+ is installed, try pinging any `*.test` domain on your terminal using a command such as `ping foobar.test`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
-
+1. Install or update [Homebrew](https://brew.sh/) to the latest version using `brew update`.
+3. Add the Homebrew PHP tap for Valet+ via `brew tap henkrehorst/php`.
+3. Install PHP 7.2 using Homebrew via `brew install valet-php@7.2`.
+4. Install Composer using Homebrew via `brew install composer`.
+5. Install Valet+ with Composer via `composer global require techdivision/valet-plus`.
+6. Run the `~/.composer/vendor/bin/valet fix` command. This will check for common issues preventing Valet+ from installing.
+7. Run the `~/.composer/vendor/bin/valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
+8. Once Valet+ is installed, try pinging any `*.test` domain on your terminal using a command such as `ping -c1 foobar.test`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
+9. Run `brew link mysql@5.7 --force --overwrite` to get mysql binaries on shell
 
 > :information_source: Valet+ will automatically start its daemon each time your machine boots. There is no need to run `valet start` or `valet install` ever again once the initial Valet+ installation is complete.
 
@@ -93,7 +91,7 @@ For example:
 
 ## Switching PHP version
 
-Switch PHP version using one of three commands:
+Switch PHP version using one of four commands:
 
 ```
 valet use 5.6
@@ -165,6 +163,13 @@ Valet+ automatically installs MySQL 5.7 with 5.6 compatibility mode included. It
 Username: `root`
 
 Password: `root`
+
+## Change password
+
+```
+valet db pwd <old> <new>
+```
+
 
 ## List databases
 
@@ -254,6 +259,13 @@ When no name is given it'll try to find the closest git repository directory nam
 valet db open
 ```
 
+## Logging
+
+To easily read the log file of php, php-fpm, nginx, mysql, mailhog or redis you can use command below.
+```
+valet logs <logname>
+```
+
 ## Subdomains
 
 You can manage subdomains for the current working directory using:
@@ -274,13 +286,69 @@ valet subdomain add welcome
 
 Will create `welcome.yourproject.test`.
 
+## Domain Alias / Symlinks
+
+Display all of the registered symbolic links based on the current folder.:
+
+```
+valet links
+```
+
+Add new alias:
+```
+valet link <domain>
+```
+
+For example:
+
+```
+valet link yourproject2
+```
+
+Will create a symbolic link to the current folder `yourproject2.test`.
+
+Remove alias:
+```
+valet unlink <domain>
+```
+
+For example:
+
+```
+valet unlink yourproject2
+```
+
 ## Mailhog
 
 Mailhog is used to catch emails send from PHP. You can access the panel at [http://mailhog.test](http://mailhog.test).
 
+Enable Mailhog:
+
+```
+valet mailhog on
+```
+
+Disable Mailhog:
+
+```
+valet mailhog off
+```
+
 ## Redis
 
 Redis is automatically installed and listens on the default port `6379`. The redis socket is located at `/tmp/redis.sock`
+
+Enable Redis:
+
+```
+valet redis on
+```
+
+Disable Redis:
+
+```
+valet redis off
+```
 
 ## Elasticsearch
 
@@ -328,6 +396,14 @@ Open current git project in [PhpStorm](https://www.jetbrains.com/phpstorm/)
 
 ```
 valet phpstorm
+```
+
+## SourceTree
+
+Open current git project in [SourceTree](https://www.sourcetreeapp.com/)
+
+```
+valet sourcetree
 ```
 
 ## VScode
@@ -391,6 +467,10 @@ The `nginx-error.log`, `php.log` and `mysql.log` are located at `~/.valet/Log`.
 
 Other logs are located at `/usr/local/var/log`
 
+## PHP.ini location
+
+The PHP.ini location is `/usr/local/etc/valet-php/VERSION/php.ini`.
+
 ## Valet drivers
 Valet uses drivers to handle requests. You can read more about those [here](https://laravel.com/docs/5.4/valet#custom-valet-drivers).
 
@@ -399,25 +479,24 @@ APCu is temporarily turned off due to a compatibility issue with PHP-FPM, see ht
 
 By default these are included:
 
-- Static HTML
-- Magento
-- Magento 2
-- Symfony
-- Wordpress / Bedrock
-- Laravel
-- Lumen
 - CakePHP 3
 - Craft
-- Jigsaw
-- Slim
-- Statamic
-- Zend Framework
 - Drupal
-- Typo3
+- Jigsaw
+- Laravel
+- Lumen
+- Magento
+- Magento 2
 - Neos
-- Craft
 - Pimcore 5
 - Shopware 5
+- Slim
+- Statamic
+- Static HTML
+- Symfony
+- Typo3
+- Wordpress / Bedrock
+- Zend Framework
 
 A full list can be found [here](cli/drivers).
 
@@ -548,3 +627,12 @@ This project is a fork of [laravel/valet](https://github.com/laravel/valet). Tha
 ## Valet+ Authors
 
 - Tim Neutkens ([@timneutkens](https://github.com/timneutkens))
+- Lou van der Laarse ([@Neodork](https://github.com/Neodork))
+- Sam Granger ([@samgranger](https://github.com/samgranger))
+
+
+## Get in touch
+
+[![slack](https://p9.zdassets.com/hc/theme_assets/138842/200037786/logo.png)](https://join.slack.com/t/valet-plus/shared_invite/enQtNDE2MjU2NzgyNjQwLTc4MmI0ZTlhM2FiODRjNmQxN2RlZDVlN2E2YjUwMDBjNGViYjVkNWQ4ODJjYzI3M2U4ZGM5M2Q3ZGQ3ZDQ2YjY)
+
+We have a slack workspace available [which you can join](https://join.slack.com/t/valet-plus/shared_invite/enQtNDE2MjU2NzgyNjQwLTc4MmI0ZTlhM2FiODRjNmQxN2RlZDVlN2E2YjUwMDBjNGViYjVkNWQ4ODJjYzI3M2U4ZGM5M2Q3ZGQ3ZDQ2YjY).

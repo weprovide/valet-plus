@@ -31,7 +31,6 @@ class KirbyValetDriver extends ValetDriver
 
        return false;
     }
-
     /**
      * Get the fully resolved path to the application's front controller.
      *
@@ -42,10 +41,11 @@ class KirbyValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+
         // Needed to force Kirby to use *.test to generate its URLs...
         $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_HOST'];
 
-        if (preg_match('/^\/panel/', $uri)) {
+        if (preg_match('/^\/panel/', $uri) && file_exists($sitePath . '/panel/index.php')) {
             $_SERVER['SCRIPT_NAME'] = '/panel/index.php';
 
             return $sitePath.'/panel/index.php';
