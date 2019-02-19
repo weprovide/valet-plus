@@ -73,6 +73,10 @@ class Mysql
             $this->brew->installOrFail('mysql-utilities');
         }
 
+        if ($this->installedVersion()) {
+            $this->brew->link($type, true, true);
+        }
+
         $this->stop();
         $this->installConfiguration($type);
         $this->restart();
