@@ -74,7 +74,7 @@ class Mysql
         }
 
         if ($this->installedVersion()) {
-            $this->brew->link($type, true, true);
+            $this->cli->runAsUser("brew link $type --force --overwrite");
         }
 
         $this->stop();
