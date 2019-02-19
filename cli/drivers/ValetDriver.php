@@ -61,28 +61,6 @@ abstract class ValetDriver
             return $driver;
         }
 
-        $drivers[] = 'Magento2ValetDriver';
-        $drivers[] = 'MagentoValetDriver';
-        $drivers[] = 'BedrockValetDriver';
-        $drivers[] = 'WordPressValetDriver';
-        $drivers[] = 'LaravelValetDriver';
-        $drivers[] = 'ContaoValetDriver';
-        $drivers[] = 'SymfonyValetDriver';
-        $drivers[] = 'CraftValetDriver';
-        $drivers[] = 'StatamicValetDriver';
-        $drivers[] = 'StatamicV1ValetDriver';
-        $drivers[] = 'CakeValetDriver';
-        $drivers[] = 'SculpinValetDriver';
-        $drivers[] = 'JigsawValetDriver';
-        $drivers[] = 'KirbyValetDriver';
-        $drivers[] = 'KatanaValetDriver';
-        $drivers[] = 'JoomlaValetDriver';
-        $drivers[] = 'DrupalValetDriver';
-        $drivers[] = 'Concrete5ValetDriver';
-        $drivers[] = 'Typo3ValetDriver';
-        $drivers[] = 'NeosValetDriver';
-        $drivers[] = 'BasicValetDriver';
-
         foreach ($drivers as $driver) {
             $driverInstance = new $driver;
 

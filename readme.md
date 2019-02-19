@@ -62,15 +62,15 @@ Here are a few key differences compared to the original Valet:
 3. Add the Homebrew PHP tap for Valet+ via `brew tap henkrehorst/php`.
 3. Install PHP 7.2 using Homebrew via `brew install valet-php@7.2`.
 4. Install Composer using Homebrew via `brew install composer`.
-5. Install Valet+ with Composer via `composer global require techdivision/valet-plus`.
-6. Run the `~/.composer/vendor/bin/valet fix` command. This will check for common issues preventing Valet+ from installing.
-7. Run the `~/.composer/vendor/bin/valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
-8. Once Valet+ is installed, try pinging any `*.test` domain on your terminal using a command such as `ping -c1 foobar.test`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
-9. Run `brew link mysql@5.7 --force --overwrite` to get mysql binaries on shell
+5. Install Valet+ with Composer via `composer global require weprovide/valet-plus`.
+6. Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on your shell (`echo $SHELL`)
+7. Run the `valet fix` command. This will check for common issues preventing Valet+ from installing.
+8. Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
+9. Once Valet+ is installed, try pinging any `*.test` domain on your terminal using a command such as `ping -c1 foobar.test`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
 
 > :information_source: Valet+ will automatically start its daemon each time your machine boots. There is no need to run `valet start` or `valet install` ever again once the initial Valet+ installation is complete.
 
-> :information_source: To update Valet+ to the latest version use the `composer global require techdivision/valet-plus` command in your terminal. After upgrading, it is good practice to run the `valet install` command so Valet+ can make additional upgrades to your configuration files if necessary.
+> :information_source: To update Valet+ to the latest version use the `composer global require weprovide/valet-plus` command in your terminal. After upgrading, it is good practice to run the `valet install` command so Valet+ can make additional upgrades to your configuration files if necessary.
 
 ### Serving sites
 
