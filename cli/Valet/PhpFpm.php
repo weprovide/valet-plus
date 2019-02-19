@@ -454,8 +454,15 @@ class PhpFpm
             output($this->cli->runAsUser('brew uninstall php72'));
         }
 
+        if (!$this->brew->hasTap(self::VALET_PHP_BREW_TAP)) {
+            info("[BREW TAP] Installing " . self::VALET_PHP_BREW_TAP);
+            $this->brew->tap(self::VALET_PHP_BREW_TAP);
+        } else {
+            info("[BREW TAP] " . self::VALET_PHP_BREW_TAP . " already installed");
+        }
+
         // If the current php is not 7.1, link 7.1.
-        info('Installing and linking new PHP homebrew/core version.');
+        info('Installing and linking new valet-php version.');
         output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
         output($this->cli->runAsUser('brew install ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
         output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
