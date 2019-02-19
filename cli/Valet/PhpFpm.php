@@ -56,15 +56,15 @@ class PhpFpm
      */
     function install()
     {
-        if (!$this->hasInstalledPhp()) {
-            $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V71_VERSION));
-        }
-
         if (!$this->brew->hasTap(self::VALET_PHP_BREW_TAP)) {
             info("[BREW TAP] Installing " . self::VALET_PHP_BREW_TAP);
             $this->brew->tap(self::VALET_PHP_BREW_TAP);
         } else {
             info("[BREW TAP] " . self::VALET_PHP_BREW_TAP . " already installed");
+        }
+
+        if (!$this->hasInstalledPhp()) {
+            $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V71_VERSION));
         }
 
         $version = $this->linkedPhp();
