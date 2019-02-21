@@ -13,13 +13,11 @@ class PimcoreValetDriver extends ValetDriver
      */
     public function serves($sitePath, $siteName, $uri)
     {
-        if (file_exists($sitePath.'/pimcore')) {
-             return true;
+        if (file_exists($sitePath.'/app/config/pimcore')) {
+            return true;
         }
-
         return false;
     }
-
     /**
      * Determine if the incoming request is for a static file.
      *
@@ -36,13 +34,12 @@ class PimcoreValetDriver extends ValetDriver
             $last = explode("/", $uri, 3);
             $uri = '/'.$last[2];
         }
-        if (file_exists($staticFilePath = $sitePath.'/var/assets'.$uri) || file_exists($staticFilePath = $sitePath.$uri)) {
+        if (file_exists($staticFilePath = $sitePath.'/web/var/assets'.$uri) || file_exists($staticFilePath = $sitePath.'/web/'.$uri)) {
             return $staticFilePath;
         }
 
         return false;
     }
-
     /**
      * Get the fully resolved path to the application's front controller.
      *
@@ -54,11 +51,9 @@ class PimcoreValetDriver extends ValetDriver
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
         $this->loadServerEnvironmentVariables($sitePath, $siteName);
-
         if(strpos($uri, '/install') === 0) {
-            return $sitePath.'/install.php'; 
+            return $sitePath.'/install.php';
         }
-
-        return $sitePath.'/app.php';
+        return $sitePath.'/web/app.php';
     }
 }
