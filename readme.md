@@ -495,7 +495,7 @@ By default these are included:
 - Static HTML
 - Symfony
 - Typo3
-- Wordpress / Bedrock
+- WordPress / Bedrock
 - Zend Framework
 
 A full list can be found [here](cli/drivers).
