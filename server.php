@@ -1,4 +1,7 @@
 <?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+use Illuminate\Container\Container;
 
 /**
  * Define the user's "~/.valet" path.
@@ -6,6 +9,8 @@
 
 define('VALET_HOME_PATH', posix_getpwuid(fileowner(__FILE__))['dir'].'/.valet');
 define('VALET_STATIC_PREFIX', '41c270e4-5535-4daa-b23e-c269744c2f45');
+
+Container::setInstance(new Container);
 
 /**
  * Load the Valet configuration.

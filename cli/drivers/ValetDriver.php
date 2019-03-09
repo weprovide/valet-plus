@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Container\Container;
+
 abstract class ValetDriver
 {
     /**
@@ -62,7 +64,7 @@ abstract class ValetDriver
         }
 
         foreach ($drivers as $driver) {
-            $driverInstance = new $driver;
+            $driverInstance = Container::getInstance()->make($driver);
 
             if ($driverInstance->serves($sitePath, $siteName, $driverInstance->mutateUri($uri))) {
                 // Cache the valet driver for a specific site for 1 hour
