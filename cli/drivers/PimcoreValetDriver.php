@@ -3,6 +3,15 @@
 /** Valet driver for Pimcore 5 */
 class PimcoreValetDriver extends ValetDriver
 {
+    const COMPOSER_PACKAGE = 'pimcore/pimcore';
+
+    private $composer;
+
+    public function __construct(\Valet\Composer $composer)
+    {
+        $this->composer = $composer;
+    }
+
     /**
      * Determine if the driver serves the request.
      *
@@ -13,11 +22,7 @@ class PimcoreValetDriver extends ValetDriver
      */
     public function serves($sitePath, $siteName, $uri)
     {
-        if (file_exists($sitePath.'/pimcore')) {
-             return true;
-        }
-
-        return false;
+        return $this->composer->isInstalled(self::COMPOSER_PACKAGE, $sitePath);
     }
 
     /**
@@ -36,7 +41,10 @@ class PimcoreValetDriver extends ValetDriver
             $last = explode("/", $uri, 3);
             $uri = '/'.$last[2];
         }
-        if (file_exists($staticFilePath = $sitePath.'/var/assets'.$uri) || file_exists($staticFilePath = $sitePath.$uri)) {
+
+        $versionedPath = $sitePath . (version_compare($this->getPimcoreVersion($sitePath), 'v5.5', '>=') ? '/web/' : '');
+
+        if (file_exists($staticFilePath = $versionedPath.'var/assets'.$uri) || file_exists($staticFilePath = $versionedPath.$uri)) {
             return $staticFilePath;
         }
 
@@ -59,6 +67,14 @@ class PimcoreValetDriver extends ValetDriver
             return $sitePath.'/install.php'; 
         }
 
-        return $sitePath.'/app.php';
+        if(version_compare($this->getPimcoreVersion($sitePath), 'v5.5', '>=')) {
+            return $sitePath . '/web/app.php';
+        } else {
+            return $sitePath . '/app.php';
+        }
+    }
+
+    private function getPimcoreVersion($sitePath) {
+        return $this->composer->getPackage(self::COMPOSER_PACKAGE, $sitePath)['version'];
     }
 }
