@@ -45,11 +45,11 @@ class Pecl extends AbstractPecl
             'default' => false,
             'extension_type' => self::ZEND_EXTENSION_TYPE
         ],
-        self::APCU_BC_EXTENSION => [
+	self::APCU_EXTENSION => [
             '5.6' => false,
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
-        self::APCU_EXTENSION => [
+	self::APCU_BC_EXTENSION => [
             '7.3' => false,
             '7.2' => false,
             '7.1' => false,

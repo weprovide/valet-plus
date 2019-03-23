@@ -120,6 +120,11 @@ class Magento2ValetDriver extends ValetDriver
             exit;
         }
 
+        if (strpos($uri, '/elasticsearch.php') === 0) {
+            include($sitePath . DIRECTORY_SEPARATOR . 'pub' . DIRECTORY_SEPARATOR . 'elasticsearch.php');
+            exit;
+        }
+
         return false;
     }
 
@@ -164,6 +169,10 @@ class Magento2ValetDriver extends ValetDriver
                 $_SERVER['REQUEST_URI'] = '/';
             }
             return $sitePath.'/setup/index.php';
+        }
+
+        if (strpos($uri, '/elasticsearch.php') === 0) {
+            return $sitePath . DIRECTORY_SEPARATOR . 'pub' . DIRECTORY_SEPARATOR . 'elasticsearch.php';
         }
 
         if(!$this->installed($sitePath)) {
