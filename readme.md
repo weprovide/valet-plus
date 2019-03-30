@@ -352,7 +352,7 @@ valet redis off
 
 ## Elasticsearch
 
-Elasticsearch 2.4 can be installed using:
+Elasticsearch 5.6 can be installed using:
 
 ```
 valet elasticsearch install
@@ -361,7 +361,7 @@ valet elasticsearch install
 To uninstall:
 
 ```
-brew uninstall elasticsearch@2.4
+brew uninstall elasticsearch@5.6
 ```
 
 The most recent version of Elasticsearch – 5.6 at the time of writing – can be installed using:
@@ -372,7 +372,7 @@ brew install elasticsearch
 
 It will run on the default port `9200`, and is accessible at [http://elasticsearch.test/](http://elasticsearch.test/).
 
-Elasticsearch 2.4 is installed by default because [Magento 2.1 does not support Elasticsearch 5](http://devdocs.magento.com/guides/v2.1/config-guide/elasticsearch/es-overview.html).
+Elasticsearch 5.6 is installed by default because [Magento 2.1 does not support Elasticsearch 5](http://devdocs.magento.com/guides/v2.1/config-guide/elasticsearch/es-overview.html).
 
 ## Framework specific development tools
 
