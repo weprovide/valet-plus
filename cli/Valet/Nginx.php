@@ -83,23 +83,8 @@ class Nginx
             )
         );
 
-        $this->files->putAsUser(
-            '/usr/local/etc/nginx/valet/mailhog.conf',
-            str_replace(
-                ['VALET_DOMAIN'],
-                [$domain],
-                $this->files->get(__DIR__ . '/../stubs/mailhog.conf')
-            )
-        );
-
-        $this->files->putAsUser(
-            '/usr/local/etc/nginx/valet/elasticsearch.conf',
-            str_replace(
-                ['VALET_DOMAIN'],
-                [$domain],
-                $this->files->get(__DIR__ . '/../stubs/elasticsearch.conf')
-            )
-        );
+        Mailhog::updateDomain($domain);
+        Elasticsearch::updateDomain($domain);
 
         $this->files->putAsUser(
             '/usr/local/etc/nginx/fastcgi_params',

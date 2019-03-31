@@ -86,6 +86,9 @@ if (is_dir(VALET_HOME_PATH)) {
             return info(Configuration::read()['domain']);
         }
 
+        Mailhog::updateDomain($domain);
+        Elasticsearch::updateDomain($domain);
+
         DnsMasq::updateDomain(
             $oldDomain = Configuration::read()['domain'], $domain = trim($domain, '.')
         );
