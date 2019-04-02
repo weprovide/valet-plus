@@ -865,8 +865,8 @@ if (is_dir(VALET_HOME_PATH)) {
     /**
      * Rewrite commands
      */
-    $app->command('rewrite [url]', function ($url = null) {
-        $host = Site::host(getcwd());
+    $app->command('rewrite [url] [domain]', function ($url = null, $domain = null) {
+        $host = $domain ?: Site::host(getcwd());
 
         if (!$url) {
             warning('Aborting, url is required');
