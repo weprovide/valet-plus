@@ -34,6 +34,7 @@ class Pecl extends Facade {}
 class PeclCustom extends Facade {}
 class Binaries extends Facade{}
 class Nginx extends Facade {}
+class Memcache extends Facade {}
 class Mysql extends Facade {}
 class RedisTool extends Facade {}
 class Elasticsearch extends Facade {}
