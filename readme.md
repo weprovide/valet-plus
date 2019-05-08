@@ -1,5 +1,3 @@
-[![Gitter](https://camo.githubusercontent.com/af6b886e3ac898bab012f2a99a3d09e2aa9ef2f9/68747470733a2f2f696d672e736869656c64732e696f2f6769747465722f726f6f6d2f76616c65742d706c75732f4c6f756e67652e7376673f7374796c653d666c61742d737175617265)](https://gitter.im/valet-plus/Lobby)
-
 <p align="center"><img width="200" src="images/logo.png"></p>
 
 ## Introduction
@@ -61,13 +59,14 @@ Here are a few key differences compared to the original Valet:
 > :warning: Valet+ requires macOS and [Homebrew](https://brew.sh/). Before installation, you should make sure that no other programs such as Apache or Nginx are binding to your local machine's port 80.
 
 1. Install or update [Homebrew](https://brew.sh/) to the latest version using `brew update`.
-2. Install PHP 7.1 using Homebrew via `brew install php@7.1`.
-3. Install Composer using Homebrew via `brew install composer`.
-4. Install Valet+ with Composer via `composer global require weprovide/valet-plus`.
-5. Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on your shell (`echo $SHELL`)
-6. Run the `valet fix` command. This will check for common issues preventing Valet+ from installing.
-7. Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
-8. Once Valet+ is installed, try pinging any `*.test` domain on your terminal using a command such as `ping foobar.test`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
+3. Add the Homebrew PHP tap for Valet+ via `brew tap henkrehorst/php`.
+3. Install PHP 7.2 using Homebrew via `brew install valet-php@7.2`.
+4. Install Composer using Homebrew via `brew install composer`.
+5. Install Valet+ with Composer via `composer global require weprovide/valet-plus`.
+6. Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on your shell (`echo $SHELL`)
+7. Run the `valet fix` command. This will check for common issues preventing Valet+ from installing.
+8. Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
+9. Once Valet+ is installed, try pinging any `*.test` domain on your terminal using a command such as `ping -c1 foobar.test`. If Valet+ is installed correctly you should see this domain responding on `127.0.0.1`. If not you might have to restart your system. Especially when coming from the Dinghy (docker) solution.
 
 > :information_source: Valet+ will automatically start its daemon each time your machine boots. There is no need to run `valet start` or `valet install` ever again once the initial Valet+ installation is complete.
 
@@ -92,7 +91,7 @@ For example:
 
 ## Switching PHP version
 
-Switch PHP version using one of three commands:
+Switch PHP version using one of four commands:
 
 ```
 valet use 5.6
@@ -287,6 +286,38 @@ valet subdomain add welcome
 
 Will create `welcome.yourproject.test`.
 
+## Domain Alias / Symlinks
+
+Display all of the registered symbolic links based on the current folder.:
+
+```
+valet links
+```
+
+Add new alias:
+```
+valet link <domain>
+```
+
+For example:
+
+```
+valet link yourproject2
+```
+
+Will create a symbolic link to the current folder `yourproject2.test`.
+
+Remove alias:
+```
+valet unlink <domain>
+```
+
+For example:
+
+```
+valet unlink yourproject2
+```
+
 ## Mailhog
 
 Mailhog is used to catch emails send from PHP. You can access the panel at [http://mailhog.test](http://mailhog.test).
@@ -438,7 +469,7 @@ Other logs are located at `/usr/local/var/log`
 
 ## PHP.ini location
 
-The PHP.ini location is `/usr/local/etc/php/VERSION/php.ini`.
+The PHP.ini location is `/usr/local/etc/valet-php/VERSION/php.ini`.
 
 ## Valet drivers
 Valet uses drivers to handle requests. You can read more about those [here](https://laravel.com/docs/5.4/valet#custom-valet-drivers).
@@ -464,7 +495,7 @@ By default these are included:
 - Static HTML
 - Symfony
 - Typo3
-- Wordpress / Bedrock
+- WordPress / Bedrock
 - Zend Framework
 
 A full list can be found [here](cli/drivers).

@@ -40,16 +40,25 @@
     <body>
         <div>
             <h1>Valet could not find directory <span><?php echo htmlspecialchars($siteName); ?></span></h1>
-            <h2>Available sites:</h2>
-            <?php foreach($valetConfig['paths'] as $path): ?>
-                <?php foreach(glob(htmlspecialchars($path) . '/*', GLOB_ONLYDIR) as $site): ?>
-                    <p><span><a href="http://<?php echo htmlspecialchars(basename($site) . '.' . $valetConfig['domain']); ?>"><?php echo htmlspecialchars(basename($site) . '.' . $valetConfig['domain']); ?></a></span></p>
+            <?php
+            // Only show for localhost (acessing from 127.0.0.1, or any lan ip)
+            if ($_SERVER['REMOTE_ADDR'] == $_SERVER['SERVER_ADDR']) {
+            ?>
+                <h2>Available sites:</h2>
+                <?php foreach ($valetConfig['paths'] as $path): ?>
+                    <?php foreach (glob(htmlspecialchars($path) . '/*', GLOB_ONLYDIR) as $site): ?>
+                        <p>
+                            <span><a href="http://<?php echo htmlspecialchars(basename($site) . '.' . $valetConfig['domain']); ?>"><?php echo htmlspecialchars(basename($site) . '.' . $valetConfig['domain']); ?></a></span>
+                        </p>
+                    <?php endforeach; ?>
                 <?php endforeach; ?>
-            <?php endforeach; ?>
-            <h2>Checked paths:</h2>
-            <?php foreach($valetConfig['paths'] as $path): ?>
-                <p><span><?php echo htmlspecialchars($path); ?></span></p>
-            <?php endforeach; ?>
+                <h2>Checked paths:</h2>
+                <?php foreach ($valetConfig['paths'] as $path): ?>
+                    <p><span><?php echo htmlspecialchars($path); ?></span></p>
+                <?php endforeach; ?>
+            <?php
+            }
+            ?>
         </div>
     </body>
 </html>

@@ -22,7 +22,7 @@ use Symfony\Component\Console\Question\Question;
 Container::setInstance(new Container);
 
 // get current version based on git describe and tags
-$version = new Version('1.0.23' , __DIR__ . '/../');
+$version = new Version('1.0.27' , __DIR__ . '/../');
 
 $app = new Application('Valet+', $version->getVersion());
 
@@ -85,6 +85,9 @@ if (is_dir(VALET_HOME_PATH)) {
         if ($domain === null) {
             return info(Configuration::read()['domain']);
         }
+
+        Mailhog::updateDomain($domain);
+        Elasticsearch::updateDomain($domain);
 
         DnsMasq::updateDomain(
             $oldDomain = Configuration::read()['domain'], $domain = trim($domain, '.')
@@ -277,9 +280,23 @@ if (is_dir(VALET_HOME_PATH)) {
      * Start the daemon services.
      */
     $app->command('start [services]*', function ($services) {
-        if(empty($services)) {
+        $phpVersion = false;
+
+        if (!empty($services)) {
+            // Check if services contains a php version so we can switch to it immediately.
+            $phpVersions = array_keys(\Valet\PhpFpm::SUPPORTED_PHP_FORMULAE);
+            $intersect   = array_intersect($services, $phpVersions);
+            $phpVersion  = end($intersect);
+            $services    = array_diff($services, $phpVersions);
+        }
+
+        if (empty($services)) {
             DnsMasq::restart();
-            PhpFpm::restart();
+            if ($phpVersion) {
+                PhpFpm::switchTo($phpVersion);
+            } else {
+                PhpFpm::restart();
+            }
             Nginx::restart();
             Mysql::restart();
             RedisTool::restart();
@@ -288,6 +305,7 @@ if (is_dir(VALET_HOME_PATH)) {
             RabbitMq::restart();
             Varnish::restart();
             info('Valet services have been started.');
+
             return;
         }
 
@@ -303,7 +321,11 @@ if (is_dir(VALET_HOME_PATH)) {
                     break;
                 }
                 case 'php': {
-                    PhpFpm::restart();
+                    if ($phpVersion) {
+                        PhpFpm::switchTo($phpVersion);
+                    } else {
+                        PhpFpm::restart();
+                    }
                     break;
                 }
                 case 'redis': {
@@ -793,6 +815,31 @@ if (is_dir(VALET_HOME_PATH)) {
         }
     })->descriptions('Enable / disable Redis');
 
+    $app->command('memcache [mode]', function ($mode) {
+        $modes = ['install', 'uninstall'];
+
+        if (!in_array($mode, $modes)) {
+            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
+        }
+
+        if (PhpFpm::linkedPhp() == '5.6') {
+            throw new Exception('Memcache needs php 7.0 or higher, current php version: 5.6');
+        }
+
+        $restart = false;
+        switch ($mode) {
+            case 'install':
+                $restart = Memcache::install();
+                break;
+            case 'uninstall':
+                $restart = Memcache::uninstall();
+                break;
+        }
+        if ($restart) {
+          PhpFpm::restart();
+        }
+    })->descriptions('Install / uninstall Memcache');
+
     $app->command('tower', function () {
         DevTools::tower();
     })->descriptions('Open closest git project in Tower');
@@ -822,6 +869,7 @@ if (is_dir(VALET_HOME_PATH)) {
         $question = new Question('Where would you like to proxy this url to? ');
         if (!$to = $helper->ask($input, $output, $question)) {
             warning('Aborting, url is required');
+            return;
         }
 
         Site::proxy($url, $to);
@@ -841,6 +889,47 @@ if (is_dir(VALET_HOME_PATH)) {
 
         info("The [$url] will no longer proxy traffic and will use the Valet driver instead.");
     })->descriptions('Disable proxying for a site re-instating handling with a Valet driver.');
+
+    /**
+     * Rewrite commands
+     */
+    $app->command('rewrite [url]', function ($url = null) {
+        $host = Site::host(getcwd());
+
+        if (!$url) {
+            warning('Aborting, url is required');
+            return;
+        }
+
+        $url = Site::rewrite($url, $host);
+        if ($url === false) {
+            warning('Aborting, url rewrite failed, might already exist');
+            return;
+        }
+
+        info("The [$url] will now rewrite traffic to [$host].");
+    })->descriptions('Rewrite any URL to your local site instance.');
+
+    $app->command('unrewrite [url]', function ($url = null) {
+        if (!$url) {
+            warning('Aborting, url is required');
+            return;
+        }
+
+        $url = Site::unrewrite($url);
+        if ($url === false) {
+            warning('Aborting, url unrewrite failed, might not exist');
+            return;
+        }
+
+        info("The [$url] will no longer rewrite traffic.");
+    })->descriptions('Remove a rewrite of an URL to your local site instance.');
+
+    $app->command('rewrites', function () {
+        $rewrites = Site::rewrites();
+
+        table(['Site', 'URL'], $rewrites->all());
+    })->descriptions('Display all of the registered Valet rewrites');
 
     $app->command('logs [service]', function ($service) {
         $logs = [

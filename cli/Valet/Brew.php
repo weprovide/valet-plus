@@ -6,21 +6,6 @@ use DomainException;
 
 class Brew
 {
-    const PHP_V56_VERSION = '5.6';
-    const PHP_V56_BREWNAME = 'php@5.6';
-    const PHP_V70_VERSION = '7.0';
-    const PHP_V70_BREWNAME = 'php@7.0';
-    const PHP_V71_VERSION = '7.1';
-    const PHP_V71_BREWNAME = 'php@7.1';
-    const PHP_V72_VERSION = '7.2';
-    const PHP_V72_BREWNAME = 'php';
-
-    const SUPPORTED_PHP_FORMULAE = [
-        self::PHP_V56_VERSION => self::PHP_V56_BREWNAME,
-        self::PHP_V70_VERSION => self::PHP_V70_BREWNAME,
-        self::PHP_V71_VERSION => self::PHP_V71_BREWNAME,
-        self::PHP_V72_VERSION => self::PHP_V72_BREWNAME
-    ];
 
     var $cli, $files;
 
@@ -45,22 +30,6 @@ class Brew
     function installed($formula)
     {
         return in_array($formula, explode(PHP_EOL, $this->cli->runAsUser('brew list | grep ' . $formula)));
-    }
-
-    /**
-     * Determine if a compatible PHP version is Homebrewed.
-     *
-     * @return bool
-     */
-    function hasInstalledPhp()
-    {
-        foreach (Brew::SUPPORTED_PHP_FORMULAE as $version => $brewname) {
-            if ($this->installed($brewname)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -242,42 +211,5 @@ class Brew
                 $this->cli->quietly('sudo brew services stop ' . $service);
             }
         }
-    }
-
-    /**
-     * Determine which version of PHP is linked in Homebrew.
-     *
-     * @param bool $asFormula
-     *
-     * @return string
-     */
-    function linkedPhp()
-    {
-        if (!$this->files->isLink('/usr/local/bin/php')) {
-            throw new DomainException("Unable to determine linked PHP.");
-        }
-
-        $resolvedPath = $this->files->readLink('/usr/local/bin/php');
-
-        $versions = self::SUPPORTED_PHP_FORMULAE;
-
-        foreach ($versions as $version => $brewname) {
-            if (strpos($resolvedPath, '/'.$brewname.'/') !== false) {
-                return $version;
-            }
-        }
-
-
-        throw new DomainException("Unable to determine linked PHP.");
-    }
-
-    /**
-     * Restart the linked PHP-FPM Homebrew service.
-     *
-     * @return void
-     */
-    function restartLinkedPhp()
-    {
-        $this->restartService(Brew::SUPPORTED_PHP_FORMULAE[$this->linkedPhp()]);
     }
 }
