@@ -179,23 +179,54 @@ abstract class ValetDriver
 
     /**
      * Load server environment variables if available.
+     * This method supports both the vale plus and valet variables files
+     * Processes any '*' entries first, and then adds site-specific entries
      *
      * @param  string  $sitePath
      * @param  string  $siteName
      * @return void
      */
-    protected function loadServerEnvironmentVariables($sitePath, $siteName)
+    public function loadServerEnvironmentVariables($sitePath, $siteName)
     {
-        $varFilePath = $sitePath . '/.env.valet';
-        if (! file_exists($varFilePath)) {
-            return;
+        // include files
+        $variableFiles = [
+            'ValetPlus' => $sitePath . '/.env.valet',
+            'Valet'     => $sitePath . '/.valet-env.php'
+        ];
+
+        // check for variable files, and evict the index from the variableFiles array, if the file does not exist
+        foreach ($variableFiles as $key => $variableFile) {
+            if (!file_exists($variableFile)) {
+                unset($variableFiles[$key]);
+            }
         }
-        $variables = include $varFilePath;
-        if (! isset($variables[$siteName])) {
-            return;
+
+        // if we find no include files then return out of this method
+        if(sizeof($variableFiles) === 0) { return; }
+
+        // build our variables from include files
+        foreach ($variableFiles as $key => $variableFile) {
+            $variables[$key] = include $variableFile;
+            $variablesToSet[$key] = isset($variables[$key]['*']) ? $variables[$key]['*'] : [];
+
+            if (isset($variables[$key][$siteName])) {
+                $variablesToSet[$key] = array_merge($variablesToSet[$key], $variables[$key][$siteName]);
+            }
         }
-        foreach ($variables[$siteName] as $key => $value) {
-            $_SERVER[$key] = $value;
+
+        // merge the variables that we have into one array
+        $variablesToSet = array_merge($variablesToSet, $variables);
+
+        // iterate and set
+        foreach ($variablesToSet as $key => $environment) {
+            foreach($environment as $env) {
+                foreach ($env as $envKey => $envValue) {
+                    if (! is_string($envKey)) continue;
+                    $_SERVER[$envKey] = $envValue;
+                    $_ENV[$envKey] = $envValue;
+                    putenv($envKey . '=' . $envValue);
+                }
+            }
         }
     }
 }
