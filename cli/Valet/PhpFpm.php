@@ -291,6 +291,10 @@ class PhpFpm
     function linkedPhp()
     {
         if (!$this->files->isLink('/usr/local/bin/php')) {
+            $this->cli->runAsUser('brew unlink '.self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION].' && brew link --force '.self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]);
+        }
+
+        if (!$this->files->isLink('/usr/local/bin/php')) {
             throw new DomainException("Unable to determine linked PHP.");
         }
 
