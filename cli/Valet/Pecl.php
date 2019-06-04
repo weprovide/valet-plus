@@ -98,6 +98,7 @@ class Pecl extends AbstractPecl
             }
 
             if($this->getVersion($extension) !== false){
+                info("[PECL] Installing extension: ".$extension);
                 $this->installExtension($extension);
                 $this->enableExtension($extension);
             }

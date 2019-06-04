@@ -83,8 +83,10 @@ class Nginx
             )
         );
 
-        Mailhog::updateDomain($domain);
-        Elasticsearch::updateDomain($domain);
+        $mailhog = new Mailhog($this->brew, $this->cli, $this->files, $this->configuration, $this->site);
+        $mailhog->updateDomain($domain);
+        $elasticShearch = new Elasticsearch($this->brew, $this->cli, $this->files, $this->configuration, $this->site);
+        $elasticShearch->updateDomain($domain);
 
         $this->files->putAsUser(
             '/usr/local/etc/nginx/fastcgi_params',

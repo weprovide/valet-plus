@@ -160,18 +160,15 @@ class PhpFpm
             warning('Please check http://php.net/supported-versions.php for more information.');
         }
 
-        $installed = $this->brew->installed(self::SUPPORTED_PHP_FORMULAE[$version]);
-        if (!$installed) {
-            $this->brew->ensureInstalled(self::SUPPORTED_PHP_FORMULAE[$version]);
-        }
+        $this->brew->ensureInstalled(self::SUPPORTED_PHP_FORMULAE[$version]);
 
-        info("[php@$currentVersion] Unlinking");
+        info("[" . self::SUPPORTED_PHP_FORMULAE[$currentVersion] . "] Unlinking");
         output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[$currentVersion]));
 
         info('[libjpeg] Relinking');
         $this->cli->passthru('sudo ln -fs /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib');
 
-        info("[php@$version] Linking");
+        info("[" . self::SUPPORTED_PHP_FORMULAE[$version] . "] Linking");
         output($this->cli->runAsUser('brew link ' . self::SUPPORTED_PHP_FORMULAE[$version] . ' --force --overwrite'));
 
         $this->stop();
@@ -283,16 +280,18 @@ class PhpFpm
     }
 
     /**
-     * Determine which version of PHP is linked with Homebrew.
+     * Determine which version of PHP is linked with Homebrew if failed set version 7.1.
      *
+     * @param $versionUse String
      * @return string
      * @internal param bool $asFormula
      */
-    function linkedPhp()
+    function linkedPhp($versionUse = self::PHP_V71_VERSION)
     {
         if (!$this->files->isLink('/usr/local/bin/php')) {
-            info($this->cli->runAsUser('brew unlink '.self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
-            info($this->cli->runAsUser('brew link --force '.self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
+            $this->cli->runAsUser('brew install '.self::SUPPORTED_PHP_FORMULAE[$versionUse]);
+            info($this->cli->runAsUser('brew unlink '.self::SUPPORTED_PHP_FORMULAE[$versionUse]));
+            info($this->cli->runAsUser('brew link --force --overwrite '.self::SUPPORTED_PHP_FORMULAE[$versionUse]));
         }
 
         if (!$this->files->isLink('/usr/local/bin/php')) {
@@ -469,9 +468,9 @@ class PhpFpm
             output($this->cli->runAsUser('brew uninstall php72'));
         }
 
-        // If the current php is not 7.1, link 7.1.
+        // If the current php is not 7.1, link 7.1. if failed to uninstall rm it manually
         info('Installing and linking new PHP homebrew/core version.');
-        output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
+        $this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]);
         $this->cli->runAsUser('sudo rm -rf /usr/local/Cellar/' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]);
         output($this->cli->runAsUser('brew install ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
         output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
