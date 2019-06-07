@@ -49,7 +49,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
     Binaries::installBinaries();
 
     Configuration::install();
-    Nginx::install();
+    $domain = Nginx::install();
     PhpFpm::install();
     DnsMasq::install();
     Mysql::install($withMariadb ? 'mariadb' : 'mysql@5.7');
@@ -58,6 +58,9 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
     Nginx::restart();
     Valet::symlinkToUsersBin();
     Mysql::setRootPassword();
+
+    Mailhog::updateDomain($domain);
+    Elasticsearch::updateDomain($domain);
 
     output(PHP_EOL.'<info>Valet installed successfully!</info>');
 })->descriptions('Install the Valet services');
