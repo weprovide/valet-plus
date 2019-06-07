@@ -46,6 +46,8 @@ class Nginx
         $this->installConfiguration();
         $this->installServer();
         $this->installNginxDirectory();
+
+        return $this->configuration->read()['domain'];
     }
 
     /**
@@ -82,9 +84,6 @@ class Nginx
                 $this->files->get(__DIR__.'/../stubs/valet.conf')
             )
         );
-
-        Mailhog::updateDomain($domain);
-        Elasticsearch::updateDomain($domain);
 
         $this->files->putAsUser(
             '/usr/local/etc/nginx/fastcgi_params',
