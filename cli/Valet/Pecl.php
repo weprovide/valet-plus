@@ -14,6 +14,7 @@ class Pecl extends AbstractPecl
     const APCU_BC_EXTENSION = 'apcu_bc';
     const GEOIP_EXTENSION = 'geoip';
     const MEMCACHE_EXTENSION = 'memcached';
+    const YAML_EXTENSION = 'yaml';
 
     // Extension aliases.
     const APCU_BC_ALIAS = 'apc';
@@ -71,6 +72,9 @@ class Pecl extends AbstractPecl
             '7.1' => '3.1.3',
             '7.0' => '3.1.3',
             'default' => false,
+            'extension_type' => self::NORMAL_EXTENSION_TYPE
+        ],
+        self::YAML_EXTENSION => [
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ]
     ];

@@ -504,11 +504,31 @@ if (is_dir(VALET_HOME_PATH)) {
     })->descriptions('Determine if this is the latest version of Valet');
 
     /**
-     * Switch between versions of PHP
+     * Switch between versions of PHP (Default) or Elasticsearch
      */
-    $app->command('use [phpVersion]', function ($phpVersion) {
-        PhpFpm::switchTo($phpVersion);
-    })->descriptions('Switch between versions of PHP');
+    $app->command('use [service] [targetVersion]', function ($service, $targetVersion) {
+        $supportedServices = [
+            'php'           => 'php',
+            'elasticsearch' => 'elasticsearch',
+            'es'            => 'elasticsearch',
+        ];
+        if (is_numeric($service)) {
+            $targetVersion = $service;
+            $service       = 'php';
+        }
+        $service = (isset($supportedServices[$service]) ? $supportedServices[$service] : false);
+
+        switch ($service) {
+            case 'php':
+                PhpFpm::switchTo($targetVersion);
+                break;
+            case 'elasticsearch':
+                Elasticsearch::switchTo($targetVersion);
+                break;
+            default:
+                throw new Exception('Service to switch version of not supported. Supported services: ' . implode(', ', array_unique(array_values($supportedServices))));
+        }
+    })->descriptions('Switch between versions of PHP (default) or Elasticsearch');
 
     /**
      * Create database
