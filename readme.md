@@ -374,6 +374,20 @@ It will run on the default port `9200`, and is accessible at [http://elasticsear
 
 Elasticsearch 2.4 is installed by default because [Magento 2.1 does not support Elasticsearch 5](http://devdocs.magento.com/guides/v2.1/config-guide/elasticsearch/es-overview.html).
 
+
+### Switching Elasticsearch version
+
+Switch Elasticsearch version using one of these commands:
+
+```
+valet use elasticsearch|es 2.4
+```
+```
+valet use elasticsearch|es 5.6
+```
+
+
+
 ## Framework specific development tools
 
 Valet+ will automatically install framework specific development tools for you:
