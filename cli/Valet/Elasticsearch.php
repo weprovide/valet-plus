@@ -69,7 +69,7 @@ class Elasticsearch
         }
 
         if ($this->installed($version)) {
-            info('[' . self::ES_FORMULA_NAME . '@' . $version . '] already installed');
+            info('[' .  self::SUPPORTED_ES_FORMULAE[$version] . '] already installed');
 
             return;
         }
@@ -112,7 +112,7 @@ class Elasticsearch
             return;
         }
 
-        info('[' . self::ES_FORMULA_NAME . '@' . $version . '] Restarting');
+        info('[' .  self::SUPPORTED_ES_FORMULAE[$version] . '] Restarting');
         $this->cli->quietlyAsUser('brew services restart ' . self::SUPPORTED_ES_FORMULAE[$version]);
     }
 
@@ -130,7 +130,7 @@ class Elasticsearch
             return;
         }
 
-        info('[' . self::ES_FORMULA_NAME . '@' . $version . '] Stopping');
+        info('[' . self::SUPPORTED_ES_FORMULAE[$version] . '] Stopping');
         $this->cli->quietly('sudo brew services stop ' .self::SUPPORTED_ES_FORMULAE[$version]);
         $this->cli->quietlyAsUser('brew services stop ' . self::SUPPORTED_ES_FORMULAE[$version]);
     }
