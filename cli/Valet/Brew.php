@@ -212,4 +212,17 @@ class Brew
             }
         }
     }
+
+    /**
+     * Checks wether the requested services is running.
+     *
+     * @param $formula
+     * @return bool
+     */
+    function isStartedService($formula)
+    {
+        $info = explode(" ", trim(str_replace($formula, "", $this->cli->runAsUser('brew services list | grep ' . $formula))));
+        $state = array_shift($info);
+        return ($state === 'started');
+    }
 }
