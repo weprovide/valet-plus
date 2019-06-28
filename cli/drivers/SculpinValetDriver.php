@@ -25,4 +25,18 @@ class SculpinValetDriver extends BasicValetDriver
     {
         return rtrim('/output_dev'.$uri, '/');
     }
+    
+    /**
+     * Get the fully resolved path to the application's front controller.
+     *
+     * @param  string  $sitePath
+     * @param  string  $siteName
+     * @param  string  $uri
+     * @return string
+     */
+    public function frontControllerPath($sitePath, $siteName, $uri)
+    {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+        return parent::frontControllerPath($sitePath, $siteName, $uri);
+    }
 }
