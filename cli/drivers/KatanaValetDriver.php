@@ -25,4 +25,18 @@ class KatanaValetDriver extends BasicValetDriver
     {
         return file_exists($sitePath.'/katana');
     }
+    
+    /**
+     * Get the fully resolved path to the application's front controller.
+     *
+     * @param  string  $sitePath
+     * @param  string  $siteName
+     * @param  string  $uri
+     * @return string
+     */
+    public function frontControllerPath($sitePath, $siteName, $uri)
+    {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+        return parent::frontControllerPath($sitePath, $siteName, $uri);
+    }
 }
