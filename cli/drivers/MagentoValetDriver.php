@@ -54,6 +54,6 @@ class MagentoValetDriver extends BasicValetDriver
     {
         $this->loadServerEnvironmentVariables($sitePath, $siteName);
 
-        return $sitePath.'/index.php';
+        return parent::frontControllerPath($sitePath, $siteName, $uri);
     }
 }
