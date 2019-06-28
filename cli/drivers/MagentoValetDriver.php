@@ -41,4 +41,19 @@ class MagentoValetDriver extends BasicValetDriver
 
         info('Configured Magento');
     }
+    
+    /**
+     * Get the fully resolved path to the application's front controller.
+     *
+     * @param  string  $sitePath
+     * @param  string  $siteName
+     * @param  string  $uri
+     * @return string
+     */
+    public function frontControllerPath($sitePath, $siteName, $uri)
+    {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
+
+        return $sitePath.'/index.php';
+    }
 }
