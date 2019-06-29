@@ -14,10 +14,12 @@ class DrupalValetDriver extends ValetDriver
     {
         /**
          * /misc/drupal.js = Drupal 7
+         * /web/misc/drupal.js = Drupal 7 with Composer
          * /core/lib/Drupal.php = Drupal 8
          * /web/core/lib/Drupal.php = Drupal 8 with Composer
          */
         if (file_exists($sitePath . '/misc/drupal.js') ||
+            file_exists($sitePath . '/web/misc/drupal.js') ||
             file_exists($sitePath . '/core/lib/Drupal.php') ||
             file_exists($sitePath . '/web/core/lib/Drupal.php')) {
             return true;
@@ -56,7 +58,7 @@ class DrupalValetDriver extends ValetDriver
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
         $sitePath = $this->appendComposerPath($sitePath);
-        
+
         $this->loadServerEnvironmentVariables($sitePath, $siteName);
 
         if (!isset($_GET['q']) && !empty($uri) && $uri !== '/' && strpos($uri, '/jsonapi/') === false) {
