@@ -15,9 +15,11 @@ class DrupalValetDriver extends ValetDriver
         /**
          * /misc/drupal.js = Drupal 7
          * /core/lib/Drupal.php = Drupal 8
+         * /web/core/lib/Drupal.php = Drupal 8 with Composer
          */
         if (file_exists($sitePath . '/misc/drupal.js') ||
-            file_exists($sitePath . '/core/lib/Drupal.php')) {
+            file_exists($sitePath . '/core/lib/Drupal.php') ||
+            file_exists($sitePath . '/web/core/lib/Drupal.php')) {
             return true;
         }
     }
@@ -32,6 +34,8 @@ class DrupalValetDriver extends ValetDriver
      */
     public function isStaticFile($sitePath, $siteName, $uri)
     {
+        $sitePath = $this->appendComposerPath($sitePath);
+
         if (file_exists($sitePath . $uri) &&
             !is_dir($sitePath . $uri) &&
             pathinfo($sitePath . $uri)['extension'] != 'php') {
@@ -51,6 +55,8 @@ class DrupalValetDriver extends ValetDriver
      */
     public function frontControllerPath($sitePath, $siteName, $uri)
     {
+        $sitePath = $this->appendComposerPath($sitePath);
+        
         $this->loadServerEnvironmentVariables($sitePath, $siteName);
 
         if (!isset($_GET['q']) && !empty($uri) && $uri !== '/' && strpos($uri, '/jsonapi/') === false) {
@@ -110,6 +116,19 @@ class DrupalValetDriver extends ValetDriver
         return $sitePath . '/index.php';
     }
 
+    private function appendComposerPath($sitePath)
+    {
+        if ($this->isComposer($sitePath)) {
+            $sitePath = ($sitePath . '/web');
+        }
+
+        return $sitePath;
+    }
+
+    private function isComposer($sitePath)
+    {
+        return file_exists($sitePath . '/composer.json');
+    }
 
     /**
      * Redirect to uri with trailing slash.
