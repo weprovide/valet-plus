@@ -77,6 +77,7 @@ class Magento2ValetDriver extends ValetDriver
      */
     public function isStaticFile($sitePath, $siteName, $uri)
     {
+        $this->loadServerEnvironmentVariables($sitePath, $siteName);
         $isMagentoStatic = false;
         $resource = $uri;
         
