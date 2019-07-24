@@ -57,6 +57,15 @@ class Shopware5ValetDriver extends ValetDriver
             return $installPath;
         }
 
+        if ($this->isUpdaterPath($sitePath, $uri)) {
+	    $updaterPath = $this->buildUpdaterPath($sitePath, $uri);
+            $_SERVER['SCRIPT_FILENAME'] = $updaterPath;
+            $_SERVER['SCRIPT_NAME'] = str_replace($sitePath, '', $updaterPath);
+            $_SERVER['DOCUMENT_ROOT'] = $sitePath;
+
+            return $updaterPath;
+        }
+
         return $sitePath . '/shopware.php';
     }
 
@@ -72,6 +81,18 @@ class Shopware5ValetDriver extends ValetDriver
         return (strpos($uri, 'recovery/install') !== false);
     }
 
+    /**
+     * check if uri contains shopware update path
+     *
+     * @param string $sitePath
+     * @param string $uri
+     * @return bool
+     */
+    protected function isUpdaterPath($sitePath, $uri)
+    {
+        return (strpos($uri, 'recovery/update') !== false);
+    }
+
 
     /**
      * build shopware install url
@@ -83,5 +104,17 @@ class Shopware5ValetDriver extends ValetDriver
     protected function buildInstallPath($sitePath, $uri)
     {
         return $sitePath . '/recovery/install/index.php';
+    }
+
+    /**
+     * build shopware install url
+     *
+     * @param $sitePath
+     * @param $uri
+     * @return string
+     */
+    protected function buildUpdaterPath($sitePath, $uri)
+    {
+        return $sitePath . '/recovery/update/index.php';
     }
 }
