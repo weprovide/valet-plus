@@ -16,11 +16,13 @@ class Elasticsearch
     const ES_FORMULA_NAME = 'elasticsearch@';
     const ES_V24_VERSION = '2.4';
     const ES_V56_VERSION = '5.6';
+    const ES_V68_VERSION = '6.8';
     const ES_DEFAULT_VERSION = self::ES_V24_VERSION;
 
     const SUPPORTED_ES_FORMULAE = [
         self::ES_V24_VERSION => self::ES_FORMULA_NAME . self::ES_V24_VERSION,
         self::ES_V56_VERSION => self::ES_FORMULA_NAME . self::ES_V56_VERSION,
+        self::ES_V68_VERSION => self::ES_FORMULA_NAME . self::ES_V68_VERSION,
     ];
 
     var $brew;
@@ -190,9 +192,11 @@ class Elasticsearch
 
 
         // Alter elasticsearch data path in config yaml.
-        $config                            = yaml_parse_file(self::ES_CONFIG_YAML);
-        $config[self::ES_CONFIG_DATA_PATH] = self::ES_CONFIG_DATA_BASEPATH . self::SUPPORTED_ES_FORMULAE[$version] . '/';
-        yaml_emit_file(self::ES_CONFIG_YAML, $config);
+        if (extension_loaded('yaml')){
+            $config                            = yaml_parse_file(self::ES_CONFIG_YAML);
+            $config[self::ES_CONFIG_DATA_PATH] = self::ES_CONFIG_DATA_BASEPATH . self::SUPPORTED_ES_FORMULAE[$version] . '/';
+            yaml_emit_file(self::ES_CONFIG_YAML, $config);
+        }
 
 
         // Start requested version.
