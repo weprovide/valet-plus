@@ -105,7 +105,6 @@ class Elasticsearch
      */
     function restart($version = null)
     {
-
         $version = ($version ? $version : $this->getCurrentVersion());
         $version = $this->installed($version);
         if (!$version) {
@@ -192,9 +191,11 @@ class Elasticsearch
 
 
         // Alter elasticsearch data path in config yaml.
-        $config                            = yaml_parse_file(self::ES_CONFIG_YAML);
-        $config[self::ES_CONFIG_DATA_PATH] = self::ES_CONFIG_DATA_BASEPATH . self::SUPPORTED_ES_FORMULAE[$version] . '/';
-        yaml_emit_file(self::ES_CONFIG_YAML, $config);
+        if (extension_loaded('yaml')){
+            $config                            = yaml_parse_file(self::ES_CONFIG_YAML);
+            $config[self::ES_CONFIG_DATA_PATH] = self::ES_CONFIG_DATA_BASEPATH . self::SUPPORTED_ES_FORMULAE[$version] . '/';
+            yaml_emit_file(self::ES_CONFIG_YAML, $config);
+        }
 
 
         // Start requested version.
