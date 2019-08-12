@@ -13,16 +13,16 @@ class Elasticsearch
     const ES_CONFIG_DATA_PATH = 'path.data';
     const ES_CONFIG_DATA_BASEPATH = '/usr/local/var/';
 
-    const ES_FORMULA_NAME = 'elasticsearch@';
+    const ES_FORMULA_NAME = 'elasticsearch';
     const ES_V24_VERSION = '2.4';
     const ES_V56_VERSION = '5.6';
     const ES_V68_VERSION = '6.8';
     const ES_DEFAULT_VERSION = self::ES_V24_VERSION;
 
     const SUPPORTED_ES_FORMULAE = [
-        self::ES_V24_VERSION => self::ES_FORMULA_NAME . self::ES_V24_VERSION,
-        self::ES_V56_VERSION => self::ES_FORMULA_NAME . self::ES_V56_VERSION,
-        self::ES_V68_VERSION => self::ES_FORMULA_NAME . self::ES_V68_VERSION,
+        self::ES_V24_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V24_VERSION,
+        self::ES_V56_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V56_VERSION,
+        self::ES_V68_VERSION => self::ES_FORMULA_NAME,
     ];
 
     var $brew;
@@ -69,13 +69,13 @@ class Elasticsearch
         }
 
         if ($this->installed($version)) {
-            info('[' . self::ES_FORMULA_NAME . $version . '] already installed');
+            info('[' .  self::SUPPORTED_ES_FORMULAE[$version] . '] already installed');
 
             return;
         }
 
         $this->cli->quietlyAsUser('brew cask install java');
-        $this->brew->installOrFail(self::ES_FORMULA_NAME . $version);
+        $this->brew->installOrFail(self::SUPPORTED_ES_FORMULAE[$version]);
         $this->restart($version);
     }
 
@@ -88,9 +88,8 @@ class Elasticsearch
     function installed($version = null)
     {
         $versions = ($version ? [$version] : array_keys(self::SUPPORTED_ES_FORMULAE));
-
         foreach ($versions as $version) {
-            if ($this->brew->installed(self::ES_FORMULA_NAME . $version)) {
+            if ($this->brew->installed(self::SUPPORTED_ES_FORMULAE[$version])) {
                 return $version;
             }
         }
@@ -112,8 +111,8 @@ class Elasticsearch
             return;
         }
 
-        info('[' . self::ES_FORMULA_NAME . $version . '] Restarting');
-        $this->cli->quietlyAsUser('brew services restart ' . self::ES_FORMULA_NAME . $version);
+        info('[' .  self::SUPPORTED_ES_FORMULAE[$version] . '] Restarting');
+        $this->cli->quietlyAsUser('brew services restart ' . self::SUPPORTED_ES_FORMULAE[$version]);
     }
 
     /**
@@ -130,9 +129,9 @@ class Elasticsearch
             return;
         }
 
-        info('[' . self::ES_FORMULA_NAME . $version . '] Stopping');
-        $this->cli->quietly('sudo brew services stop ' . self::ES_FORMULA_NAME . $version);
-        $this->cli->quietlyAsUser('brew services stop ' . self::ES_FORMULA_NAME . $version);
+        info('[' . self::SUPPORTED_ES_FORMULAE[$version] . '] Stopping');
+        $this->cli->quietly('sudo brew services stop ' .self::SUPPORTED_ES_FORMULAE[$version]);
+        $this->cli->quietlyAsUser('brew services stop ' . self::SUPPORTED_ES_FORMULAE[$version]);
     }
 
     /**
