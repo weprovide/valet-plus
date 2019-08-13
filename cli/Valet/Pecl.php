@@ -75,6 +75,7 @@ class Pecl extends AbstractPecl
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
         self::YAML_EXTENSION => [
+            '5.6' => '1.3.1',
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ]
     ];

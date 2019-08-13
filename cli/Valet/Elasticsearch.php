@@ -74,7 +74,10 @@ class Elasticsearch
             return;
         }
 
+        // Install dependencies
         $this->cli->quietlyAsUser('brew cask install java');
+        $this->cli->quietlyAsUser('brew cask install homebrew/cask-versions/adoptopenjdk8');
+        $this->brew->installOrFail('libyaml');
         $this->brew->installOrFail(self::SUPPORTED_ES_FORMULAE[$version]);
         $this->restart($version);
     }
@@ -149,14 +152,16 @@ class Elasticsearch
      */
     function updateDomain($domain)
     {
-        $this->files->putAsUser(
-            self::NGINX_CONFIGURATION_PATH,
-            str_replace(
-                ['VALET_DOMAIN'],
-                [$domain],
-                $this->files->get(self::NGINX_CONFIGURATION_PATH)
-            )
-        );
+        if ($this->files->exists(self::NGINX_CONFIGURATION_PATH)) {
+            $this->files->putAsUser(
+                self::NGINX_CONFIGURATION_PATH,
+                str_replace(
+                    ['VALET_DOMAIN'],
+                    [$domain],
+                    $this->files->get(self::NGINX_CONFIGURATION_PATH)
+                )
+            );
+        }
     }
 
     /**
