@@ -46,5 +46,4 @@ class Concrete5ValetDriver extends BasicValetDriver
 
         return $sitePath . '/index.php';
     }
-
 }

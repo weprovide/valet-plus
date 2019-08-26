@@ -4,9 +4,9 @@ namespace Valet;
 
 class Memcache
 {
-    var $brew;
-    var $cli;
-    var $pecl;
+    public $brew;
+    public $cli;
+    public $pecl;
 
     /**
      * Memcached.
@@ -15,7 +15,7 @@ class Memcache
      * @param  CommandLine $cli
      * @param  Pecl $pecl
      */
-    function __construct(Brew $brew, CommandLine $cli, Pecl $pecl)
+    public function __construct(Brew $brew, CommandLine $cli, Pecl $pecl)
     {
         $this->cli = $cli;
         $this->brew = $brew;
@@ -27,7 +27,7 @@ class Memcache
      *
      * @return bool
      */
-    function install()
+    public function install()
     {
         $restart = false;
         if ($this->brew->installed('libmemcached')) {
@@ -50,7 +50,7 @@ class Memcache
      *
      * @return bool
      */
-    function uninstall()
+    public function uninstall()
     {
         info('[memcached] Uninstalling');
         $removed = $this->pecl->disableExtension('memcached');

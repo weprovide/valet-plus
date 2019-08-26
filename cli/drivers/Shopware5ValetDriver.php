@@ -58,7 +58,7 @@ class Shopware5ValetDriver extends ValetDriver
         }
 
         if ($this->isUpdaterPath($sitePath, $uri)) {
-	    $updaterPath = $this->buildUpdaterPath($sitePath, $uri);
+            $updaterPath = $this->buildUpdaterPath($sitePath, $uri);
             $_SERVER['SCRIPT_FILENAME'] = $updaterPath;
             $_SERVER['SCRIPT_NAME'] = str_replace($sitePath, '', $updaterPath);
             $_SERVER['DOCUMENT_ROOT'] = $sitePath;

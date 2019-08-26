@@ -18,12 +18,12 @@ class DevTools
         self::GEOIP_TOOL
     ];
 
-    var $brew;
-    var $cli;
-    var $files;
-    var $configuration;
-    var $site;
-    var $mysql;
+    public $brew;
+    public $cli;
+    public $files;
+    public $configuration;
+    public $site;
+    public $mysql;
 
     /**
      * Create a new Nginx instance.
@@ -35,9 +35,14 @@ class DevTools
      * @param  Site $site
      * @param Mysql $mysql
      */
-    function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
-                         Configuration $configuration, Site $site, Mysql $mysql)
-    {
+    public function __construct(
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
+        Configuration $configuration,
+        Site $site,
+        Mysql $mysql
+    ) {
         $this->cli = $cli;
         $this->brew = $brew;
         $this->site = $site;
@@ -51,7 +56,7 @@ class DevTools
      *
      * @return void
      */
-    function install()
+    public function install()
     {
         info('[devtools] Installing tools');
 
@@ -69,7 +74,7 @@ class DevTools
      *
      * @return void
      */
-    function uninstall()
+    public function uninstall()
     {
         info('[devtools] Uninstalling tools');
 
@@ -82,26 +87,26 @@ class DevTools
         }
     }
 
-    function sshkey()
+    public function sshkey()
     {
         $this->cli->passthru('pbcopy < ~/.ssh/id_rsa.pub');
         info('Copied ssh key to your clipboard');
     }
 
-    function phpstorm()
+    public function phpstorm()
     {
         info('Opening PHPstorm');
 
         $this->cli->runAsUser('open -a PhpStorm ./');
     }
 
-    function sourcetree()
+    public function sourcetree()
     {
         info('Opening SourceTree');
         $this->cli->runAsUser('open -a SourceTree ./');
     }
 
-    function vscode()
+    public function vscode()
     {
         info('Opening Visual Studio Code');
         $command = false;
@@ -125,7 +130,7 @@ class DevTools
         }
     }
 
-    function tower()
+    public function tower()
     {
         info('Opening git tower');
         if (!$this->files->exists('/Applications/Tower.app/Contents/MacOS/gittower')) {
@@ -139,7 +144,7 @@ class DevTools
         }
     }
 
-    function configure()
+    public function configure()
     {
         require realpath(__DIR__ . '/../drivers/require.php');
 

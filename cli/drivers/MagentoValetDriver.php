@@ -15,12 +15,13 @@ class MagentoValetDriver extends BasicValetDriver
         return is_dir($sitePath.'/app/code/core/Mage');
     }
 
-    public function configure($devtools, $url) {
+    public function configure($devtools, $url)
+    {
         info('Configuring Magento...');
 
         $sitePath = getcwd();
 
-        if(!file_exists($sitePath.'/app/etc/local.xml')) {
+        if (!file_exists($sitePath.'/app/etc/local.xml')) {
             info('local.xml missing. Installing default local.xml...');
             $devtools->files->putAsUser(
                 $sitePath.'/app/etc/local.xml',
