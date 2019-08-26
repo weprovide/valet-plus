@@ -2,11 +2,6 @@ trigger:
 - master
 - 2.x
 
-# Trigger on every PR towards 2.x or master
-pr:
-- master
-- 2.x
-
 # Build on Mojave and High Sierra
 strategy:
   matrix:
