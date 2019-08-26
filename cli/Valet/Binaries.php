@@ -48,7 +48,8 @@ class Binaries
         ]
     ];
 
-    var $cli, $files;
+    public $cli;
+    public $files;
 
     /**
      * Create a new Brew instance.
@@ -56,7 +57,7 @@ class Binaries
      * @param  CommandLine $cli
      * @param  Filesystem $files
      */
-    function __construct(CommandLine $cli, Filesystem $files)
+    public function __construct(CommandLine $cli, Filesystem $files)
     {
         $this->cli = $cli;
         $this->files = $files;
@@ -70,7 +71,7 @@ class Binaries
      * @return bool
      *    True if installed, false if not installed.
      */
-    function installed($binary)
+    public function installed($binary)
     {
         return $this->files->exists(self::SUPPORTED_CUSTOM_BINARIES[$binary]['bin_location'] . $binary);
     }
@@ -78,7 +79,7 @@ class Binaries
     /**
      * Install all binaries defined in SUPPORTED_CUSTOM_BINARIES
      */
-    function installBinaries()
+    public function installBinaries()
     {
         info("[binaries] Installing binaries");
         foreach (self::SUPPORTED_CUSTOM_BINARIES as $binary => $versions) {
@@ -94,7 +95,7 @@ class Binaries
      * @param $binary
      *    The binary key name.
      */
-    function installBinary($binary)
+    public function installBinary($binary)
     {
         $url = $this->getUrl($binary);
         $urlSplit = explode('/', $url);
@@ -124,7 +125,7 @@ class Binaries
     /**
      * Uninstall all binaries defined in SUPPORTED_CUSTOM_BINARIES
      */
-    function uninstallBinaries()
+    public function uninstallBinaries()
     {
         info("[binaries] Uninstalling binaries");
         foreach (self::SUPPORTED_CUSTOM_BINARIES as $binary => $versions) {
@@ -140,7 +141,7 @@ class Binaries
      * @param $binary
      *    The binary key name.
      */
-    function uninstallBinary($binary)
+    public function uninstallBinary($binary)
     {
         $binaryLocation = $this->getBinLocation($binary);
         $this->cli->runAsUser('rm ' . $binaryLocation);
@@ -217,4 +218,3 @@ class Binaries
         throw new DomainException('bin_location key is required for binaries.');
     }
 }
-

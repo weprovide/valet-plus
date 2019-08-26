@@ -25,11 +25,11 @@ class Elasticsearch
         self::ES_V68_VERSION => self::ES_FORMULA_NAME,
     ];
 
-    var $brew;
-    var $cli;
-    var $files;
-    var $configuration;
-    var $site;
+    public $brew;
+    public $cli;
+    public $files;
+    public $configuration;
+    public $site;
 
     /**
      * Create a new instance.
@@ -40,7 +40,7 @@ class Elasticsearch
      * @param Configuration $configuration
      * @param Site          $site
      */
-    function __construct(
+    public function __construct(
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
@@ -60,7 +60,7 @@ class Elasticsearch
      * @param string $version
      * @return void
      */
-    function install($version = self::ES_DEFAULT_VERSION)
+    public function install($version = self::ES_DEFAULT_VERSION)
     {
         if (!array_key_exists($version, self::SUPPORTED_ES_FORMULAE)) {
             warning('The Elasticsearch version you\'re installing is not supported.');
@@ -88,7 +88,7 @@ class Elasticsearch
      * @param string $version
      * @return bool
      */
-    function installed($version = null)
+    public function installed($version = null)
     {
         $versions = ($version ? [$version] : array_keys(self::SUPPORTED_ES_FORMULAE));
         foreach ($versions as $version) {
@@ -106,7 +106,7 @@ class Elasticsearch
      * @param string $version
      * @return void
      */
-    function restart($version = null)
+    public function restart($version = null)
     {
         $version = ($version ? $version : $this->getCurrentVersion());
         $version = $this->installed($version);
@@ -124,7 +124,7 @@ class Elasticsearch
      * @param string $version
      * @return void
      */
-    function stop($version = null)
+    public function stop($version = null)
     {
         $version = ($version ? $version : $this->getCurrentVersion());
         $version = $this->installed($version);
@@ -142,7 +142,7 @@ class Elasticsearch
      *
      * @return void
      */
-    function uninstall()
+    public function uninstall()
     {
         $this->stop();
     }
@@ -150,7 +150,7 @@ class Elasticsearch
     /**
      * @param $domain
      */
-    function updateDomain($domain)
+    public function updateDomain($domain)
     {
         if ($this->files->exists(self::NGINX_CONFIGURATION_PATH)) {
             $this->files->putAsUser(
@@ -169,7 +169,7 @@ class Elasticsearch
      *
      * @param $version
      */
-    function switchTo($version)
+    public function switchTo($version)
     {
         $currentVersion = $this->getCurrentVersion();
 
@@ -196,7 +196,7 @@ class Elasticsearch
 
 
         // Alter elasticsearch data path in config yaml.
-        if (extension_loaded('yaml')){
+        if (extension_loaded('yaml')) {
             $config                            = yaml_parse_file(self::ES_CONFIG_YAML);
             $config[self::ES_CONFIG_DATA_PATH] = self::ES_CONFIG_DATA_BASEPATH . self::SUPPORTED_ES_FORMULAE[$version] . '/';
             yaml_emit_file(self::ES_CONFIG_YAML, $config);
@@ -214,7 +214,7 @@ class Elasticsearch
      *
      * @return bool|int|string
      */
-    function getCurrentVersion()
+    public function getCurrentVersion()
     {
         $currentVersion = false;
         foreach (self::SUPPORTED_ES_FORMULAE as $version => $formula) {

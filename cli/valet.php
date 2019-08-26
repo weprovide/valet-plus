@@ -4,10 +4,10 @@
 /**
  * Load correct autoloader depending on install location.
  */
-if (file_exists(__DIR__.'/../vendor/autoload.php')) {
-    require __DIR__.'/../vendor/autoload.php';
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require __DIR__ . '/../vendor/autoload.php';
 } else {
-    require __DIR__.'/../../../autoload.php';
+    require __DIR__ . '/../../../autoload.php';
 }
 
 use Silly\Application;
@@ -22,7 +22,7 @@ use Symfony\Component\Console\Question\Question;
 Container::setInstance(new Container);
 
 // get current version based on git describe and tags
-$version = new Version('1.0.29' , __DIR__ . '/../');
+$version = new Version('1.0.29', __DIR__ . '/../');
 
 $app = new Application('Valet+', $version->getVersion());
 
@@ -62,7 +62,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
     Mailhog::updateDomain($domain);
     Elasticsearch::updateDomain($domain);
 
-    output(PHP_EOL.'<info>Valet installed successfully!</info>');
+    output(PHP_EOL . '<info>Valet installed successfully!</info>');
 })->descriptions('Install the Valet services');
 
 /**
@@ -93,7 +93,8 @@ if (is_dir(VALET_HOME_PATH)) {
         Elasticsearch::updateDomain($domain);
 
         DnsMasq::updateDomain(
-            $oldDomain = Configuration::read()['domain'], $domain = trim($domain, '.')
+            $oldDomain = Configuration::read()['domain'],
+            $domain = trim($domain, '.')
         );
 
         Configuration::updateKey('domain', $domain);
@@ -102,7 +103,7 @@ if (is_dir(VALET_HOME_PATH)) {
         PhpFpm::restart();
         Nginx::restart();
 
-        info('Your Valet domain has been updated to ['.$domain.'].');
+        info('Your Valet domain has been updated to [' . $domain . '].');
     })->descriptions('Get or set the domain used for Valet sites');
 
     /**
@@ -130,46 +131,46 @@ if (is_dir(VALET_HOME_PATH)) {
         $domain = Site::link(getcwd(), $name = $name ?: basename(getcwd()));
 
         if ($secure) {
-            $this->runCommand('secure '.$name);
+            $this->runCommand('secure ' . $name);
         }
 
         if ($proxy) {
-            $this->runCommand('proxy '.$name);
+            $this->runCommand('proxy ' . $name);
         }
 
-        info('Current working directory linked to '.$domain);
+        info('Current working directory linked to ' . $domain);
     })->descriptions('Link the current working directory to Valet');
 
     /**
      * Register a subdomain link with Valet.
      */
     $app->command('subdomain [action] [name] [--secure] [--proxy]', function ($action, $name, $secure, $proxy) {
-        if($action === 'list') {
+        if ($action === 'list') {
             $links = Site::links(basename(getcwd()));
 
             table(['Site', 'SSL', 'URL', 'Path'], $links->all());
             return;
         }
 
-        if($action === 'add') {
-            $domain = Site::link(getcwd(), $name.'.'.basename(getcwd()));
+        if ($action === 'add') {
+            $domain = Site::link(getcwd(), $name . '.' . basename(getcwd()));
 
             if ($secure) {
-                $this->runCommand('secure '. $name);
+                $this->runCommand('secure ' . $name);
             }
 
             if ($proxy) {
-                $this->runCommand('proxy '.$name);
+                $this->runCommand('proxy ' . $name);
             }
 
-            info('Current working directory linked to '.$domain);
+            info('Current working directory linked to ' . $domain);
             return;
         }
 
-        if($action === 'remove') {
-            Site::unlink($name.'.'.basename(getcwd()));
+        if ($action === 'remove') {
+            Site::unlink($name . '.' . basename(getcwd()));
 
-            info('Current working directory unlinked from '.$name.'.'.basename(getcwd()));
+            info('Current working directory unlinked from ' . $name . '.' . basename(getcwd()));
             return;
         }
 
@@ -191,14 +192,14 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('unlink [name]', function ($name) {
         Site::unlink($name = $name ?: basename(getcwd()));
 
-        info('The ['.$name.'] symbolic link has been removed.');
+        info('The [' . $name . '] symbolic link has been removed.');
     })->descriptions('Remove the specified Valet link');
 
     /**
      * Secure the given domain with a trusted TLS certificate.
      */
     $app->command('secure [domain]', function ($domain = null) {
-        $url = ($domain ?: Site::host(getcwd())).'.'.Configuration::read()['domain'];
+        $url = ($domain ?: Site::host(getcwd())) . '.' . Configuration::read()['domain'];
 
         Site::secure($url);
 
@@ -206,14 +207,14 @@ if (is_dir(VALET_HOME_PATH)) {
 
         Nginx::restart();
 
-        info('The ['.$url.'] site has been secured with a fresh TLS certificate.');
+        info('The [' . $url . '] site has been secured with a fresh TLS certificate.');
     })->descriptions('Secure the given domain with a trusted TLS certificate');
 
     /**
      * Stop serving the given domain over HTTPS and remove the trusted TLS certificate.
      */
     $app->command('unsecure [domain]', function ($domain = null) {
-        $url = ($domain ?: Site::host(getcwd())).'.'.Configuration::read()['domain'];
+        $url = ($domain ?: Site::host(getcwd())) . '.' . Configuration::read()['domain'];
 
         $proxied = Site::proxied($url);
         Site::unsecure($url);
@@ -225,19 +226,19 @@ if (is_dir(VALET_HOME_PATH)) {
 
         Nginx::restart();
 
-        info('The ['.$url.'] site will now serve traffic over HTTP.');
+        info('The [' . $url . '] site will now serve traffic over HTTP.');
     })->descriptions('Stop serving the given domain over HTTPS and remove the trusted TLS certificate');
 
     /**
      * Determine which Valet driver the current directory is using.
      */
     $app->command('which', function () {
-        require __DIR__.'/drivers/require.php';
+        require __DIR__ . '/drivers/require.php';
 
         $driver = ValetDriver::assign(getcwd(), basename(getcwd()), '/', true);
 
         if ($driver) {
-            info('This site is served by ['.get_class($driver).'].');
+            info('This site is served by [' . get_class($driver) . '].');
         } else {
             warning('Valet could not determine which driver to use for this site.');
         }
@@ -260,9 +261,9 @@ if (is_dir(VALET_HOME_PATH)) {
      * Open the current or given directory in the browser.
      */
     $app->command('open [domain]', function ($domain = null) {
-        $url = "http://".($domain ?: Site::host(getcwd())).'.'.Configuration::read()['domain'];
+        $url = "http://" . ($domain ?: Site::host(getcwd())) . '.' . Configuration::read()['domain'];
 
-        passthru("sudo -u ".user(). " open ".escapeshellarg($url));
+        passthru("sudo -u " . user() . " open " . escapeshellarg($url));
     })->descriptions('Open the site for the current (or specified) directory in your browser');
 
     /**
@@ -312,45 +313,37 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        foreach($services as $service) {
-            switch($service) {
-                case 'nginx': {
+        foreach ($services as $service) {
+            switch ($service) {
+                case 'nginx':
                     Nginx::restart();
                     break;
-                }
                 case 'mysql':
-                case 'mariadb': {
+                case 'mariadb':
                     Mysql::restart();
                     break;
-                }
-                case 'php': {
+                case 'php':
                     if ($phpVersion) {
                         PhpFpm::switchTo($phpVersion);
                     } else {
                         PhpFpm::restart();
                     }
                     break;
-                }
-                case 'redis': {
+                case 'redis':
                     RedisTool::restart();
                     break;
-                }
-                case 'mailhog': {
+                case 'mailhog':
                     Mailhog::restart();
                     break;
-                }
-                case 'elasticsearch': {
+                case 'elasticsearch':
                     Elasticsearch::restart();
                     break;
-                }
-                case 'rabbitmq': {
+                case 'rabbitmq':
                     RabbitMq::restart();
                     break;
-                }
-                case 'varnish': {
+                case 'varnish':
                     Varnish::restart();
                     break;
-                }
             }
         }
 
@@ -361,7 +354,7 @@ if (is_dir(VALET_HOME_PATH)) {
      * Restart the daemon services.
      */
     $app->command('restart [services]*', function ($services) {
-        if(empty($services)) {
+        if (empty($services)) {
             DnsMasq::restart();
             PhpFpm::restart();
             Nginx::restart();
@@ -375,40 +368,32 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        foreach($services as $service) {
-            switch($service) {
-                case 'nginx': {
+        foreach ($services as $service) {
+            switch ($service) {
+                case 'nginx':
                     Nginx::restart();
                     break;
-                }
-                case 'mysql': {
+                case 'mysql':
                     Mysql::restart();
                     break;
-                }
-                case 'php': {
+                case 'php':
                     PhpFpm::restart();
                     break;
-                }
-                case 'redis': {
+                case 'redis':
                     RedisTool::restart();
                     break;
-                }
-                case 'mailhog': {
+                case 'mailhog':
                     Mailhog::restart();
                     break;
-                }
-                case 'elasticsearch': {
+                case 'elasticsearch':
                     Elasticsearch::restart();
                     break;
-                }
-                case 'rabbitmq': {
+                case 'rabbitmq':
                     RabbitMq::restart();
                     break;
-                }
-                case 'varnish': {
+                case 'varnish':
                     Varnish::restart();
                     break;
-                }
             }
         }
 
@@ -419,7 +404,7 @@ if (is_dir(VALET_HOME_PATH)) {
      * Stop the daemon services.
      */
     $app->command('stop [services]*', function ($services) {
-        if(empty($services)) {
+        if (empty($services)) {
             DnsMasq::stop();
             PhpFpm::stop();
             Nginx::stop();
@@ -433,40 +418,32 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        foreach($services as $service) {
-            switch($service) {
-                case 'nginx': {
+        foreach ($services as $service) {
+            switch ($service) {
+                case 'nginx':
                     Nginx::stop();
                     break;
-                }
-                case 'mysql': {
+                case 'mysql':
                     Mysql::stop();
                     break;
-                }
-                case 'php': {
+                case 'php':
                     PhpFpm::stop();
                     break;
-                }
-                case 'redis': {
+                case 'redis':
                     RedisTool::stop();
                     break;
-                }
-                case 'mailhog': {
+                case 'mailhog':
                     Mailhog::stop();
                     break;
-                }
-                case 'elasticsearch': {
+                case 'elasticsearch':
                     Elasticsearch::stop();
                     break;
-                }
-                case 'rabbitmq': {
+                case 'rabbitmq':
                     RabbitMq::stop();
                     break;
-                }
-                case 'varnish': {
+                case 'varnish':
                     Varnish::stop();
                     break;
-                }
             }
         }
 
@@ -537,15 +514,15 @@ if (is_dir(VALET_HOME_PATH)) {
         $helper = $this->getHelperSet()->get('question');
         $defaults = $input->getOptions();
 
-        if($run === 'list' || $run === 'ls') {
+        if ($run === 'list' || $run === 'ls') {
             Mysql::listDatabases();
             return;
         }
 
-        if($run === 'create') {
+        if ($run === 'create') {
             $databaseName = Mysql::createDatabase($name);
 
-            if(!$databaseName) {
+            if (!$databaseName) {
                 return warning('Error creating database');
             }
 
@@ -553,9 +530,9 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        if($run === 'drop') {
-            if(!$defaults['yes']) {
-                $question = new ConfirmationQuestion('Are you sure you want to delete the database? [y/N] ', FALSE);
+        if ($run === 'drop') {
+            if (!$defaults['yes']) {
+                $question = new ConfirmationQuestion('Are you sure you want to delete the database? [y/N] ', false);
                 if (!$helper->ask($input, $output, $question)) {
                     warning('Aborted');
                     return;
@@ -563,7 +540,7 @@ if (is_dir(VALET_HOME_PATH)) {
             }
             $databaseName = Mysql::dropDatabase($name);
 
-            if(!$databaseName) {
+            if (!$databaseName) {
                 return warning('Error dropping database');
             }
 
@@ -571,9 +548,9 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        if($run === 'reset') {
-          if(!$defaults['yes']) {
-                $question = new ConfirmationQuestion('Are you sure you want to reset the database? [y/N] ', FALSE);
+        if ($run === 'reset') {
+            if (!$defaults['yes']) {
+                $question = new ConfirmationQuestion('Are you sure you want to reset the database? [y/N] ', false);
                 if (!$helper->ask($input, $output, $question)) {
                     warning('Aborted');
                     return;
@@ -582,13 +559,13 @@ if (is_dir(VALET_HOME_PATH)) {
 
             $dropped = Mysql::dropDatabase($name);
 
-            if(!$dropped) {
+            if (!$dropped) {
                 return warning('Error creating database');
             }
 
             $databaseName = Mysql::createDatabase($name);
 
-            if(!$databaseName) {
+            if (!$databaseName) {
                 return warning('Error creating database');
             }
 
@@ -596,8 +573,8 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        if($run === 'open') {
-            if($name === '.') {
+        if ($run === 'open') {
+            if ($name === '.') {
                 $name = basename(getcwd());
             }
 
@@ -607,15 +584,15 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        if($run === 'import') {
+        if ($run === 'import') {
             info('Importing database...');
-            if(!$name) {
+            if (!$name) {
                 throw new Exception('Please provide a dump file');
             }
 
             // check if database already exists.
-            if(Mysql::isDatabaseExists($optional)){
-                $question = new ConfirmationQuestion('Database already exists are you sure you want to continue? [y/N] ', FALSE);
+            if (Mysql::isDatabaseExists($optional)) {
+                $question = new ConfirmationQuestion('Database already exists are you sure you want to continue? [y/N] ', false);
                 if (!$helper->ask($input, $output, $question)) {
                     warning('Aborted');
                     return;
@@ -626,23 +603,23 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        if($run === 'reimport') {
-          if(!$defaults['yes']) {
-                $question = new ConfirmationQuestion('Are you sure you want to reimport the database? [y/N] ', FALSE);
+        if ($run === 'reimport') {
+            if (!$defaults['yes']) {
+                $question = new ConfirmationQuestion('Are you sure you want to reimport the database? [y/N] ', false);
                 if (!$helper->ask($input, $output, $question)) {
                     warning('Aborted');
                     return;
                 }
             }
             info('Resetting database, importing database...');
-            if(!$name) {
+            if (!$name) {
                 throw new Exception('Please provide a dump file');
             }
             Mysql::reimportDatabase($name, $optional);
             return;
         }
 
-        if($run === 'export' || $run === 'dump') {
+        if ($run === 'export' || $run === 'dump') {
             info('Exporting database...');
             $data = Mysql::exportDatabase($name, $optional);
             info('Database "' . $data['database'] . '" exported into file "' . $data['filename'] . '"');
@@ -716,7 +693,7 @@ if (is_dir(VALET_HOME_PATH)) {
         $modes = ['on', 'enable', 'off', 'disable'];
 
         if (!in_array($mode, $modes)) {
-            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
+            throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
         }
 
         if (PeclCustom::isInstalled('ioncube_loader_dar') === false) {
@@ -728,7 +705,7 @@ if (is_dir(VALET_HOME_PATH)) {
             info("[PECL-CUSTOM] Enabling ioncube_loader_dar extension");
             PeclCustom::enable('ioncube_loader_dar');
             PhpFpm::restart();
-        }elseif($mode === 'on' || $mode === 'enable'){
+        } elseif ($mode === 'on' || $mode === 'enable') {
             info("[PECL-CUSTOM] ioncube_loader_dar extension is already installed");
         }
 
@@ -736,13 +713,13 @@ if (is_dir(VALET_HOME_PATH)) {
             info("[PECL-CUSTOM] Disabling ioncube_loader_dar extension");
             PeclCustom::disable('ioncube_loader_dar');
             PhpFpm::restart();
-        }elseif($mode === 'off' || $mode === 'disable'){
+        } elseif ($mode === 'off' || $mode === 'disable') {
             info("[PECL-CUSTOM] ioncube_loader_dar extension is already uninstalled");
         }
     })->descriptions('Enable / disable ioncube');
 
     $app->command('elasticsearch [mode]', function ($mode) {
-        if($mode === 'install' || $mode === 'on') {
+        if ($mode === 'install' || $mode === 'on') {
             Elasticsearch::install();
             return;
         }
@@ -754,7 +731,7 @@ if (is_dir(VALET_HOME_PATH)) {
         $modes = ['install', 'on', 'enable', 'off', 'disable'];
 
         if (!in_array($mode, $modes)) {
-            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
+            throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
         }
 
         switch ($mode) {
@@ -776,7 +753,7 @@ if (is_dir(VALET_HOME_PATH)) {
         $modes = ['install', 'on', 'enable', 'off', 'disable'];
 
         if (!in_array($mode, $modes)) {
-            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
+            throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
         }
 
         switch ($mode) {
@@ -798,7 +775,7 @@ if (is_dir(VALET_HOME_PATH)) {
         $modes = ['install', 'on', 'enable', 'off', 'disable'];
 
         if (!in_array($mode, $modes)) {
-            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
+            throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
         }
 
         switch ($mode) {
@@ -820,7 +797,7 @@ if (is_dir(VALET_HOME_PATH)) {
         $modes = ['install', 'on', 'enable', 'off', 'disable'];
 
         if (!in_array($mode, $modes)) {
-            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
+            throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
         }
 
         switch ($mode) {
@@ -842,7 +819,7 @@ if (is_dir(VALET_HOME_PATH)) {
         $modes = ['install', 'uninstall'];
 
         if (!in_array($mode, $modes)) {
-            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
+            throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
         }
 
         if (PhpFpm::linkedPhp() == '5.6') {
@@ -859,7 +836,7 @@ if (is_dir(VALET_HOME_PATH)) {
                 break;
         }
         if ($restart) {
-          PhpFpm::restart();
+            PhpFpm::restart();
         }
     })->descriptions('Install / uninstall Memcache');
 
@@ -887,7 +864,7 @@ if (is_dir(VALET_HOME_PATH)) {
      * Proxy commands
      */
     $app->command('proxy [url]', function ($input, $output, $url = null) {
-        $url = ($url ?: Site::host(getcwd())).'.'.Configuration::read()['domain'];
+        $url = ($url ?: Site::host(getcwd())) . '.' . Configuration::read()['domain'];
         $helper = $this->getHelperSet()->get('question');
         $question = new Question('Where would you like to proxy this url to? ');
         if (!$to = $helper->ask($input, $output, $question)) {
@@ -904,7 +881,7 @@ if (is_dir(VALET_HOME_PATH)) {
     })->descriptions('Enable proxying for a site instead of handling it with a Valet driver. Useful for SPAs and Swoole applications.');
 
     $app->command('unproxy [url]', function ($url = null) {
-        $url = ($url ?: Site::host(getcwd())).'.'.Configuration::read()['domain'];
+        $url = ($url ?: Site::host(getcwd())) . '.' . Configuration::read()['domain'];
         Site::proxy($url);
 
         PhpFpm::restart();
@@ -965,7 +942,7 @@ if (is_dir(VALET_HOME_PATH)) {
         ];
 
         if (!isset($logs[$service])) {
-            warning('No logs found for [' . $service . ']. Available logs: '.implode(', ', array_keys($logs)));
+            warning('No logs found for [' . $service . ']. Available logs: ' . implode(', ', array_keys($logs)));
             return;
         }
 

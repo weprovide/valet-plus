@@ -56,7 +56,7 @@ abstract class ValetDriver
             static::driversIn(__DIR__ .'/')
         );
 
-        if(!$noCache && $cachedDriver) {
+        if (!$noCache && $cachedDriver) {
             $driver = new $cachedDriver;
             return $driver;
         }
@@ -108,7 +108,9 @@ abstract class ValetDriver
 
         $blacklist[] = 'ValetDriver';
         $blacklist[] = 'BasicValetDriver';
-        $blacklist = array_map(function($i) { return $i.'.php'; }, $blacklist);
+        $blacklist = array_map(function ($i) {
+            return $i.'.php';
+        }, $blacklist);
 
         $drivers = [];
 

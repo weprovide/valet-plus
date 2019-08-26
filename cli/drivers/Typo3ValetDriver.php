@@ -12,7 +12,7 @@ class Typo3ValetDriver extends ValetDriver
     | Document Root Subdirectory
     |--------------------------------------------------------------------------
     |
-    | This subdirectory contains the public server resources, such as the 
+    | This subdirectory contains the public server resources, such as the
     | index.php, the typo3 and fileadmin system directories. Change it
     | to '', if you don't use a subdirectory but valet link directly.
     |
@@ -66,17 +66,15 @@ class Typo3ValetDriver extends ValetDriver
     {
         // May the file contains a cache busting version string like filename.12345678.css
         // If that is the case, the file cannot be found on disk, so remove the version
-        // identifier before retrying below. 
-        if (!$this->isActualFile($filePath = $sitePath . $this->documentRoot . $uri)) 
-        {
+        // identifier before retrying below.
+        if (!$this->isActualFile($filePath = $sitePath . $this->documentRoot . $uri)) {
             $uri = preg_replace("@^(.+)\.(\d+)\.(js|css|png|jpg|gif|gzip)$@", "$1.$3", $uri);
         }
 
         // Now that any possible version string is cleared from the filename, the resulting
         // URI should be a valid file on disc. So assemble the absolut file name with the
         // same schema as above and if it exists, authorize access and return its path.
-        if ($this->isActualFile($filePath = $sitePath . $this->documentRoot . $uri))
-        {
+        if ($this->isActualFile($filePath = $sitePath . $this->documentRoot . $uri)) {
             return $this->isAccessAuthorized($uri) ? $filePath : false;
         }
 
@@ -92,10 +90,8 @@ class Typo3ValetDriver extends ValetDriver
      */
     private function isAccessAuthorized($uri)
     {
-        foreach ($this->forbiddenUriPatterns as $forbiddenUriPattern)
-        {
-            if (preg_match("@$forbiddenUriPattern@", $uri))
-            {
+        foreach ($this->forbiddenUriPatterns as $forbiddenUriPattern) {
+            if (preg_match("@$forbiddenUriPattern@", $uri)) {
                 return false;
             }
         }
@@ -123,24 +119,18 @@ class Typo3ValetDriver extends ValetDriver
         $uri = rtrim($uri, '/');
 
         // try to find the responsible script file for the requested folder / script URI
-        if (file_exists($absoluteFilePath = $sitePath . $this->documentRoot . $uri))
-        {
-            if (is_dir($absoluteFilePath))
-            {
-                if (file_exists($absoluteFilePath . '/index.php'))
-                {
+        if (file_exists($absoluteFilePath = $sitePath . $this->documentRoot . $uri)) {
+            if (is_dir($absoluteFilePath)) {
+                if (file_exists($absoluteFilePath . '/index.php')) {
                     // this folder can be served by index.php
                     return $this->serveScript($sitePath, $siteName, $uri . '/index.php');
                 }
 
-                if (file_exists($absoluteFilePath . '/index.html'))
-                {
+                if (file_exists($absoluteFilePath . '/index.html')) {
                     // this folder can be served by index.html
                     return $absoluteFilePath . '/index.html';
                 }
-            }
-            else if (pathinfo($absoluteFilePath, PATHINFO_EXTENSION) === 'php')
-            {
+            } else if (pathinfo($absoluteFilePath, PATHINFO_EXTENSION) === 'php') {
                 // this file can be served directly
                 return $this->serveScript($sitePath, $siteName, $uri);
             }
@@ -159,14 +149,12 @@ class Typo3ValetDriver extends ValetDriver
      */
     private function handleRedirectBackendShorthandUris($uri)
     {
-        if (rtrim($uri, '/') === '/typo3/install')
-        {
+        if (rtrim($uri, '/') === '/typo3/install') {
             header('Location: /typo3/sysext/install/Start/Install.php');
             die();
         }
 
-        if ($uri === '/typo3')
-        {
+        if ($uri === '/typo3') {
             header('Location: /typo3/');
             die();
         }
