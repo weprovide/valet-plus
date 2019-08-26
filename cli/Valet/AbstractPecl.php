@@ -30,12 +30,13 @@ abstract class AbstractPecl
 
     ];
 
-    var $cli, $files;
+    public $cli;
+    public $files;
 
     /**
      * Create a new PECL instance.
      */
-    function __construct(CommandLine $cli, Filesystem $files)
+    public function __construct(CommandLine $cli, Filesystem $files)
     {
         $this->cli = $cli;
         $this->files = $files;
@@ -130,7 +131,7 @@ abstract class AbstractPecl
     /**
      * Uninstall all extensions defined in EXTENSIONS.
      */
-    function uninstallExtensions()
+    public function uninstallExtensions()
     {
         throw new \Exception(__METHOD__.' not implemented!');
     }

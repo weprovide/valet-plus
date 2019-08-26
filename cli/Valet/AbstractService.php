@@ -7,15 +7,15 @@ abstract class AbstractService
     const STATE_DISABLED = false;
     const STATE_ENABLED = true;
 
-    var $configuration;
-    var $configClassName;
+    public $configuration;
+    public $configClassName;
 
     /**
      * AbstractService constructor.
      *
      * @param Configuration $configuration
      */
-    function __construct(Configuration $configuration)
+    public function __construct(Configuration $configuration)
     {
         $this->configuration = $configuration;
     }
@@ -25,7 +25,7 @@ abstract class AbstractService
      *
      * @return string
      */
-    function getConfigClassName()
+    public function getConfigClassName()
     {
         if (!$this->configClassName) {
             try {
@@ -44,7 +44,7 @@ abstract class AbstractService
      *
      * @return bool
      */
-    function isEnabled()
+    public function isEnabled()
     {
         $config = $this->configuration->read();
         $name   = $this->getConfigClassName();
@@ -57,7 +57,7 @@ abstract class AbstractService
      *
      * @param $state
      */
-    function setEnabled($state)
+    public function setEnabled($state)
     {
         $config        = $this->configuration->read();
         $name          = $this->getConfigClassName();
@@ -71,7 +71,7 @@ abstract class AbstractService
     /**
      * Stops the service and stores in configuration it should not be started.
      */
-    function disable()
+    public function disable()
     {
         $this->stop();
         $this->setEnabled(self::STATE_DISABLED);
@@ -80,7 +80,7 @@ abstract class AbstractService
     /**
      * Installs the service if not installed, restarts it and stores in configuration it should be started.
      */
-    function enable()
+    public function enable()
     {
         $this->setEnabled(self::STATE_ENABLED);
         if ($this->installed()) {
@@ -94,21 +94,21 @@ abstract class AbstractService
     /**
      * Implement installation of the service.
      */
-    abstract function install();
+    abstract public function install();
 
     /**
      * Implement wether or not the service is installed.
      * @return bool
      */
-    abstract function installed();
+    abstract public function installed();
 
     /**
      * Implement stopping the service.
      */
-    abstract function stop();
+    abstract public function stop();
 
     /**
      * Implement restarting the service.
      */
-    abstract function restart();
+    abstract public function restart();
 }

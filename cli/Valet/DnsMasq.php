@@ -4,11 +4,13 @@ namespace Valet;
 
 class DnsMasq
 {
-    var $brew, $cli, $files;
+    public $brew;
+    public $cli;
+    public $files;
 
-    var $resolverPath = '/etc/resolver';
-    var $configPath = '/usr/local/etc/dnsmasq.conf';
-    var $exampleConfigPath = '/usr/local/opt/dnsmasq/dnsmasq.conf.example';
+    public $resolverPath = '/etc/resolver';
+    public $configPath = '/usr/local/etc/dnsmasq.conf';
+    public $exampleConfigPath = '/usr/local/opt/dnsmasq/dnsmasq.conf.example';
 
     /**
      * Create a new DnsMasq instance.
@@ -17,7 +19,7 @@ class DnsMasq
      * @param  CommandLine $cli
      * @param  Filesystem $files
      */
-    function __construct(Brew $brew, CommandLine $cli, Filesystem $files)
+    public function __construct(Brew $brew, CommandLine $cli, Filesystem $files)
     {
         $this->cli = $cli;
         $this->brew = $brew;
@@ -29,7 +31,7 @@ class DnsMasq
      *
      * @return void
      */
-    function install($domain = 'test')
+    public function install($domain = 'test')
     {
         $this->brew->ensureInstalled('dnsmasq');
 
@@ -49,7 +51,7 @@ class DnsMasq
      * @param  string  $domain
      * @return void
      */
-    function createCustomConfigFile($domain)
+    public function createCustomConfigFile($domain)
     {
         $customConfigPath = $this->customConfigPath();
 
@@ -65,7 +67,7 @@ class DnsMasq
      *
      * @return void
      */
-    function copyExampleConfig()
+    public function copyExampleConfig()
     {
         if (! $this->files->exists($this->configPath)) {
             $this->files->copyAsUser(
@@ -81,7 +83,7 @@ class DnsMasq
      * @param  string  $customConfigPath
      * @return void
      */
-    function appendCustomConfigImport($customConfigPath)
+    public function appendCustomConfigImport($customConfigPath)
     {
         if (! $this->customConfigIsBeingImported($customConfigPath)) {
             $this->files->appendAsUser(
@@ -97,7 +99,7 @@ class DnsMasq
      * @param  string  $customConfigPath
      * @return bool
      */
-    function customConfigIsBeingImported($customConfigPath)
+    public function customConfigIsBeingImported($customConfigPath)
     {
         return strpos($this->files->get($this->configPath), $customConfigPath) !== false;
     }
@@ -108,7 +110,7 @@ class DnsMasq
      * @param  string  $domain
      * @return void
      */
-    function createDomainResolver($domain)
+    public function createDomainResolver($domain)
     {
         $this->files->ensureDirExists($this->resolverPath);
 
@@ -122,7 +124,7 @@ class DnsMasq
      * @param  string  $newDomain
      * @return void
      */
-    function updateDomain($oldDomain, $newDomain)
+    public function updateDomain($oldDomain, $newDomain)
     {
         $this->files->unlink($this->resolverPath.'/'.$oldDomain);
 
@@ -134,7 +136,7 @@ class DnsMasq
      *
      * @return string
      */
-    function customConfigPath()
+    public function customConfigPath()
     {
         return $_SERVER['HOME'].'/.valet/dnsmasq.conf';
     }
@@ -144,7 +146,7 @@ class DnsMasq
      *
      * @return void
      */
-    function restart()
+    public function restart()
     {
         $this->brew->restartService('dnsmasq');
     }
@@ -154,7 +156,7 @@ class DnsMasq
      *
      * @return void
      */
-    function stop()
+    public function stop()
     {
         $this->brew->stopService('dnsmasq');
     }

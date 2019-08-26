@@ -315,43 +315,35 @@ if (is_dir(VALET_HOME_PATH)) {
 
         foreach ($services as $service) {
             switch ($service) {
-                case 'nginx': {
+                case 'nginx':
                     Nginx::restart();
                     break;
-                }
                 case 'mysql':
-                case 'mariadb': {
+                case 'mariadb':
                     Mysql::restart();
                     break;
-                }
-                case 'php': {
+                case 'php':
                     if ($phpVersion) {
                         PhpFpm::switchTo($phpVersion);
                     } else {
                         PhpFpm::restart();
                     }
                     break;
-                }
-                case 'redis': {
+                case 'redis':
                     RedisTool::restart();
                     break;
-                }
-                case 'mailhog': {
+                case 'mailhog':
                     Mailhog::restart();
                     break;
-                }
-                case 'elasticsearch': {
+                case 'elasticsearch':
                     Elasticsearch::restart();
                     break;
-                }
-                case 'rabbitmq': {
+                case 'rabbitmq':
                     RabbitMq::restart();
                     break;
-                }
-                case 'varnish': {
+                case 'varnish':
                     Varnish::restart();
                     break;
-                }
             }
         }
 
@@ -378,38 +370,30 @@ if (is_dir(VALET_HOME_PATH)) {
 
         foreach ($services as $service) {
             switch ($service) {
-                case 'nginx': {
+                case 'nginx':
                     Nginx::restart();
                     break;
-                }
-                case 'mysql': {
+                case 'mysql':
                     Mysql::restart();
                     break;
-                }
-                case 'php': {
+                case 'php':
                     PhpFpm::restart();
                     break;
-                }
-                case 'redis': {
+                case 'redis':
                     RedisTool::restart();
                     break;
-                }
-                case 'mailhog': {
+                case 'mailhog':
                     Mailhog::restart();
                     break;
-                }
-                case 'elasticsearch': {
+                case 'elasticsearch':
                     Elasticsearch::restart();
                     break;
-                }
-                case 'rabbitmq': {
+                case 'rabbitmq':
                     RabbitMq::restart();
                     break;
-                }
-                case 'varnish': {
+                case 'varnish':
                     Varnish::restart();
                     break;
-                }
             }
         }
 
@@ -436,38 +420,30 @@ if (is_dir(VALET_HOME_PATH)) {
 
         foreach ($services as $service) {
             switch ($service) {
-                case 'nginx': {
+                case 'nginx':
                     Nginx::stop();
                     break;
-                }
-                case 'mysql': {
+                case 'mysql':
                     Mysql::stop();
                     break;
-                }
-                case 'php': {
+                case 'php':
                     PhpFpm::stop();
                     break;
-                }
-                case 'redis': {
+                case 'redis':
                     RedisTool::stop();
                     break;
-                }
-                case 'mailhog': {
+                case 'mailhog':
                     Mailhog::stop();
                     break;
-                }
-                case 'elasticsearch': {
+                case 'elasticsearch':
                     Elasticsearch::stop();
                     break;
-                }
-                case 'rabbitmq': {
+                case 'rabbitmq':
                     RabbitMq::stop();
                     break;
-                }
-                case 'varnish': {
+                case 'varnish':
                     Varnish::stop();
                     break;
-                }
             }
         }
 

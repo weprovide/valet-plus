@@ -28,7 +28,11 @@ class PhpFpm
 
     const LOCAL_PHP_FOLDER = '/usr/local/etc/valet-php/';
 
-    var $brew, $cli, $files, $pecl, $peclCustom;
+    public $brew;
+    public $cli;
+    public $files;
+    public $pecl;
+    public $peclCustom;
 
     const DEPRECATED_PHP_TAP = 'homebrew/php';
     const VALET_PHP_BREW_TAP = 'henkrehorst/php';
@@ -40,7 +44,7 @@ class PhpFpm
      * @param  CommandLine $cli
      * @param  Filesystem $files
      */
-    function __construct(Brew $brew, CommandLine $cli, Filesystem $files, Pecl $pecl, PeclCustom $peclCustom)
+    public function __construct(Brew $brew, CommandLine $cli, Filesystem $files, Pecl $pecl, PeclCustom $peclCustom)
     {
         $this->cli = $cli;
         $this->brew = $brew;
@@ -54,7 +58,7 @@ class PhpFpm
      *
      * @return void
      */
-    function install()
+    public function install()
     {
         if (!$this->hasInstalledPhp()) {
             $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V71_VERSION));
@@ -77,7 +81,7 @@ class PhpFpm
         $this->restart();
     }
 
-    function iniPath()
+    public function iniPath()
     {
         $destFile = dirname($this->fpmConfigPath());
         $destFile = str_replace('/php-fpm.d', '', $destFile);
@@ -91,7 +95,7 @@ class PhpFpm
      *
      * @return void
      */
-    function restart()
+    public function restart()
     {
         $this->brew->restartService(self::SUPPORTED_PHP_FORMULAE[$this->linkedPhp()]);
     }
@@ -101,7 +105,7 @@ class PhpFpm
      *
      * @return void
      */
-    function stop()
+    public function stop()
     {
         $this->brew->stopService(self::SUPPORTED_PHP_FORMULAE);
     }
@@ -111,7 +115,7 @@ class PhpFpm
      *
      * @return string
      */
-    function fpmConfigPath()
+    public function fpmConfigPath()
     {
         $confLookup = [
             self::PHP_V73_VERSION => self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
@@ -130,7 +134,7 @@ class PhpFpm
      * @param $version
      * @return string Formula name
      */
-    function getFormulaName($version)
+    public function getFormulaName($version)
     {
         return self::SUPPORTED_PHP_FORMULAE[$version];
     }
@@ -140,7 +144,7 @@ class PhpFpm
      *
      * @param $version
      */
-    function switchTo($version)
+    public function switchTo($version)
     {
         $currentVersion = $this->linkedPhp();
 
@@ -187,7 +191,7 @@ class PhpFpm
      * @param $extension
      * @return bool
      */
-    function enableExtension($extension)
+    public function enableExtension($extension)
     {
         $currentPhpVersion = $this->linkedPhp();
 
@@ -219,7 +223,7 @@ class PhpFpm
      * @param $extension
      * @return bool
      */
-    function disableExtension($extension)
+    public function disableExtension($extension)
     {
         $iniPath = $this->iniPath();
         if ($this->files->exists($iniPath . 'ext-' . $extension . '.ini.disabled')) {
@@ -244,7 +248,7 @@ class PhpFpm
      * @param $extension
      * @return bool
      */
-    function isExtensionEnabled($extension)
+    public function isExtensionEnabled($extension)
     {
 
         $currentPhpVersion = $this->brew->linkedPhp();
@@ -264,7 +268,7 @@ class PhpFpm
         return true;
     }
 
-    function enableAutoStart()
+    public function enableAutoStart()
     {
         $iniPath = $this->iniPath();
         if ($this->files->exists($iniPath . 'z-performance.ini')) {
@@ -276,7 +280,7 @@ class PhpFpm
         return false;
     }
 
-    function disableAutoStart()
+    public function disableAutoStart()
     {
         $iniPath = $this->iniPath();
         if ($this->files->exists($iniPath . 'z-performance.ini')) {
@@ -294,7 +298,7 @@ class PhpFpm
      * @return string
      * @internal param bool $asFormula
      */
-    function linkedPhp()
+    public function linkedPhp()
     {
         if (!$this->files->isLink('/usr/local/bin/php')) {
             throw new DomainException("Unable to determine linked PHP.");
@@ -318,7 +322,7 @@ class PhpFpm
      *
      * @return bool
      */
-    function hasInstalledPhp()
+    public function hasInstalledPhp()
     {
         foreach (self::SUPPORTED_PHP_FORMULAE as $version => $brewName) {
             if ($this->brew->installed($brewName)) {
@@ -334,7 +338,7 @@ class PhpFpm
      *
      * @return void
      */
-    function updateConfiguration()
+    public function updateConfiguration()
     {
         $contents = $this->files->get($this->fpmConfigPath());
 
@@ -370,7 +374,7 @@ class PhpFpm
         $this->files->putAsUser($phpIniPath, $contents);
     }
 
-    function writePerformanceConfiguration()
+    public function writePerformanceConfiguration()
     {
         $path = $this->iniPath() . 'z-performance.ini';
 
@@ -391,7 +395,7 @@ class PhpFpm
         $this->files->putAsUser($path, $contents);
     }
 
-    function checkInstallation()
+    public function checkInstallation()
     {
         // Check for errors within the installation of php.
         info('[php] Checking for errors within the php installation...');
@@ -426,7 +430,7 @@ class PhpFpm
     /**
      * Fixes common problems with php installations from Homebrew.
      */
-    function fix($reinstall)
+    public function fix($reinstall)
     {
         // Remove old homebrew/php tap packages.
         info('Removing all old php56- packages from homebrew/php tap');

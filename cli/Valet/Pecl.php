@@ -80,12 +80,12 @@ class Pecl extends AbstractPecl
         ]
     ];
 
-    var $peclCustom;
+    public $peclCustom;
 
     /**
      * @inheritdoc
      */
-    function __construct(CommandLine $cli, Filesystem $files, PeclCustom $peclCustom)
+    public function __construct(CommandLine $cli, Filesystem $files, PeclCustom $peclCustom)
     {
         parent::__construct($cli, $files);
         $this->peclCustom = $peclCustom;
@@ -117,7 +117,7 @@ class Pecl extends AbstractPecl
      *    The extension key name.
      * @return bool
      */
-    function installExtension($extension)
+    public function installExtension($extension)
     {
         if ($this->isInstalled($extension)) {
             output("\t$extension is already installed, skipping...");
@@ -168,7 +168,7 @@ class Pecl extends AbstractPecl
      *    The extension key name.
      * @return bool
      */
-    function enableExtension($extension)
+    public function enableExtension($extension)
     {
         if ($this->isEnabled($extension) && $this->isEnabledCorrectly($extension)) {
             output("\t$extension is already enabled, skipping...");
@@ -185,7 +185,7 @@ class Pecl extends AbstractPecl
      * @param $extension
      *    The extension key name.
      */
-    function enable($extension)
+    public function enable($extension)
     {
         $phpIniPath = $this->getPhpIniPath();
         $phpIniFile = $this->files->get($phpIniPath);
@@ -199,7 +199,7 @@ class Pecl extends AbstractPecl
     /**
      * @inheritdoc
      */
-    function uninstallExtensions()
+    public function uninstallExtensions()
     {
         info("[PECL] Removing extensions");
         foreach (self::EXTENSIONS as $extension => $versions) {
@@ -217,7 +217,7 @@ class Pecl extends AbstractPecl
      * @return bool
      *    Whether or not an uninstall happened.
      */
-    function disableExtension($extension)
+    public function disableExtension($extension)
     {
         $version = $this->getVersion($extension);
         if ($this->isEnabled($extension)) {
@@ -230,7 +230,7 @@ class Pecl extends AbstractPecl
         return false;
     }
 
-    function disable($extension)
+    public function disable($extension)
     {
         $this->removeIniDefinition($extension);
         $this->alternativeDisable($extension);
@@ -314,7 +314,7 @@ class Pecl extends AbstractPecl
     /**
      * Update the default PECL channel.
      */
-    function updatePeclChannel()
+    public function updatePeclChannel()
     {
         info('[PECL] Updating PECL channel: pecl.php.net');
         $this->cli->runAsUser('pecl channel-update pecl.php.net');
@@ -323,7 +323,7 @@ class Pecl extends AbstractPecl
     /**
      * Fix common problems related to the PECL/PEAR installation.
      */
-    function fix()
+    public function fix()
     {
         info('[PECL] Checking pear config...');
         // Check if pear config is set correctly as per:
@@ -443,7 +443,7 @@ class Pecl extends AbstractPecl
     /**
      * @inheritdoc
      */
-    function isInstalled($extension)
+    public function isInstalled($extension)
     {
         return strpos($this->cli->runAsUser('pecl list | grep ' . $extension), $extension) !== false;
     }

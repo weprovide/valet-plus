@@ -67,7 +67,7 @@ class PeclCustom extends AbstractPecl
     /**
      * @inheritdoc
      */
-    function __construct(CommandLine $cli, Filesystem $files)
+    public function __construct(CommandLine $cli, Filesystem $files)
     {
         parent::__construct($cli, $files);
     }
@@ -75,7 +75,7 @@ class PeclCustom extends AbstractPecl
     /**
      * @inheritdoc
      */
-    function installExtensions($onlyDefaults = true)
+    public function installExtensions($onlyDefaults = true)
     {
         info("[PECL-CUSTOM] Installing extensions");
         foreach (self::EXTENSIONS as $extension => $versions) {
@@ -96,7 +96,7 @@ class PeclCustom extends AbstractPecl
      *    The extension key name.
      * @return bool
      */
-    function installExtension($extension)
+    public function installExtension($extension)
     {
         $version = $this->getVersion($extension);
 
@@ -117,7 +117,7 @@ class PeclCustom extends AbstractPecl
      *    The extension key name.
      * @param $url
      */
-    function install($extension, $url)
+    public function install($extension, $url)
     {
 
         // Get file name from url
@@ -151,7 +151,7 @@ class PeclCustom extends AbstractPecl
      * @param $extensionDirectory
      *    The directory where the .so file needs to be placed.
      */
-    function downloadExtension($extension, $url, $fileName, $extensionAlias, $extensionDirectory)
+    public function downloadExtension($extension, $url, $fileName, $extensionAlias, $extensionDirectory)
     {
         $unpackagedDirectory = $this->getPackagedDirectory($extension);
 
@@ -192,7 +192,7 @@ class PeclCustom extends AbstractPecl
      *    The extension key name.
      * @return bool
      */
-    function enableExtension($extension)
+    public function enableExtension($extension)
     {
         if ($this->isEnabled($extension)) {
             output("\t$extension is already enabled, skipping...");
@@ -209,7 +209,7 @@ class PeclCustom extends AbstractPecl
      * @param $extension
      *    The extension key name.
      */
-    function enable($extension)
+    public function enable($extension)
     {
         // Install php.ini directive.
         $extensionAlias = $this->getExtensionAlias($extension);
@@ -225,7 +225,7 @@ class PeclCustom extends AbstractPecl
     /**
      * @inheritdoc
      */
-    function uninstallExtensions()
+    public function uninstallExtensions()
     {
         info("[PECL-CUSTOM] Removing extensions");
         foreach (self::EXTENSIONS as $extension => $versions) {
@@ -240,7 +240,7 @@ class PeclCustom extends AbstractPecl
      *    The extension key name.
      * @return bool
      */
-    function uninstallExtension($extension)
+    public function uninstallExtension($extension)
     {
         $version = $this->getVersion($extension);
         if ($this->isEnabled($extension)) {
@@ -258,7 +258,7 @@ class PeclCustom extends AbstractPecl
      *
      * @param $extension
      */
-    function disable($extension)
+    public function disable($extension)
     {
         $this->removeIniDefinition($extension);
     }
@@ -287,7 +287,7 @@ class PeclCustom extends AbstractPecl
     /**
      * @inheritdoc
      */
-    function isInstalled($extension)
+    public function isInstalled($extension)
     {
         $extensionDirectory = $this->getExtensionDirectory();
         $extensionAlias = $this->getExtensionAlias($extension);

@@ -4,10 +4,10 @@ namespace Valet;
 
 class RedisTool extends AbstractService
 {
-    var $brew;
-    var $cli;
-    var $files;
-    var $site;
+    public $brew;
+    public $cli;
+    public $files;
+    public $site;
 
     const REDIS_CONF = '/usr/local/etc/redis.conf';
 
@@ -20,7 +20,7 @@ class RedisTool extends AbstractService
      * @param  Configuration $configuration
      * @param  Site          $site
      */
-    function __construct(
+    public function __construct(
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
@@ -39,7 +39,7 @@ class RedisTool extends AbstractService
      *
      * @return void
      */
-    function install()
+    public function install()
     {
         if ($this->installed()) {
             info('[redis] already installed');
@@ -58,7 +58,7 @@ class RedisTool extends AbstractService
      *
      * @return bool
      */
-    function installed()
+    public function installed()
     {
         return $this->brew->installed('redis');
     }
@@ -68,7 +68,7 @@ class RedisTool extends AbstractService
      *
      * @return void
      */
-    function installConfiguration()
+    public function installConfiguration()
     {
         $this->files->copy(__DIR__.'/../stubs/redis.conf', static::REDIS_CONF);
     }
@@ -78,7 +78,7 @@ class RedisTool extends AbstractService
      *
      * @return void
      */
-    function restart()
+    public function restart()
     {
         if (!$this->installed() || !$this->isEnabled()) {
             return;
@@ -93,7 +93,7 @@ class RedisTool extends AbstractService
      *
      * @return void
      */
-    function stop()
+    public function stop()
     {
         if (!$this->installed()) {
             return;
@@ -109,7 +109,7 @@ class RedisTool extends AbstractService
      *
      * @return void
      */
-    function uninstall()
+    public function uninstall()
     {
         $this->stop();
     }
