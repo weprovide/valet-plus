@@ -157,7 +157,8 @@ if (! function_exists('ends_with')) {
      * @param  string|array  $needles
      * @return bool
      */
-    function ends_with($haystack, $needles) {
+    function ends_with($haystack, $needles)
+    {
         foreach ((array) $needles as $needle) {
             if (substr($haystack, -strlen($needle)) === (string) $needle) {
                 return true;
@@ -172,14 +173,13 @@ if (! function_exists('ends_with')) {
  */
 function user()
 {
-	if(isset($_SERVER['SUDO_USER']) && $_SERVER['SUDO_USER'] !== null) {
-		return $_SERVER['SUDO_USER'];
+    if (isset($_SERVER['SUDO_USER']) && $_SERVER['SUDO_USER'] !== null) {
+        return $_SERVER['SUDO_USER'];
     }
 
-	if(isset($_SERVER['USER']) && $_SERVER['USER'] !== null) {
-		return $_SERVER['USER'];
+    if (isset($_SERVER['USER']) && $_SERVER['USER'] !== null) {
+        return $_SERVER['USER'];
     }
 
-	return '';
+    return '';
 }
-

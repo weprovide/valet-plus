@@ -196,7 +196,7 @@ class Elasticsearch
 
 
         // Alter elasticsearch data path in config yaml.
-        if (extension_loaded('yaml')){
+        if (extension_loaded('yaml')) {
             $config                            = yaml_parse_file(self::ES_CONFIG_YAML);
             $config[self::ES_CONFIG_DATA_PATH] = self::ES_CONFIG_DATA_BASEPATH . self::SUPPORTED_ES_FORMULAE[$version] . '/';
             yaml_emit_file(self::ES_CONFIG_YAML, $config);

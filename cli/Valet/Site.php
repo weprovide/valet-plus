@@ -49,7 +49,8 @@ class Site
         $tld = $this->config->read()['domain'];
         $link = str_replace('.'.$tld, '', $link);
         $this->files->ensureDirExists(
-            $linkPath = $this->sitesPath(), user()
+            $linkPath = $this->sitesPath(),
+            user()
         );
 
         $this->config->prependPath($linkPath);
@@ -65,7 +66,8 @@ class Site
      * @param string $filterName
      * @return \Illuminate\Support\Collection
      */
-    function links($filterName = '') {
+    function links($filterName = '')
+    {
         $certsPath = VALET_HOME_PATH.'/Certificates';
 
         $this->files->ensureDirExists($certsPath, user());
@@ -109,7 +111,7 @@ class Site
             $secured = $certs->has($site);
             $url = ($secured ? 'https': 'http').'://'.$site.'.'.$tld;
 
-            if($filterName) {
+            if ($filterName) {
                 $site = str_replace('.'.$filterName, '', $site);
             } else {
                 $site = $site.'.'.$tld;
@@ -117,7 +119,7 @@ class Site
 
             return [$site, $secured ? ' X': '', $url, $path];
         })->filter(function ($item) use ($filterName, $tld) {
-            if(!$filterName) {
+            if (!$filterName) {
                 return true;
             }
 
@@ -234,7 +236,8 @@ class Site
         }
 
         $this->files->putAsUser(
-            VALET_HOME_PATH . '/Nginx/' . $url, $this->buildNginxConfig($url, $secure, $proxy)
+            VALET_HOME_PATH . '/Nginx/' . $url,
+            $this->buildNginxConfig($url, $secure, $proxy)
         );
     }
 
@@ -269,7 +272,10 @@ class Site
 
         $this->cli->runAsUser(sprintf(
             'openssl x509 -req -days 365 -in %s -signkey %s -out %s -extensions v3_req -extfile %s',
-            $csrPath, $keyPath, $crtPath, $confPath
+            $csrPath,
+            $keyPath,
+            $crtPath,
+            $confPath
         ));
 
         $this->trustCertificate($crtPath);
@@ -296,7 +302,10 @@ class Site
     {
         $this->cli->runAsUser(sprintf(
             'openssl req -new -key %s -out %s -subj "/C=/ST=/O=/localityName=/commonName=*.%s/organizationalUnitName=/emailAddress=/" -config %s -passin pass:',
-            $keyPath, $csrPath, $url, $confPath
+            $keyPath,
+            $csrPath,
+            $url,
+            $confPath
         ));
     }
 
@@ -309,7 +318,8 @@ class Site
     function trustCertificate($crtPath)
     {
         $this->cli->run(sprintf(
-            'sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain %s', $crtPath
+            'sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain %s',
+            $crtPath
         ));
     }
 

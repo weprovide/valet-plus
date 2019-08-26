@@ -210,7 +210,8 @@ class Configuration
     function write($config)
     {
         $this->files->putAsUser($this->path(), json_encode(
-            $config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+            $config,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         ).PHP_EOL);
     }
 

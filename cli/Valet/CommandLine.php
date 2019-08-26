@@ -72,7 +72,8 @@ class CommandLine
      */
     function runCommand($command, callable $onError = null)
     {
-        $onError = $onError ?: function () {};
+        $onError = $onError ?: function () {
+        };
 
         $process = new Process($command);
 

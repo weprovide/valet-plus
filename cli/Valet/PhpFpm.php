@@ -145,8 +145,10 @@ class PhpFpm
         $currentVersion = $this->linkedPhp();
 
         if (!array_key_exists($version, self::SUPPORTED_PHP_FORMULAE)) {
-            throw new DomainException("This version of PHP not available. The following versions are available: " . implode(' ',
-                    array_keys(self::SUPPORTED_PHP_FORMULAE)));
+            throw new DomainException("This version of PHP not available. The following versions are available: " . implode(
+                ' ',
+                array_keys(self::SUPPORTED_PHP_FORMULAE)
+            ));
         }
 
         // If the current version equals that of the current PHP version, do not switch.
@@ -201,8 +203,10 @@ class PhpFpm
         }
 
         if ($this->files->exists($iniPath . 'ext-' . $extension . '.ini.disabled')) {
-            $this->files->move($iniPath . 'ext-' . $extension . '.ini.disabled',
-                $iniPath . 'ext-' . $extension . '.ini');
+            $this->files->move(
+                $iniPath . 'ext-' . $extension . '.ini.disabled',
+                $iniPath . 'ext-' . $extension . '.ini'
+            );
         }
 
         info('Enabled ' . $extension);
@@ -224,8 +228,10 @@ class PhpFpm
         }
 
         if ($this->files->exists($iniPath . 'ext-' . $extension . '.ini')) {
-            $this->files->move($iniPath . 'ext-' . $extension . '.ini',
-                $iniPath . 'ext-' . $extension . '.ini.disabled');
+            $this->files->move(
+                $iniPath . 'ext-' . $extension . '.ini',
+                $iniPath . 'ext-' . $extension . '.ini.disabled'
+            );
         }
 
         info('Disabled ' . $extension);
@@ -338,8 +344,11 @@ class PhpFpm
         $contents = preg_replace('/^;?listen\.owner = .+$/m', 'listen.owner = ' . user(), $contents);
         $contents = preg_replace('/^;?listen\.group = .+$/m', 'listen.group = staff', $contents);
         $contents = preg_replace('/^;?listen\.mode = .+$/m', 'listen.mode = 0777', $contents);
-        $contents = preg_replace('/^;?php_admin_value\[error_log\] = .+$/m',
-            'php_admin_value[error_log] = ' . VALET_HOME_PATH . '/Log/php.log', $contents);
+        $contents = preg_replace(
+            '/^;?php_admin_value\[error_log\] = .+$/m',
+            'php_admin_value[error_log] = ' . VALET_HOME_PATH . '/Log/php.log',
+            $contents
+        );
         $this->files->put($this->fpmConfigPath(), $contents);
 
         $this->writePerformanceConfiguration();
@@ -361,10 +370,11 @@ class PhpFpm
         $this->files->putAsUser($phpIniPath, $contents);
     }
 
-    function writePerformanceConfiguration() {
+    function writePerformanceConfiguration()
+    {
         $path = $this->iniPath() . 'z-performance.ini';
 
-        if(file_exists($path)) {
+        if (file_exists($path)) {
             return;
         }
 

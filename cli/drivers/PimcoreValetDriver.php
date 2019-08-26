@@ -31,7 +31,7 @@ class PimcoreValetDriver extends ValetDriver
     public function isStaticFile($sitePath, $siteName, $uri)
     {
         // remove cache busting part from url
-        if(strpos($uri, '/cache-buster') === 0) {
+        if (strpos($uri, '/cache-buster') === 0) {
             // https://stackoverflow.com/questions/25543974/how-to-get-string-after-second-slash-in-url-using-php
             $last = explode("/", $uri, 3);
             $uri = '/'.$last[2];
@@ -55,8 +55,8 @@ class PimcoreValetDriver extends ValetDriver
     {
         $this->loadServerEnvironmentVariables($sitePath, $siteName);
 
-        if(strpos($uri, '/install') === 0) {
-            return $sitePath.'/install.php'; 
+        if (strpos($uri, '/install') === 0) {
+            return $sitePath.'/install.php';
         }
 
         return $sitePath.'/app.php';

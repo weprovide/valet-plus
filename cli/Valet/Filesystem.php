@@ -182,7 +182,8 @@ class Filesystem
         copy($from, $to);
     }
 
-    function move($from, $to) {
+    function move($from, $to)
+    {
         rename($from, $to);
     }
 
@@ -258,14 +259,16 @@ class Filesystem
         chown($path, $user);
     }
 
-    function chmod($filename, $mode) {
-        chmod($filename , $mode);
+    function chmod($filename, $mode)
+    {
+        chmod($filename, $mode);
     }
 
-    function chmodPath($pathname, $filemode) {
+    function chmodPath($pathname, $filemode)
+    {
         $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($pathname));
 
-        foreach($iterator as $item) {
+        foreach ($iterator as $item) {
             chmod($item, $filemode);
         }
     }

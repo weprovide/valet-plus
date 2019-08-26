@@ -22,7 +22,7 @@ use Symfony\Component\Console\Question\Question;
 Container::setInstance(new Container);
 
 // get current version based on git describe and tags
-$version = new Version('1.0.29' , __DIR__ . '/../');
+$version = new Version('1.0.29', __DIR__ . '/../');
 
 $app = new Application('Valet+', $version->getVersion());
 
@@ -93,7 +93,8 @@ if (is_dir(VALET_HOME_PATH)) {
         Elasticsearch::updateDomain($domain);
 
         DnsMasq::updateDomain(
-            $oldDomain = Configuration::read()['domain'], $domain = trim($domain, '.')
+            $oldDomain = Configuration::read()['domain'],
+            $domain = trim($domain, '.')
         );
 
         Configuration::updateKey('domain', $domain);
@@ -144,14 +145,14 @@ if (is_dir(VALET_HOME_PATH)) {
      * Register a subdomain link with Valet.
      */
     $app->command('subdomain [action] [name] [--secure] [--proxy]', function ($action, $name, $secure, $proxy) {
-        if($action === 'list') {
+        if ($action === 'list') {
             $links = Site::links(basename(getcwd()));
 
             table(['Site', 'SSL', 'URL', 'Path'], $links->all());
             return;
         }
 
-        if($action === 'add') {
+        if ($action === 'add') {
             $domain = Site::link(getcwd(), $name.'.'.basename(getcwd()));
 
             if ($secure) {
@@ -166,7 +167,7 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        if($action === 'remove') {
+        if ($action === 'remove') {
             Site::unlink($name.'.'.basename(getcwd()));
 
             info('Current working directory unlinked from '.$name.'.'.basename(getcwd()));
@@ -312,8 +313,8 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        foreach($services as $service) {
-            switch($service) {
+        foreach ($services as $service) {
+            switch ($service) {
                 case 'nginx': {
                     Nginx::restart();
                     break;
@@ -361,7 +362,7 @@ if (is_dir(VALET_HOME_PATH)) {
      * Restart the daemon services.
      */
     $app->command('restart [services]*', function ($services) {
-        if(empty($services)) {
+        if (empty($services)) {
             DnsMasq::restart();
             PhpFpm::restart();
             Nginx::restart();
@@ -375,8 +376,8 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        foreach($services as $service) {
-            switch($service) {
+        foreach ($services as $service) {
+            switch ($service) {
                 case 'nginx': {
                     Nginx::restart();
                     break;
@@ -419,7 +420,7 @@ if (is_dir(VALET_HOME_PATH)) {
      * Stop the daemon services.
      */
     $app->command('stop [services]*', function ($services) {
-        if(empty($services)) {
+        if (empty($services)) {
             DnsMasq::stop();
             PhpFpm::stop();
             Nginx::stop();
@@ -433,8 +434,8 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        foreach($services as $service) {
-            switch($service) {
+        foreach ($services as $service) {
+            switch ($service) {
                 case 'nginx': {
                     Nginx::stop();
                     break;
@@ -537,15 +538,15 @@ if (is_dir(VALET_HOME_PATH)) {
         $helper = $this->getHelperSet()->get('question');
         $defaults = $input->getOptions();
 
-        if($run === 'list' || $run === 'ls') {
+        if ($run === 'list' || $run === 'ls') {
             Mysql::listDatabases();
             return;
         }
 
-        if($run === 'create') {
+        if ($run === 'create') {
             $databaseName = Mysql::createDatabase($name);
 
-            if(!$databaseName) {
+            if (!$databaseName) {
                 return warning('Error creating database');
             }
 
@@ -553,9 +554,9 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        if($run === 'drop') {
-            if(!$defaults['yes']) {
-                $question = new ConfirmationQuestion('Are you sure you want to delete the database? [y/N] ', FALSE);
+        if ($run === 'drop') {
+            if (!$defaults['yes']) {
+                $question = new ConfirmationQuestion('Are you sure you want to delete the database? [y/N] ', false);
                 if (!$helper->ask($input, $output, $question)) {
                     warning('Aborted');
                     return;
@@ -563,7 +564,7 @@ if (is_dir(VALET_HOME_PATH)) {
             }
             $databaseName = Mysql::dropDatabase($name);
 
-            if(!$databaseName) {
+            if (!$databaseName) {
                 return warning('Error dropping database');
             }
 
@@ -571,9 +572,9 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        if($run === 'reset') {
-          if(!$defaults['yes']) {
-                $question = new ConfirmationQuestion('Are you sure you want to reset the database? [y/N] ', FALSE);
+        if ($run === 'reset') {
+            if (!$defaults['yes']) {
+                $question = new ConfirmationQuestion('Are you sure you want to reset the database? [y/N] ', false);
                 if (!$helper->ask($input, $output, $question)) {
                     warning('Aborted');
                     return;
@@ -582,13 +583,13 @@ if (is_dir(VALET_HOME_PATH)) {
 
             $dropped = Mysql::dropDatabase($name);
 
-            if(!$dropped) {
+            if (!$dropped) {
                 return warning('Error creating database');
             }
 
             $databaseName = Mysql::createDatabase($name);
 
-            if(!$databaseName) {
+            if (!$databaseName) {
                 return warning('Error creating database');
             }
 
@@ -596,8 +597,8 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        if($run === 'open') {
-            if($name === '.') {
+        if ($run === 'open') {
+            if ($name === '.') {
                 $name = basename(getcwd());
             }
 
@@ -607,15 +608,15 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        if($run === 'import') {
+        if ($run === 'import') {
             info('Importing database...');
-            if(!$name) {
+            if (!$name) {
                 throw new Exception('Please provide a dump file');
             }
 
             // check if database already exists.
-            if(Mysql::isDatabaseExists($optional)){
-                $question = new ConfirmationQuestion('Database already exists are you sure you want to continue? [y/N] ', FALSE);
+            if (Mysql::isDatabaseExists($optional)) {
+                $question = new ConfirmationQuestion('Database already exists are you sure you want to continue? [y/N] ', false);
                 if (!$helper->ask($input, $output, $question)) {
                     warning('Aborted');
                     return;
@@ -626,23 +627,23 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        if($run === 'reimport') {
-          if(!$defaults['yes']) {
-                $question = new ConfirmationQuestion('Are you sure you want to reimport the database? [y/N] ', FALSE);
+        if ($run === 'reimport') {
+            if (!$defaults['yes']) {
+                $question = new ConfirmationQuestion('Are you sure you want to reimport the database? [y/N] ', false);
                 if (!$helper->ask($input, $output, $question)) {
                     warning('Aborted');
                     return;
                 }
             }
             info('Resetting database, importing database...');
-            if(!$name) {
+            if (!$name) {
                 throw new Exception('Please provide a dump file');
             }
             Mysql::reimportDatabase($name, $optional);
             return;
         }
 
-        if($run === 'export' || $run === 'dump') {
+        if ($run === 'export' || $run === 'dump') {
             info('Exporting database...');
             $data = Mysql::exportDatabase($name, $optional);
             info('Database "' . $data['database'] . '" exported into file "' . $data['filename'] . '"');
@@ -728,7 +729,7 @@ if (is_dir(VALET_HOME_PATH)) {
             info("[PECL-CUSTOM] Enabling ioncube_loader_dar extension");
             PeclCustom::enable('ioncube_loader_dar');
             PhpFpm::restart();
-        }elseif($mode === 'on' || $mode === 'enable'){
+        } elseif ($mode === 'on' || $mode === 'enable') {
             info("[PECL-CUSTOM] ioncube_loader_dar extension is already installed");
         }
 
@@ -736,13 +737,13 @@ if (is_dir(VALET_HOME_PATH)) {
             info("[PECL-CUSTOM] Disabling ioncube_loader_dar extension");
             PeclCustom::disable('ioncube_loader_dar');
             PhpFpm::restart();
-        }elseif($mode === 'off' || $mode === 'disable'){
+        } elseif ($mode === 'off' || $mode === 'disable') {
             info("[PECL-CUSTOM] ioncube_loader_dar extension is already uninstalled");
         }
     })->descriptions('Enable / disable ioncube');
 
     $app->command('elasticsearch [mode]', function ($mode) {
-        if($mode === 'install' || $mode === 'on') {
+        if ($mode === 'install' || $mode === 'on') {
             Elasticsearch::install();
             return;
         }
@@ -859,7 +860,7 @@ if (is_dir(VALET_HOME_PATH)) {
                 break;
         }
         if ($restart) {
-          PhpFpm::restart();
+            PhpFpm::restart();
         }
     })->descriptions('Install / uninstall Memcache');
 

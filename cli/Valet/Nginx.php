@@ -22,9 +22,13 @@ class Nginx
      * @param  Configuration $configuration
      * @param  Site $site
      */
-    function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
-                         Configuration $configuration, Site $site)
-    {
+    function __construct(
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
+        Configuration $configuration,
+        Site $site
+    ) {
         $this->cli = $cli;
         $this->brew = $brew;
         $this->site = $site;

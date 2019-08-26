@@ -144,7 +144,8 @@ class DnsMasq
      *
      * @return void
      */
-    function restart() {
+    function restart()
+    {
         $this->brew->restartService('dnsmasq');
     }
 
@@ -153,7 +154,8 @@ class DnsMasq
      *
      * @return void
      */
-    function stop() {
+    function stop()
+    {
         $this->brew->stopService('dnsmasq');
     }
 }

@@ -35,9 +35,14 @@ class DevTools
      * @param  Site $site
      * @param Mysql $mysql
      */
-    function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
-                         Configuration $configuration, Site $site, Mysql $mysql)
-    {
+    function __construct(
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
+        Configuration $configuration,
+        Site $site,
+        Mysql $mysql
+    ) {
         $this->cli = $cli;
         $this->brew = $brew;
         $this->site = $site;

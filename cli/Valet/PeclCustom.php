@@ -243,7 +243,7 @@ class PeclCustom extends AbstractPecl
     function uninstallExtension($extension)
     {
         $version = $this->getVersion($extension);
-        if($this->isEnabled($extension)){
+        if ($this->isEnabled($extension)) {
             $this->disable($extension);
         }
         if ($this->isInstalled($extension)) {
@@ -258,7 +258,8 @@ class PeclCustom extends AbstractPecl
      *
      * @param $extension
      */
-    function disable($extension){
+    function disable($extension)
+    {
         $this->removeIniDefinition($extension);
     }
 
@@ -278,7 +279,7 @@ class PeclCustom extends AbstractPecl
         if ($this->files->exists($filePath)) {
             $this->cli->runAsUser("rm $filePath");
             output("\t$extension successfully uninstalled.");
-        }else{
+        } else {
             output("\t$extension was already removed!");
         }
     }
@@ -434,5 +435,4 @@ class PeclCustom extends AbstractPecl
         }
         throw new DomainException('extension_php_name key is required for custom PECL packages');
     }
-
 }

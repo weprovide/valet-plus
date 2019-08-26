@@ -217,4 +217,3 @@ class Binaries
         throw new DomainException('bin_location key is required for binaries.');
     }
 }
-

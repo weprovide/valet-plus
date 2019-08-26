@@ -102,7 +102,7 @@ class Pecl extends AbstractPecl
                 continue;
             }
 
-            if($this->getVersion($extension) !== false){
+            if ($this->getVersion($extension) !== false) {
                 $this->installExtension($extension);
                 $this->enableExtension($extension);
             }
@@ -203,7 +203,7 @@ class Pecl extends AbstractPecl
     {
         info("[PECL] Removing extensions");
         foreach (self::EXTENSIONS as $extension => $versions) {
-            if($this->getVersion($extension) !== false){
+            if ($this->getVersion($extension) !== false) {
                 $this->disableExtension($extension);
             }
         }
@@ -220,7 +220,7 @@ class Pecl extends AbstractPecl
     function disableExtension($extension)
     {
         $version = $this->getVersion($extension);
-        if($this->isEnabled($extension)){
+        if ($this->isEnabled($extension)) {
             $this->disable($extension);
         }
         if ($this->isInstalled($extension)) {
@@ -230,7 +230,8 @@ class Pecl extends AbstractPecl
         return false;
     }
 
-    function disable($extension){
+    function disable($extension)
+    {
         $this->removeIniDefinition($extension);
         $this->alternativeDisable($extension);
     }
@@ -322,7 +323,8 @@ class Pecl extends AbstractPecl
     /**
      * Fix common problems related to the PECL/PEAR installation.
      */
-    function fix(){
+    function fix()
+    {
         info('[PECL] Checking pear config...');
         // Check if pear config is set correctly as per:
         // https://github.com/kabel/homebrew-core/blob/2564749d8f73e43cbb8cfc449bca4f564ac0e9e1/Formula/php%405.6.rb
@@ -332,7 +334,7 @@ class Pecl extends AbstractPecl
 
             $pearConfigPath = PhpFpm::LOCAL_PHP_FOLDER . "$phpVersion/pear.conf";
 
-            if(!$this->files->exists($pearConfigPath)){
+            if (!$this->files->exists($pearConfigPath)) {
                 warning("    Skipping $phpVersion, Pear config path could not be found at: $pearConfigPath");
                 continue;
             }
@@ -342,17 +344,17 @@ class Pecl extends AbstractPecl
 
             $pearConfigVersion = '';
             $pearConfig = false;
-            foreach($pearConfigSplit as $splitValue){
-                if(strpos($splitValue, 'php_ini')){
+            foreach ($pearConfigSplit as $splitValue) {
+                if (strpos($splitValue, 'php_ini')) {
                     $pearConfig = unserialize($splitValue);
-                }else if(strpos($splitValue, 'Config')){
+                } else if (strpos($splitValue, 'Config')) {
                     $pearConfigVersion = $splitValue;
-                }else{
+                } else {
                     continue;
                 }
             }
 
-            if($pearConfig === false){
+            if ($pearConfig === false) {
                 warning("Could not determine pear configuration for PhP version: $phpVersion, skipping...");
                 continue;
             }
@@ -372,64 +374,64 @@ class Pecl extends AbstractPecl
             $phpBinDirPath = "/usr/local/opt/$brewname/bin/php";
 
             // Check php_ini value of par config.
-            if(empty($pearConfig['php_ini']) || $pearConfig['php_ini'] !== $phpIniPath){
+            if (empty($pearConfig['php_ini']) || $pearConfig['php_ini'] !== $phpIniPath) {
                 output("    Setting pear config php_ini directive to: $phpIniPath");
                 $pearConfig['php_ini'] = $phpIniPath;
             }
             // Check php_dir value of par config.
-            if(empty($pearConfig['php_dir']) || $pearConfig['php_dir'] !== $phpDirPath){
+            if (empty($pearConfig['php_dir']) || $pearConfig['php_dir'] !== $phpDirPath) {
                 output("    Setting pear config php_dir directive to: $phpDirPath");
                 $pearConfig['php_dir'] = $phpDirPath;
             }
             // Check doc_dir value of par config.
-            if(empty($pearConfig['doc_dir']) || $pearConfig['doc_dir'] !== $pearDocDirPath){
+            if (empty($pearConfig['doc_dir']) || $pearConfig['doc_dir'] !== $pearDocDirPath) {
                 output("    Setting pear config doc_dir directive to: $pearDocDirPath");
                 $pearConfig['doc_dir'] = $pearDocDirPath;
             }
             // Check ext_dir value of par config.
-            if(empty($pearConfig['ext_dir']) || $pearConfig['ext_dir'] !== $phpExtensionDirPath){
+            if (empty($pearConfig['ext_dir']) || $pearConfig['ext_dir'] !== $phpExtensionDirPath) {
                 output("    Setting pear config ext_dir directive to: $phpExtensionDirPath");
                 $pearConfig['ext_dir'] = $phpExtensionDirPath;
             }
             // Check php_bin value of par config.
-            if(empty($pearConfig['bin_dir']) || $pearConfig['bin_dir'] !== $phpBinPath){
+            if (empty($pearConfig['bin_dir']) || $pearConfig['bin_dir'] !== $phpBinPath) {
                 output("    Setting pear config bin_dir directive to: $phpBinPath");
                 $pearConfig['bin_dir'] = $phpBinPath;
             }
             // Check data_dir value of par config.
-            if(empty($pearConfig['data_dir']) || $pearConfig['data_dir'] !== $pearDataDirPath){
+            if (empty($pearConfig['data_dir']) || $pearConfig['data_dir'] !== $pearDataDirPath) {
                 output("    Setting pear config data_dir directive to: $pearDataDirPath");
                 $pearConfig['data_dir'] = $pearDataDirPath;
             }
             // Check cfg_dir value of par config.
-            if(empty($pearConfig['cfg_dir']) || $pearConfig['cfg_dir'] !== $pearCfgDirPath){
+            if (empty($pearConfig['cfg_dir']) || $pearConfig['cfg_dir'] !== $pearCfgDirPath) {
                 output("    Setting pear config cfg_dir directive to: $pearCfgDirPath");
                 $pearConfig['cfg_dir'] = $pearCfgDirPath;
             }
             // Check www_dir value of par config.
-            if(empty($pearConfig['www_dir']) || $pearConfig['www_dir'] !== $pearWwwDirPath){
+            if (empty($pearConfig['www_dir']) || $pearConfig['www_dir'] !== $pearWwwDirPath) {
                 output("    Setting pear config www_dir directive to: $pearWwwDirPath");
                 $pearConfig['www_dir'] = $pearWwwDirPath;
             }
             // Check man_dir value of par config.
-            if(empty($pearConfig['man_dir']) || $pearConfig['man_dir'] !== $pearManDirPath){
+            if (empty($pearConfig['man_dir']) || $pearConfig['man_dir'] !== $pearManDirPath) {
                 output("    Setting pear config man_dir directive to: $pearManDirPath");
                 $pearConfig['man_dir'] = $pearManDirPath;
             }
             // Check test_dir value of par config.
-            if(empty($pearConfig['test_dir']) || $pearConfig['test_dir'] !== $pearTestDirPath){
+            if (empty($pearConfig['test_dir']) || $pearConfig['test_dir'] !== $pearTestDirPath) {
                 output("    Setting pear config test_dir directive to: $pearTestDirPath");
                 $pearConfig['test_dir'] = $pearTestDirPath;
             }
             // Check php_bin value of par config.
-            if(empty($pearConfig['php_bin']) || $pearConfig['php_bin'] !== $phpBinDirPath){
+            if (empty($pearConfig['php_bin']) || $pearConfig['php_bin'] !== $phpBinDirPath) {
                 output("    Setting pear config php_bin directive to: $phpBinDirPath");
                 $pearConfig['php_bin'] = $phpBinDirPath;
             }
 
             // Rebuild the config.
             $pearConfig = serialize($pearConfig);
-            if(!empty($pearConfigVersion)){
+            if (!empty($pearConfigVersion)) {
                 $pearConfig = $pearConfigVersion."\n".$pearConfig;
             }
 
@@ -543,7 +545,8 @@ class Pecl extends AbstractPecl
      * @param $extension
      * @return bool
      */
-    private function isEnabledCorrectly($extension){
+    private function isEnabledCorrectly($extension)
+    {
         $phpIniPath = $this->getPhpIniPath();
         $phpIniFile = $this->files->get($phpIniPath);
         $type = $this->getExtensionType($extension);
@@ -560,7 +563,8 @@ class Pecl extends AbstractPecl
      * @param $extension
      * @return bool
      */
-    private function isAlternativeEnabledCorrectly($extension){
+    private function isAlternativeEnabledCorrectly($extension)
+    {
         switch ($extension) {
             case self::APCU_BC_EXTENSION:
                 return $this->isEnabledCorrectly(self::APCU_EXTENSION);
@@ -569,7 +573,8 @@ class Pecl extends AbstractPecl
         }
     }
 
-    private function replacePhpWithPear($brewname) {
+    private function replacePhpWithPear($brewname)
+    {
         return str_replace('php', 'pear', $brewname);
     }
 }

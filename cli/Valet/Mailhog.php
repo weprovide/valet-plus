@@ -5,7 +5,7 @@ namespace Valet;
 class Mailhog extends AbstractService
 {
     const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/mailhog.conf';
-    CONST NGINX_CONFIGURATION_PATH = '/usr/local/etc/nginx/valet/mailhog.conf';
+    const NGINX_CONFIGURATION_PATH = '/usr/local/etc/nginx/valet/mailhog.conf';
 
     var $brew;
     var $cli;
