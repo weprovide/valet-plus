@@ -46,6 +46,8 @@ class Nginx
         $this->installConfiguration();
         $this->installServer();
         $this->installNginxDirectory();
+
+        return $this->configuration->read()['domain'];
     }
 
     /**
@@ -80,24 +82,6 @@ class Nginx
                 ['VALET_HOME_PATH', 'VALET_SERVER_PATH', 'VALET_STATIC_PREFIX'],
                 [VALET_HOME_PATH, VALET_SERVER_PATH, VALET_STATIC_PREFIX],
                 $this->files->get(__DIR__.'/../stubs/valet.conf')
-            )
-        );
-
-        $this->files->putAsUser(
-            '/usr/local/etc/nginx/valet/mailhog.conf',
-            str_replace(
-                ['VALET_DOMAIN'],
-                [$domain],
-                $this->files->get(__DIR__ . '/../stubs/mailhog.conf')
-            )
-        );
-
-        $this->files->putAsUser(
-            '/usr/local/etc/nginx/valet/elasticsearch.conf',
-            str_replace(
-                ['VALET_DOMAIN'],
-                [$domain],
-                $this->files->get(__DIR__ . '/../stubs/elasticsearch.conf')
             )
         );
 
