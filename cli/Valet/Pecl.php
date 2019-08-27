@@ -47,15 +47,11 @@ class Pecl extends AbstractPecl
             'default' => false,
             'extension_type' => self::ZEND_EXTENSION_TYPE
         ],
-        self::APCU_BC_EXTENSION => [
-            '5.6' => false,
-            'extension_type' => self::NORMAL_EXTENSION_TYPE
-        ],
         self::APCU_EXTENSION => [
-            '7.3' => false,
-            '7.2' => false,
-            '7.1' => false,
-            '7.0' => false,
+            '7.3' => '5.1.17',
+            '7.2' => '5.1.17',
+            '7.1' => '5.1.17',
+            '7.0' => '5.1.17',
             '5.6' => '4.0.11',
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
@@ -264,9 +260,6 @@ class Pecl extends AbstractPecl
     private function alternativeDisable($extension)
     {
         switch ($extension) {
-            case self::APCU_BC_EXTENSION:
-                $this->disable(self::APCU_EXTENSION);
-                break;
             default:
                 break;
         }
@@ -284,10 +277,6 @@ class Pecl extends AbstractPecl
     private function alternativeUninstall($extension)
     {
         switch ($extension) {
-            case self::APCU_BC_EXTENSION:
-                $version = $this->getVersion($extension);
-                $this->uninstall(self::APCU_EXTENSION, $version);
-                break;
             default:
                 break;
         }
@@ -462,8 +451,6 @@ class Pecl extends AbstractPecl
     private function alternativeInstall($extension, $phpIniFile)
     {
         switch ($extension) {
-            case self::APCU_BC_EXTENSION:
-                return $this->replaceIniDefinition(self::APCU_EXTENSION, $phpIniFile);
             default:
                 return $phpIniFile;
         }
@@ -513,8 +500,6 @@ class Pecl extends AbstractPecl
     protected function getExtensionAlias($extension)
     {
         switch ($extension) {
-            case self::APCU_BC_EXTENSION:
-                return self::APCU_BC_ALIAS;
             default:
                 return $extension;
         }
@@ -566,8 +551,6 @@ class Pecl extends AbstractPecl
     private function isAlternativeEnabledCorrectly($extension)
     {
         switch ($extension) {
-            case self::APCU_BC_EXTENSION:
-                return $this->isEnabledCorrectly(self::APCU_EXTENSION);
             default:
                 return true;
         }
