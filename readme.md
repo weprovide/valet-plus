@@ -385,6 +385,9 @@ valet use elasticsearch|es 2.4
 ```
 valet use elasticsearch|es 5.6
 ```
+```
+valet use elasticsearch|es 6.8
+```
 
 
 
