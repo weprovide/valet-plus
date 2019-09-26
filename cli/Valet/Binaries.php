@@ -32,13 +32,13 @@ class Binaries
      */
     const SUPPORTED_CUSTOM_BINARIES = [
         self::N98_MAGERUN => [
-            'url' => 'https://files.magerun.net/n98-magerun-1.101.1.phar',
-            'shasum' => '3c48fb685e569f2c7c97cca1dfbe2d20e6d7841db594b0d706924f517d8d3fd3',
+            'url' => 'https://files.magerun.net/n98-magerun-1.103.1.phar',
+            'shasum' => 'f4de50f5e7f9db70ee82148339ca865f14b7cdf7713d1f7c9357b84067235ce6',
             'bin_location' => '/usr/local/bin/'
         ],
         self::N98_MAGERUN_2 => [
-            'url' => 'https://files.magerun.net/n98-magerun2-3.0.8.phar',
-            'shasum' => '0c103253a9b78f094f043ecb50639129200899774e1584a02047b683c7a51b8e',
+            'url' => 'https://files.magerun.net/n98-magerun2-3.2.0.phar',
+            'shasum' => '5b5b4f7a857f7716950b6ef090c005c455d5e607f800a50b7b7aefa86d1c4e36',
             'bin_location' => '/usr/local/bin/'
         ],
         self::DRUSH_LAUNCHER => [
