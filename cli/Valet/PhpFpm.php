@@ -12,18 +12,21 @@ class PhpFpm
     const PHP_V71_VERSION = '7.1';
     const PHP_V72_VERSION = '7.2';
     const PHP_V73_VERSION = '7.3';
+    const PHP_V74_VERSION = '7.4';
 
     const SUPPORTED_PHP_FORMULAE = [
         self::PHP_V56_VERSION => self::PHP_FORMULA_NAME . self::PHP_V56_VERSION,
         self::PHP_V70_VERSION => self::PHP_FORMULA_NAME . self::PHP_V70_VERSION,
         self::PHP_V71_VERSION => self::PHP_FORMULA_NAME . self::PHP_V71_VERSION,
         self::PHP_V72_VERSION => self::PHP_FORMULA_NAME . self::PHP_V72_VERSION,
-        self::PHP_V73_VERSION => self::PHP_FORMULA_NAME . self::PHP_V73_VERSION
+        self::PHP_V73_VERSION => self::PHP_FORMULA_NAME . self::PHP_V73_VERSION,
+        self::PHP_V74_VERSION => self::PHP_FORMULA_NAME . self::PHP_V74_VERSION
     ];
 
     const EOL_PHP_VERSIONS = [
         self::PHP_V56_VERSION,
-        self::PHP_V70_VERSION
+        self::PHP_V70_VERSION,
+        self::PHP_V71_VERSION
     ];
 
     const LOCAL_PHP_FOLDER = '/usr/local/etc/valet-php/';
@@ -118,6 +121,7 @@ class PhpFpm
     public function fpmConfigPath()
     {
         $confLookup = [
+            self::PHP_V74_VERSION => self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
             self::PHP_V73_VERSION => self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
             self::PHP_V72_VERSION => self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
             self::PHP_V71_VERSION => self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
@@ -476,6 +480,8 @@ class PhpFpm
             output($this->cli->runAsUser('brew uninstall php71'));
             info('Trying to remove php72...');
             output($this->cli->runAsUser('brew uninstall php72'));
+            info('Trying to remove php73...');
+            output($this->cli->runAsUser('brew uninstall php73'));
         }
 
         // If the current php is not 7.1, link 7.1.
