@@ -14,14 +14,14 @@ class WordPressMultisiteSubdirectoryValetDriver extends BasicValetDriver
     public function serves($sitePath, $siteName, $uri)
     {
         // Look for MULTISITE in wp-config.php. It should be there for multisite installs.
-        return file_exists($sitePath . '/wp-config.php') && 
+        return file_exists($sitePath . '/wp-config.php') &&
         (strpos( file_get_contents($sitePath . '/wp-config.php'), 'MULTISITE') !== false) &&
         (
             //Double check if we are using subdomains.
-            strpos( file_get_contents($sitePath . '/wp-config.php'), "define('SUBDOMAIN_INSTALL',true)") || 
-            strpos( file_get_contents($sitePath . '/wp-config.php'), "define('SUBDOMAIN_INSTALL', true)")
+            strpos( file_get_contents($sitePath . '/wp-config.php'), "define('SUBDOMAIN_INSTALL',false)") ||
+            strpos( file_get_contents($sitePath . '/wp-config.php'), "define('SUBDOMAIN_INSTALL', false)")
         );
-        
+
     }
 
     /**
