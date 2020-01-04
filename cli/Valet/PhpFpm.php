@@ -399,31 +399,30 @@ class PhpFpm
     {
         // Check for errors within the installation of php.
         info('[php] Checking for errors within the php installation...');
-        if ($this->brew->installed('php56') &&
-            $this->brew->installed('php70') &&
-            $this->brew->installed('php71') &&
-            $this->brew->installed('php72') &&
-            $this->brew->installed('n98-magerun') &&
-            $this->brew->installed('n98-magerun2') &&
-            $this->brew->installed('drush') &&
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '5.6/ext-intl.ini') &&
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '5.6/ext-mcrypt.ini') &&
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '5.6/ext-apcu.ini') &&
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.0/ext-intl.ini') &&
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.0/ext-mcrypt.ini') &&
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.0/ext-apcu.ini') &&
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.1/ext-intl.ini') &&
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.1/ext-mcrypt.ini') &&
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.1/ext-apcu.ini') &&
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.2/ext-intl.ini') &&
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.2/ext-mcrypt.ini') &&
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.2/ext-apcu.ini') &&
+        if ($this->brew->installed('php56') ||
+            $this->brew->installed('php70') ||
+            $this->brew->installed('php71') ||
+            $this->brew->installed('php72') ||
+            $this->brew->installed('n98-magerun') ||
+            $this->brew->installed('n98-magerun2') ||
+            $this->brew->installed('drush') ||
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '5.6/ext-intl.ini') ||
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '5.6/ext-mcrypt.ini') ||
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '5.6/ext-apcu.ini') ||
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.0/ext-intl.ini') ||
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.0/ext-mcrypt.ini') ||
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.0/ext-apcu.ini') ||
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.1/ext-intl.ini') ||
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.1/ext-mcrypt.ini') ||
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.1/ext-apcu.ini') ||
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.2/ext-intl.ini') ||
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.2/ext-mcrypt.ini') ||
+            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.2/ext-apcu.ini') ||
             $this->brew->hasTap(self::DEPRECATED_PHP_TAP)
         ) {
-            // No errors found return, do not run fix logic.
+            // Errors found - prompt to run fix logic
             throw new DomainException("[php] Valet+ found errors within the installation.\n
             run: valet fix for valet to try and resolve these errors");
-            return;
         }
     }
 
