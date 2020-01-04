@@ -39,6 +39,8 @@ class PeclCustom extends AbstractPecl
      * @formatter:off
      *
      * 'extension_key_name' => [
+     *    '7.4' => 'https://example.com/packagename.extension',
+     *    '7.3' => 'https://example.com/packagename.extension',
      *    '7.2' => 'https://example.com/packagename.extension',
      *    '7.1' => 'https://example.com/packagename.extension',
      *    '7.0' => 'https://example.com/packagename.extension',
@@ -129,8 +131,20 @@ class PeclCustom extends AbstractPecl
         $extensionDirectory = $this->getExtensionDirectory();
         $extensionAlias = $this->getExtensionAlias($extension);
         if ($this->files->exists($extensionDirectory . '/' . $extensionAlias) === false) {
-            info("[PECL-CUSTOM] $extension is not available from PECL, downloading from: $url");
-            $this->downloadExtension($extension, $url, $fileName, $extensionAlias, $extensionDirectory);
+            if (!is_null($url)) {
+                info("[PECL-CUSTOM] $extension is not available from PECL, downloading from: $url");
+
+                $this->downloadExtension(
+                    $extension,
+                    $url,
+                    $fileName,
+                    $extensionAlias,
+                    $extensionDirectory
+                );
+            } else {
+                $phpVersion = $this->getPhpVersion();
+                warning("[PECL-CUSTOM] $extension is not available for PHP $phpVersion.");
+            }
         } else {
             info("[PECL-CUSTOM] $extensionAlias found in $extensionDirectory skipping download..");
         }
@@ -292,6 +306,7 @@ class PeclCustom extends AbstractPecl
     {
         $extensionDirectory = $this->getExtensionDirectory();
         $extensionAlias = $this->getExtensionAlias($extension);
+
         return $this->files->exists($extensionDirectory . '/' . $extensionAlias);
     }
 
