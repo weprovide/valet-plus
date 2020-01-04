@@ -2,7 +2,6 @@
 
 namespace Valet;
 
-use Exception;
 use DomainException;
 
 class PeclCustom extends AbstractPecl
@@ -122,6 +121,12 @@ class PeclCustom extends AbstractPecl
      */
     public function install($extension, $url)
     {
+        if (is_null($url)) {
+            $phpVersion = $this->getPhpVersion();
+            warning("[PECL-CUSTOM] $extension is not available for PHP $phpVersion.");
+
+            return;
+        }
 
         // Get file name from url
         $urlSplit = explode('/', $url);
@@ -130,21 +135,17 @@ class PeclCustom extends AbstractPecl
         // Check if .so is available
         $extensionDirectory = $this->getExtensionDirectory();
         $extensionAlias = $this->getExtensionAlias($extension);
-        if ($this->files->exists($extensionDirectory . '/' . $extensionAlias) === false) {
-            if (!is_null($url)) {
-                info("[PECL-CUSTOM] $extension is not available from PECL, downloading from: $url");
 
-                $this->downloadExtension(
-                    $extension,
-                    $url,
-                    $fileName,
-                    $extensionAlias,
-                    $extensionDirectory
-                );
-            } else {
-                $phpVersion = $this->getPhpVersion();
-                warning("[PECL-CUSTOM] $extension is not available for PHP $phpVersion.");
-            }
+        if ($this->extensionIsMissing($extensionDirectory, $extensionAlias)) {
+            info("[PECL-CUSTOM] $extension is not available from PECL, downloading from: $url");
+
+            $this->downloadExtension(
+                $extension,
+                $url,
+                $fileName,
+                $extensionAlias,
+                $extensionDirectory
+            );
         } else {
             info("[PECL-CUSTOM] $extensionAlias found in $extensionDirectory skipping download..");
         }
@@ -209,6 +210,18 @@ class PeclCustom extends AbstractPecl
      */
     public function enableExtension($extension)
     {
+        if ($this->extensionIsMissing($extension)) {
+            output("\t$extension is missing, ");
+
+            if ($this->isEnabled($extension)) {
+                output("disabling...");
+
+                $this->disable($extension);
+            }
+
+            return false;
+        }
+
         if ($this->isEnabled($extension)) {
             output("\t$extension is already enabled, skipping...");
             return false;
@@ -379,7 +392,12 @@ class PeclCustom extends AbstractPecl
     }
 
     /**
-     * @inheritdoc
+     * Get the extension alias for the extension. Should return the alias of the .so file without the .so extension.
+     * E.G: apcu, apc, xdebug, geoip, etc...
+     *
+     * @param $extension
+     *    The extension key name.
+     * @return string
      */
     protected function getExtensionAlias($extension)
     {
@@ -401,9 +419,11 @@ class PeclCustom extends AbstractPecl
     private function getVersion($extension)
     {
         $phpVersion = $this->getPhpVersion();
+
         if (array_key_exists($phpVersion, self::EXTENSIONS[$extension])) {
             return self::EXTENSIONS[$extension][$phpVersion];
         }
+
         return null;
     }
 
@@ -450,5 +470,22 @@ class PeclCustom extends AbstractPecl
             return self::EXTENSIONS[$extension]['extension_php_name'];
         }
         throw new DomainException('extension_php_name key is required for custom PECL packages');
+    }
+
+    /**
+     * Checks if the Extension is missing
+     *
+     * @param string $extension
+     *
+     * @return bool
+     */
+    public function extensionIsMissing($extension)
+    {
+        $extensionDirectory = $this->getExtensionDirectory();
+        $extensionAlias = $this->getExtensionAlias($extension);
+
+        $path = sprintf("%s/%s", $extensionDirectory, $extensionAlias);
+
+        return $this->files->exists($path) === false;
     }
 }
