@@ -23,7 +23,7 @@
     "require": {
         "php": ">=7.2",
         "illuminate/container": "~5.1",
-        "mnapoli/silly": "~1.5.0",
+        "mnapoli/silly": "~1.7.2",
         "nategood/httpful": "~0.2",
         "sebastian/version": "^2.0",
         "squizlabs/php_codesniffer": "*",

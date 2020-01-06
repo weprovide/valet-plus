@@ -43,7 +43,7 @@ class SiteTest extends TestCase
             'target',
             VALET_HOME_PATH . '/Sites/link'
         );
-        
+
         $domain = 'example.com';
         $config->shouldReceive('read')->andReturn(['domain' => $domain]);
 
