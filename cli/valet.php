@@ -19,7 +19,8 @@ use Symfony\Component\Console\Question\Question;
 /**
  * Create the application.
  */
-Container::setInstance(new Container());
+$container = new Container();
+Container::setInstance($container);
 
 // get current version based on git describe and tags
 $version = new Version('1.0.29', __DIR__ . '/../');
@@ -29,16 +30,18 @@ $app = new Application('Valet+', $version->getVersion());
 /**
  * Prune missing directories and symbolic links on every command.
  */
-if (is_dir(VALET_HOME_PATH)) {
-    Configuration::prune();
+$configuration = $container->get(\Valet\Configuration::class);
+$site = $container->get(\Valet\Site::class);
 
-    Site::pruneLinks();
+if (is_dir(VALET_HOME_PATH)) {
+    $configuration->prune();
+    $site->pruneLinks();
 }
 
 /**
  * Allow Valet to be run more conveniently by allowing the Node proxy to run password-less sudo.
  */
-$app->useContainer(Container::getInstance());
+$app->useContainer($container);
 
 $app->command(
     'install [--with-mariadb]',
