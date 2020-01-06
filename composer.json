@@ -28,7 +28,7 @@
         "sebastian/version": "^2.0",
         "squizlabs/php_codesniffer": "*",
         "symfony/process": "^5",
-        "tightenco/collect": "~5.4.0"
+        "tightenco/collect": "~6.9.0"
     },
     "replace": {
         "laravel/valet": "*"
