@@ -1,6 +1,5 @@
 {
     "name": "weprovide/valet-plus",
-    "app": "Valet+",
     "description": "Blazing fast macOS PHP development environment",
     "license": "MIT",
     "authors": [
@@ -21,32 +20,37 @@
             "email": "j.zelger@techdivision.com"
         }
     ],
-    "autoload": {
-        "files": [
-            "cli/includes/compatibility.php",
-            "cli/includes/facades.php",
-            "cli/includes/helpers.php"
-        ],
-        "psr-4": {
-            "Valet\\": "cli/Valet/"
-        }
+    "require": {
+        "php": ">=7.2",
+        "illuminate/container": "~5.1",
+        "mnapoli/silly": "~1.5.0",
+        "nategood/httpful": "~0.2",
+        "sebastian/version": "^2.0",
+        "squizlabs/php_codesniffer": "*",
+        "symfony/process": "~2.7 || ~3.0",
+        "tightenco/collect": "~5.4.0"
     },
     "replace": {
         "laravel/valet": "*"
     },
-    "require": {
-        "php": ">=5.6",
-        "illuminate/container": "~5.1",
-        "mnapoli/silly": "~1.5.0",
-        "symfony/process": "~2.7|~3.0",
-        "nategood/httpful": "~0.2",
-        "tightenco/collect": "~5.4.0",
-        "sebastian/version": "^2.0",
-        "squizlabs/php_codesniffer": "*"
-    },
     "require-dev": {
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~5.7"
+    },
+    "config": {
+        "platform": {
+            "php": "7.2.24"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Valet\\": "cli/Valet/"
+        },
+        "files": [
+            "cli/includes/compatibility.php",
+            "cli/includes/facades.php",
+            "cli/includes/helpers.php"
+        ]
     },
     "bin": [
         "valet"

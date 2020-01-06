@@ -37,58 +37,6 @@ steps:
     ./valet install
   displayName: '[INSTALL] valet-plus'
 
-# PHP 5.6 Command test cases
-
-- script: |
-    export PATH="$PATH:`pwd`/bin"
-    ./valet use 5.6
-    php -v
-  displayName: '[PHP 5.6] Switch to'
-
-- script: |
-    ./valet xdebug on
-    ./valet xdebug off
-  displayName: '[PHP 5.6] xdebug on and off'
-
-- script: |
-    ./valet ioncube on
-    ./valet ioncube off
-  displayName: '[PHP 5.6] ioncube on and off'
-
-# PHP 7.0 Command test cases
-
-- script: |
-    ./valet use 7.0
-    php -v
-  displayName: '[PHP 7.0] Switch to'
-
-- script: |
-    ./valet xdebug on
-    ./valet xdebug off
-  displayName: '[PHP 7.0] xdebug on and off'
-
-- script: |
-    ./valet ioncube on
-    ./valet ioncube off
-  displayName: '[PHP 7.0] ioncube on and off'
-
-# PHP 7.1 Command test cases
-
-- script: |
-    ./valet use 7.1
-    php -v | grep 7.1
-  displayName: '[PHP 7.1] Switch to'
-
-- script: |
-    ./valet xdebug on
-    ./valet xdebug off
-  displayName: '[PHP 7.1] xdebug on and off'
-
-- script: |
-    ./valet ioncube on
-    ./valet ioncube off
-  displayName: '[PHP 7.1] ioncube on and off'
-
 # PHP 7.2 Command test cases
 
 - script: |

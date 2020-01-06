@@ -94,20 +94,17 @@ For example:
 Switch PHP version using one of four commands:
 
 ```
-valet use 5.6
-```
-
-```
-valet use 7.0
-```
-
-```
-valet use 7.1
-```
-
-```
 valet use 7.2
 ```
+
+```
+valet use 7.3
+```
+
+```
+valet use 7.4
+```
+
 
 ## Xdebug
 

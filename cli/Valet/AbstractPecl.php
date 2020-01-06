@@ -86,7 +86,7 @@ abstract class AbstractPecl
      * Get the current PHP version from the PECL config.
      *
      * @return string
-     *    The php version as string: 5.6, 7.0, 7.1, 7.2, 7.3, 7.4
+     *    The php version as string: 7.2, 7.3, 7.4
      */
     protected function getPhpVersion()
     {

@@ -43,35 +43,26 @@ class Pecl extends AbstractPecl
      */
     const EXTENSIONS = [
         self::XDEBUG_EXTENSION => [
-            '5.6' => '2.2.7',
             'default' => false,
             'extension_type' => self::ZEND_EXTENSION_TYPE
         ],
         self::APCU_EXTENSION => [
             '7.3' => '5.1.17',
             '7.2' => '5.1.17',
-            '7.1' => '5.1.17',
-            '7.0' => '5.1.17',
-            '5.6' => '4.0.11',
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
         self::GEOIP_EXTENSION => [
             '7.3' => '1.1.1',
             '7.2' => '1.1.1',
-            '7.1' => '1.1.1',
-            '7.0' => '1.1.1',
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
         self::MEMCACHE_EXTENSION => [
             '7.3' => '3.1.3',
             '7.2' => '3.1.3',
-            '7.1' => '3.1.3',
-            '7.0' => '3.1.3',
             'default' => false,
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
         self::YAML_EXTENSION => [
-            '5.6' => '1.3.1',
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ]
     ];

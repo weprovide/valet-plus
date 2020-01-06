@@ -32,12 +32,14 @@ class SiteTest extends PHPUnit_Framework_TestCase
         $config = Mockery::mock(Configuration::class);
         $config->shouldReceive('prependPath')->once()->with(VALET_HOME_PATH.'/Sites');
         $files->shouldReceive('symlinkAsUser')->once()->with('target', VALET_HOME_PATH.'/Sites/link');
+        $domain = 'example.com';
+        $config->shouldReceive('read')->andReturn(['domain' => $domain]);
 
         swap(Filesystem::class, $files);
         swap(Configuration::class, $config);
 
         $linkPath = resolve(Site::class)->link('target', 'link');
-        $this->assertSame(VALET_HOME_PATH.'/Sites/link', $linkPath);
+        $this->assertSame("link.{$domain}", $linkPath);
     }
 
 
