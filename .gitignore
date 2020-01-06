@@ -2,4 +2,4 @@
 vendor/
 composer.lock
 error.log
-.idea/
+.idea/.phpunit.result.cache

@@ -8,37 +8,42 @@ use Valet\Pecl as Pecl;
 use Valet\PeclCustom as PeclCustom;
 use Valet\PhpFpm as PhpFpm;
 
-class BrewTest extends PHPUnit_Framework_TestCase
+class BrewTest extends \PHPUnit\Framework\TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $_SERVER['SUDO_USER'] = user();
 
         Container::setInstance(new Container());
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
+        $container = \Mockery::getContainer();
+        $this->addToAssertionCount($container->mockery_getExpectationCount());
+
         Mockery::close();
     }
 
-    public function test_brew_can_be_resolved_from_container()
+    public function testBrewCanBeResolvedFromContainer()
     {
         $this->assertInstanceOf(Brew::class, resolve(Brew::class));
     }
 
-    public function test_installed_returns_true_when_given_formula_is_installed(
-    )
+    public function testInstalledReturnsTrueWhenGivenFormulaIsInstalled()
     {
         $cli = Mockery::mock(CommandLine::class);
+
         $cli->shouldReceive('runAsUser')
             ->once()
             ->with('brew list | grep php71')
             ->andReturn('php71');
+
         swap(CommandLine::class, $cli);
         $this->assertTrue(resolve(Brew::class)->installed('php71'));
 
         $cli = Mockery::mock(CommandLine::class);
+
         $cli->shouldReceive('runAsUser')
             ->once()
             ->with('brew list | grep php71')
@@ -46,30 +51,35 @@ class BrewTest extends PHPUnit_Framework_TestCase
                 'php71-mcrypt
 php71'
             );
+
         swap(CommandLine::class, $cli);
         $this->assertTrue(resolve(Brew::class)->installed('php71'));
     }
 
-    public function test_installed_returns_false_when_given_formula_is_not_installed(
-    )
+    public function testInstalledReturnsFalseWhenGivenFormulaIsNotInstalled()
     {
         $cli = Mockery::mock(CommandLine::class);
+
         $cli->shouldReceive('runAsUser')
             ->once()
             ->with('brew list | grep php71')
             ->andReturn('');
+
         swap(CommandLine::class, $cli);
         $this->assertFalse(resolve(Brew::class)->installed('php71'));
 
         $cli = Mockery::mock(CommandLine::class);
+
         $cli->shouldReceive('runAsUser')
             ->once()
             ->with('brew list | grep php71')
             ->andReturn('php71-mcrypt');
+
         swap(CommandLine::class, $cli);
         $this->assertFalse(resolve(Brew::class)->installed('php71'));
 
         $cli = Mockery::mock(CommandLine::class);
+
         $cli->shouldReceive('runAsUser')
             ->once()
             ->with('brew list | grep php71')
@@ -78,6 +88,7 @@ php71'
 php71-something-else
 php7'
             );
+
         swap(CommandLine::class, $cli);
         $this->assertFalse(resolve(Brew::class)->installed('php71'));
     }
@@ -106,13 +117,21 @@ php7'
                 $peclCustom
             );
 
-        $brew->shouldReceive('installed')->with('valet-php@7.2')->andReturn(true);
-        $brew->shouldReceive('installed')->with('valet-php@7.3')->andReturn(false);
-        $brew->shouldReceive('installed')->with('valet-php@7.4')->andReturn(false);
+        $brew->shouldReceive('installed')
+            ->with('valet-php@7.2')
+            ->andReturn(true);
+
+        $brew->shouldReceive('installed')
+            ->with('valet-php@7.3')
+            ->andReturn(false);
+
+        $brew->shouldReceive('installed')
+            ->with('valet-php@7.4')
+            ->andReturn(false);
 
         $this->assertTrue($phpFpm->hasInstalledPhp());
 
-        $command_line = new CommandLine();
+        $commandLine = new CommandLine();
         $filesystem = new Filesystem();
 
         /** @var Mockery\Mock|Valet\Brew $brew */
@@ -125,22 +144,29 @@ php7'
         $pecl = new Pecl($command_line, $filesystem, $peclCustom);
 
         /** @var \Mockery\Mock|PhpFpm $phpFpm */
-        $phpFpm =
-            new PhpFpm(
-                $brew,
-                $command_line,
-                $filesystem,
-                $pecl,
-                $peclCustom
-            );
+        $phpFpm = new PhpFpm(
+            $brew,
+            $command_line,
+            $filesystem,
+            $pecl,
+            $peclCustom
+        );
 
-        $brew->shouldReceive('installed')->with('valet-php@7.2')->andReturn(false);
-        $brew->shouldReceive('installed')->with('valet-php@7.3')->andReturn(true);
-        $brew->shouldReceive('installed')->with('valet-php@7.4')->andReturn(false);
+        $brew->shouldReceive('installed')
+            ->with('valet-php@7.2')
+            ->andReturn(false);
+
+        $brew->shouldReceive('installed')
+            ->with('valet-php@7.3')
+            ->andReturn(true);
+
+        $brew->shouldReceive('installed')
+            ->with('valet-php@7.4')
+            ->andReturn(false);
 
         $this->assertTrue($phpFpm->hasInstalledPhp());
 
-        $command_line = new CommandLine();
+        $commandLine = new CommandLine();
         $filesystem = new Filesystem();
 
         /** @var Mockery\Mock|Valet\Brew $brew */
@@ -153,78 +179,94 @@ php7'
         $pecl = new Pecl($command_line, $filesystem, $peclCustom);
 
         /** @var \Mockery\Mock|PhpFpm $phpFpm */
-        $phpFpm =
-            new PhpFpm(
-                $brew,
-                $command_line,
-                $filesystem,
-                $pecl,
-                $peclCustom
-            );
+        $phpFpm = new PhpFpm(
+            $brew,
+            $command_line,
+            $filesystem,
+            $pecl,
+            $peclCustom
+        );
 
-        $brew->shouldReceive('installed')->with('valet-php@7.2')->andReturn(false);
-        $brew->shouldReceive('installed')->with('valet-php@7.3')->andReturn(false);
-        $brew->shouldReceive('installed')->with('valet-php@7.4')->andReturn(true);
+        $brew->shouldReceive('installed')->with('valet-php@7.2')->andReturn(
+            false
+        );
+        $brew->shouldReceive('installed')->with('valet-php@7.3')->andReturn(
+            false
+        );
+        $brew->shouldReceive('installed')->with('valet-php@7.4')->andReturn(
+            true
+        );
 
         $this->assertTrue($phpFpm->hasInstalledPhp());
     }
 
-    public function test_tap_taps_the_given_homebrew_repository()
+    public function testTapTapsTheGivenHomebrewRepository()
     {
         $cli = Mockery::mock(CommandLine::class);
+
         $cli->shouldReceive('passthru')->once()->with(
             'sudo -u ' . user() . ' brew tap php71'
         );
+
         $cli->shouldReceive('passthru')->once()->with(
             'sudo -u ' . user() . ' brew tap php70'
         );
+
         $cli->shouldReceive('passthru')->once()->with(
             'sudo -u ' . user() . ' brew tap php56'
         );
+
         swap(CommandLine::class, $cli);
         resolve(Brew::class)->tap('php71', 'php70', 'php56');
     }
 
-    public function test_restart_restarts_the_service_using_homebrew_services()
+    public function testRestartRestartsTheServiceUsingHomebrewServices()
     {
         $cli = Mockery::mock(CommandLine::class);
         $cli->shouldReceive('runAsUser')->once()->with(
             'brew list | grep dnsmasq'
         )->andReturn('dnsmasq');
+
         $cli->shouldReceive('quietly')->once()->with(
             'sudo brew services stop dnsmasq'
         );
+
         $cli->shouldReceive('quietly')->once()->with(
             'sudo brew services start dnsmasq'
         );
+
         swap(CommandLine::class, $cli);
         resolve(Brew::class)->restartService('dnsmasq');
     }
 
-    public function test_stop_stops_the_service_using_homebrew_services()
+    public function testStopStopsTheServiceUsingHomebrewServices()
     {
         $cli = Mockery::mock(CommandLine::class);
         $cli->shouldReceive('runAsUser')->once()->with(
             'brew list | grep dnsmasq'
         )->andReturn('dnsmasq');
+
         $cli->shouldReceive('quietly')->once()->with(
             'sudo brew services stop dnsmasq'
         );
+
         swap(CommandLine::class, $cli);
         resolve(Brew::class)->stopService('dnsmasq');
     }
 
-    public function test_linked_php_returns_linked_php_formula_name()
+    public function testLinkedPhpReturnsLinkedPhpFormulaName()
     {
         $files = Mockery::mock(Filesystem::class);
         $files->shouldReceive('isLink')
             ->once()
             ->with('/usr/local/bin/php')
             ->andReturn(true);
+
         $files->shouldReceive('readLink')
             ->once()
             ->with('/usr/local/bin/php')
             ->andReturn('/test/path/valet-php@7.2/test');
+
         swap(Filesystem::class, $files);
         $this->assertSame('7.2', resolve(PhpFpm::class)->linkedPhp(true));
 
@@ -233,82 +275,90 @@ php7'
             ->once()
             ->with('/usr/local/bin/php')
             ->andReturn(true);
+
         $files->shouldReceive('readLink')
             ->once()
             ->with('/usr/local/bin/php')
             ->andReturn('/test/path/valet-php@7.3/test');
+
         swap(Filesystem::class, $files);
         $this->assertSame('7.3', resolve(PhpFpm::class)->linkedPhp(true));
     }
 
-    /**
-     * @expectedException DomainException
-     */
-    public function test_linked_php_throws_exception_if_no_php_link()
+    public function testLinkedPhpThrowsExceptionIfNoPhpLink()
     {
+        $this->expectException(DomainException::class);
         $files = Mockery::mock(Filesystem::class);
+
         $files->shouldReceive('isLink')
             ->once()
             ->with('/usr/local/bin/php')
             ->andReturn(false);
+
         swap(Filesystem::class, $files);
         resolve(PhpFpm::class)->linkedPhp();
     }
 
-    /**
-     * @expectedException DomainException
-     */
-    public function test_linked_php_throws_exception_if_unsupported_php_version_is_linked(
-    )
+    public function testLinkedPhpThrowsExceptionIfUnsupportedPhpVersionLinked()
     {
+        $this->expectException(DomainException::class);
+
         $files = Mockery::mock(Filesystem::class);
+
         $files->shouldReceive('isLink')
             ->once()
             ->with('/usr/local/bin/php')
             ->andReturn(true);
+
         $files->shouldReceive('readLink')
             ->once()
             ->with('/usr/local/bin/php')
             ->andReturn('/test/path/php42/test');
+
         swap(Filesystem::class, $files);
         resolve(PhpFpm::class)->linkedPhp();
     }
 
-    public function test_install_or_fail_will_install_brew_formulas()
+    public function testInstallOrFailWillInstallBrewFormulas()
     {
         $cli = Mockery::mock(CommandLine::class);
+
         $cli->shouldReceive('runAsUser')->once()->with(
             'brew install dnsmasq',
             Mockery::type('Closure')
         );
+
         swap(CommandLine::class, $cli);
         resolve(Brew::class)->installOrFail('dnsmasq');
     }
 
-    public function test_install_or_fail_can_install_taps()
+    public function testInstallOrFailCanInstallTaps()
     {
         $cli = Mockery::mock(CommandLine::class);
+
         $cli->shouldReceive('runAsUser')->once()->with(
             'brew install dnsmasq',
             Mockery::type('Closure')
         );
+
         swap(CommandLine::class, $cli);
         $brew = Mockery::mock(Brew::class . '[tap]', [$cli, new Filesystem()]);
         $brew->shouldReceive('tap')->once()->with(['test/tap']);
         $brew->installOrFail('dnsmasq', [], ['test/tap']);
     }
 
-    /**
-     * @expectedException DomainException
-     */
-    public function test_install_or_fail_throws_exception_on_failure()
+    public function testInstallOrFailThrowsExceptionOnFailure()
     {
+        $this->expectException(DomainException::class);
+
         $cli = Mockery::mock(CommandLine::class);
+
         $cli->shouldReceive('runAsUser')->andReturnUsing(
             function ($command, $onError) {
                 $onError(1, 'test error ouput');
             }
         );
+
         swap(CommandLine::class, $cli);
         resolve(Brew::class)->installOrFail('dnsmasq');
     }
