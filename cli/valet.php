@@ -65,30 +65,8 @@ if (is_dir(VALET_HOME_PATH)) {
     /**
      * Get or set the domain currently being used by Valet.
      */
-    $app->command(
-        'domain [domain]',
-        function ($domain = null) {
-            if ($domain === null) {
-                return info(Configuration::read()['domain']);
-            }
-
-            Mailhog::updateDomain($domain);
-            Elasticsearch::updateDomain($domain);
-
-            DnsMasq::updateDomain(
-                $oldDomain = Configuration::read()['domain'],
-                $domain = trim($domain, '.')
-            );
-
-            Configuration::updateKey('domain', $domain);
-
-            Site::resecureForNewDomain($oldDomain, $domain);
-            PhpFpm::restart();
-            Nginx::restart();
-
-            info('Your Valet domain has been updated to [' . $domain . '].');
-        }
-    )->descriptions('Get or set the domain used for Valet sites');
+    $app->command('domain [domain]', \Valet\Command\Domain::class)
+        ->descriptions('Get or set the domain used for Valet sites');
 
     /**
      * Add the current working directory to the paths configuration.
