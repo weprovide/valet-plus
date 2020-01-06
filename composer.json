@@ -27,7 +27,7 @@
         "nategood/httpful": "~0.3",
         "sebastian/version": "^2.0",
         "squizlabs/php_codesniffer": "*",
-        "symfony/process": "~2.7 || ~3.0",
+        "symfony/process": "^5",
         "tightenco/collect": "~5.4.0"
     },
     "replace": {

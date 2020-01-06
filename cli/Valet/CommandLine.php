@@ -75,7 +75,7 @@ class CommandLine
         $onError = $onError ?: function () {
         };
 
-        $process = new Process($command);
+        $process = new Process(explode(" ", $command));
 
         $processOutput = '';
         $process->setTimeout(null)->run(function ($type, $line) use (&$processOutput) {
