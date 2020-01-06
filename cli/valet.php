@@ -10,10 +10,10 @@ if (file_exists(__DIR__.'/../vendor/autoload.php')) {
     require __DIR__.'/../../../autoload.php';
 }
 
-use Silly\Application;
 use Illuminate\Container\Container;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use SebastianBergmann\Version;
+use Silly\Application;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
 /**
@@ -38,32 +38,12 @@ if (is_dir(VALET_HOME_PATH)) {
 /**
  * Allow Valet to be run more conveniently by allowing the Node proxy to run password-less sudo.
  */
-$app->command('install [--with-mariadb]', function ($withMariadb) {
-    PhpFpm::checkInstallation();
+$app->useContainer(Container::getInstance());
 
-    Nginx::stop();
-    PhpFpm::stop();
-    Mysql::stop();
-    RedisTool::stop();
-    DevTools::install();
-    Binaries::installBinaries();
-
-    Configuration::install();
-    $domain = Nginx::install();
-    PhpFpm::install();
-    DnsMasq::install();
-    Mysql::install($withMariadb ? 'mariadb' : 'mysql@5.7');
-    RedisTool::install();
-    Mailhog::install();
-    Nginx::restart();
-    Valet::symlinkToUsersBin();
-    Mysql::setRootPassword();
-
-    Mailhog::updateDomain($domain);
-    Elasticsearch::updateDomain($domain);
-
-    output(PHP_EOL.'<info>Valet installed successfully!</info>');
-})->descriptions('Install the Valet services');
+$app->command(
+    'install [--with-mariadb]',
+    \Valet\Command\Install::class
+)->descriptions('Install the Valet services');
 
 /**
  * Fix common problems within the Valet+ installation.

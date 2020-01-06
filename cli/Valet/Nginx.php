@@ -39,7 +39,7 @@ class Nginx
     /**
      * Install service.
      *
-     * @return void
+     * @return string
      */
     public function install()
     {
