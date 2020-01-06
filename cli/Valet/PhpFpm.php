@@ -484,12 +484,12 @@ class PhpFpm
             output($this->cli->runAsUser('brew uninstall php73'));
         }
 
-        // If the current php is not 7.1, link 7.1.
+        // If the current php is not 7.2, link 7.2.
         info('Installing and linking new PHP homebrew/core version.');
-        output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
-        output($this->cli->runAsUser('brew install ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
-        output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION]));
-        output($this->cli->runAsUser('brew link ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V71_VERSION] . ' --force --overwrite'));
+        output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]));
+        output($this->cli->runAsUser('brew install ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]));
+        output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]));
+        output($this->cli->runAsUser('brew link ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION] . ' --force --overwrite'));
 
         if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {
             info('[brew] untapping formulae ' . self::DEPRECATED_PHP_TAP);
@@ -497,7 +497,7 @@ class PhpFpm
         }
 
         warning("Please check your linked php version, you might need to restart your terminal!" .
-            "\nLinked PHP should be php 7.1:");
+            "\nLinked PHP should be php 7.2:");
         output($this->cli->runAsUser('php -v'));
     }
 }
