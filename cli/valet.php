@@ -703,7 +703,7 @@ if (is_dir(VALET_HOME_PATH)) {
 
         if (PeclCustom::isEnabled('ioncube_loader_dar') === false && ($mode === 'on' || $mode === 'enable')) {
             info("[PECL-CUSTOM] Enabling ioncube_loader_dar extension");
-            PeclCustom::enable('ioncube_loader_dar');
+            PeclCustom::enableExtension('ioncube_loader_dar');
             PhpFpm::restart();
         } elseif ($mode === 'on' || $mode === 'enable') {
             info("[PECL-CUSTOM] ioncube_loader_dar extension is already installed");
