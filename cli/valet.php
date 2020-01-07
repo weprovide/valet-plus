@@ -43,31 +43,38 @@ if (is_dir(VALET_HOME_PATH)) {
  */
 $app->useContainer($container);
 
-$app->command(
-    'install [--with-mariadb]',
-    \Valet\Command\Install::class
-)->descriptions('Install the Valet services');
+$commands = [
+    [
+        'expression' => 'install [--with-mariadb]',
+        'callable' => \Valet\Command\Install::class,
+        'description' => 'Install the Valet services',
+        'global' => true,
+    ],
+    [
+        'expression' => 'fix [--reinstall]',
+        'callable' => \Valet\Command\Fix::class,
+        'description' => 'Fixes common installation problems that prevent Valet+ from working',
+        'global' => true,
+    ],
+    [
+        'expression' => 'domain [domain]',
+        'callable' => \Valet\Command\Domain::class,
+        'description' => 'Get or set the domain used for Valet sites'
+    ]
 
-/**
- * Fix common problems within the Valet+ installation.
- */
-$app->command(
-    'fix [--reinstall]',
-    \Valet\Command\Fix::class
-)->descriptions(
-    'Fixes common installation problems that prevent Valet+ from working'
-);
+];
+
+foreach ($commands as $command) {
+    if (is_dir(VALET_HOME_PATH) || $command['global']) {
+        $app->command($command['expression'], $command['callable'])
+            ->descriptions($command['description']);
+    }
+}
 
 /**
  * Most commands are available only if valet is installed.
  */
 if (is_dir(VALET_HOME_PATH)) {
-    /**
-     * Get or set the domain currently being used by Valet.
-     */
-    $app->command('domain [domain]', \Valet\Command\Domain::class)
-        ->descriptions('Get or set the domain used for Valet sites');
-
     /**
      * Add the current working directory to the paths configuration.
      */
