@@ -65,7 +65,12 @@ $commands = [
         'expression' => 'park [path]',
         'callable' => \Valet\Command\Park::class,
         'description' =>  'Register the current working (or specified) directory with Valet'
-    ]
+    ],
+    [
+        'expression' => 'forget [path]',
+        'callable' => \Valet\Command\Forget::class,
+        'description' => 'Remove the current working (or specified) directory from Valet\'s list of paths',
+    ],
 ];
 
 foreach ($commands as $command) {
@@ -79,23 +84,6 @@ foreach ($commands as $command) {
  * Most commands are available only if valet is installed.
  */
 if (is_dir(VALET_HOME_PATH)) {
-    /**
-     * Remove the current working directory from the paths configuration.
-     */
-    $app->command(
-        'forget [path]',
-        function ($path = null) {
-            Configuration::removePath($path ?: getcwd());
-
-            info(
-                ($path === null ? "This" : "The [{$path}]") .
-                " directory has been removed from Valet's paths."
-            );
-        }
-    )->descriptions(
-        'Remove the current working (or specified) directory from Valet\'s list of paths'
-    );
-
     /**
      * Register a symbolic link with Valet.
      */
