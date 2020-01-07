@@ -60,8 +60,12 @@ $commands = [
         'expression' => 'domain [domain]',
         'callable' => \Valet\Command\Domain::class,
         'description' => 'Get or set the domain used for Valet sites'
+    ],
+    [
+        'expression' => 'park [path]',
+        'callable' => \Valet\Command\Park::class,
+        'description' =>  'Register the current working (or specified) directory with Valet'
     ]
-
 ];
 
 foreach ($commands as $command) {
@@ -75,23 +79,6 @@ foreach ($commands as $command) {
  * Most commands are available only if valet is installed.
  */
 if (is_dir(VALET_HOME_PATH)) {
-    /**
-     * Add the current working directory to the paths configuration.
-     */
-    $app->command(
-        'park [path]',
-        function ($path = null) {
-            Configuration::addPath($path ?: getcwd());
-
-            info(
-                ($path === null ? "This" : "The [{$path}]") .
-                " directory has been added to Valet's paths."
-            );
-        }
-    )->descriptions(
-        'Register the current working (or specified) directory with Valet'
-    );
-
     /**
      * Remove the current working directory from the paths configuration.
      */
