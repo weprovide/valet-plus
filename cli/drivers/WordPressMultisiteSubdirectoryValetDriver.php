@@ -17,9 +17,9 @@ class WordPressMultisiteSubdirectoryValetDriver extends BasicValetDriver
         return file_exists($sitePath . '/wp-config.php') && 
         (strpos( file_get_contents($sitePath . '/wp-config.php'), 'MULTISITE') !== false) &&
         (
-            //Double check if we are using subdomains.
-            strpos( file_get_contents($sitePath . '/wp-config.php'), "define('SUBDOMAIN_INSTALL',true)") || 
-            strpos( file_get_contents($sitePath . '/wp-config.php'), "define('SUBDOMAIN_INSTALL', true)")
+            // Double check if we are using subdomains. SUBDOMAIN_INSTALL is false by default.
+            // If it has not been set as true, then this is a subdirectory configuration.
+            ! preg_match('/define[(]\s?\'SUBDOMAIN_INSTALL\'\s?,\s?true\s?[)];/i', file_get_contents($sitePath . '/wp-config.php') )
         );
         
     }
