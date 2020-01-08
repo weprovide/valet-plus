@@ -56,6 +56,7 @@ class Pecl extends AbstractPecl
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
         self::GEOIP_EXTENSION => [
+            '7.4' => '1.1.1',
             '7.3' => '1.1.1',
             '7.2' => '1.1.1',
             '7.1' => '1.1.1',
