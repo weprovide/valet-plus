@@ -83,10 +83,12 @@ class Site
      */
     function getCertificates($path)
     {
+        $config = $this->config->read();
+        $len = 5 + strlen($config['domain']);
         return collect($this->files->scanDir($path))->filter(function ($value, $key) {
             return ends_with($value, '.crt');
-        })->map(function ($cert) {
-            return substr($cert, 0, -8);
+        })->map(function ($cert) use ($len) {
+            return substr($cert, 0, -$len);
         })->flip();
     }
 
