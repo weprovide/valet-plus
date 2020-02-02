@@ -43,6 +43,7 @@ class Pecl extends AbstractPecl
      */
     const EXTENSIONS = [
         self::XDEBUG_EXTENSION => [
+            '7.0' => '2.9.0',
             '5.6' => '2.2.7',
             'default' => false,
             'extension_type' => self::ZEND_EXTENSION_TYPE
