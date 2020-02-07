@@ -197,7 +197,7 @@ class PhpFpm
      * Link a PHP version to be used as binary.
      *
      * @param $version
-     *
+     * @param $currentVersion
      * @return bool
      */
     private function linkPhp($version, $currentVersion = null)
