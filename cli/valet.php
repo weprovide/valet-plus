@@ -196,7 +196,7 @@ if (is_dir(VALET_HOME_PATH)) {
         } else {
             info('The ['.$name.'] symbolic link has been removed.');
         }
-    })->descriptions('Remove the specified Valet link, do not include `.'. Configuration::read()['domain'] .'`, ie: to unlink name.test run: `valet unlink name`.');
+    })->descriptions('Remove the specified Valet link, do not include `.'. Configuration::read()['domain'] .'`, ie: to unlink name.'. Configuration::read()['domain'] .' run: `valet unlink name`.');
 
     /**
      * Secure the given domain with a trusted TLS certificate.
