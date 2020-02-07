@@ -210,7 +210,7 @@ class PhpFpm
 
         // If the output is about how many symlinks were created.
         // Sanitize the second half to prevent users from being confused.
-        // So the only ouput would be:
+        // So the only output would be:
         // Linking /usr/local/Cellar/valet-php@7.3/7.3.8... 25 symlinks created
         // Without the directions to create exports pointing towards the binaries.
         if (strpos($output, 'symlinks created')) {
