@@ -208,7 +208,7 @@ class PhpFpm
             $isLinked = false;
         });
 
-        // If the output is about how many symlinks were created.
+        // The output is about how many symlinks were created.
         // Sanitize the second half to prevent users from being confused.
         // So the only output would be:
         // Linking /usr/local/Cellar/valet-php@7.3/7.3.8... 25 symlinks created
