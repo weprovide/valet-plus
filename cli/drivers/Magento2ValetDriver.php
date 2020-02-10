@@ -180,7 +180,7 @@ class Magento2ValetDriver extends ValetDriver
             return $sitePath . DIRECTORY_SEPARATOR . 'pub' . DIRECTORY_SEPARATOR . 'elasticsearch.php';
         }
 
-        if(!$this->installed($sitePath)) {
+        if (!$this->installed($sitePath)) {
             http_response_code(404);
             require __DIR__.'/../templates/magento2.php';
             exit;
