@@ -15,6 +15,7 @@ class Pecl extends AbstractPecl
     const GEOIP_EXTENSION = 'geoip';
     const MEMCACHE_EXTENSION = 'memcached';
     const YAML_EXTENSION = 'yaml';
+    const BLACKFIRE_EXTENSION = 'blackfire';
 
     // Extension aliases.
     const APCU_BC_ALIAS = 'apc';
@@ -75,6 +76,10 @@ class Pecl extends AbstractPecl
         self::YAML_EXTENSION => [
             '5.6' => '1.3.1',
             'extension_type' => self::NORMAL_EXTENSION_TYPE
+        ],
+        self::BLACKFIRE_EXTENSION => [
+            'default' => false,
+            'extension_type' => self::ZEND_EXTENSION_TYPE
         ]
     ];
 
