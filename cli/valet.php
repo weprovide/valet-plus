@@ -750,10 +750,13 @@ if (is_dir(VALET_HOME_PATH)) {
                 return;
             case 'test':
                 passthru('blackfire-agent --test');
+                // no break
             case 'register':
                 passthru('blackfire-agent --register');
+                // no break
             case 'config':
                 passthru('blackfire config');
+                // no break
             case 'disable':
             case 'off':
                 Blackfire::disable();

@@ -1,15 +1,15 @@
 <?php
-return array (
+return array(
   'backend' =>
-  array (
+  array(
     'frontName' => 'admin',
   ),
   'db' =>
-  array (
+  array(
     'connection' =>
-    array (
+    array(
       'indexer' =>
-      array (
+      array(
         'host' => '127.0.0.1',
         'dbname' => 'DBNAME',
         'username' => 'root',
@@ -21,7 +21,7 @@ return array (
         'initStatements' => 'SET NAMES utf8;',
       ),
       'default' =>
-      array (
+      array(
         'host' => '127.0.0.1',
         'dbname' => 'DBNAME',
         'username' => 'root',
@@ -35,14 +35,14 @@ return array (
     'table_prefix' => '',
   ),
   'crypt' =>
-  array (
+  array(
     'key' => 'JkeEumwvvQBCDxypLPBozvrpF2rFNhNL',
   ),
   'session' =>
-  array (
+  array(
     'save' => 'redis',
     'redis' =>
-    array (
+    array(
       'host' => '/tmp/redis.sock',
       'port' => '6379',
       'password' => '',
@@ -64,24 +64,24 @@ return array (
     ),
   ),
   'cache' =>
-  array (
+  array(
     'frontend' =>
-    array (
+    array(
       'default' =>
-      array (
+      array(
         'backend' => 'Cm_Cache_Backend_Redis',
         'backend_options' =>
-        array (
+        array(
           'server' => '/tmp/redis.sock',
           'port' => '6379',
           'database' => '2',
         ),
       ),
       'page_cache' =>
-      array (
+      array(
         'backend' => 'Cm_Cache_Backend_Redis',
         'backend_options' =>
-        array (
+        array(
           'server' => '/tmp/redis.sock',
           'port' => '6379',
           'database' => '1',
@@ -91,16 +91,16 @@ return array (
     ),
   ),
   'resource' =>
-  array (
+  array(
     'default_setup' =>
-    array (
+    array(
       'connection' => 'default',
     ),
   ),
   'x-frame-options' => 'SAMEORIGIN',
   'MAGE_MODE' => 'developer',
   'cache_types' =>
-  array (
+  array(
     'config' => 1,
     'layout' => 1,
     'block_html' => 1,
@@ -118,13 +118,13 @@ return array (
     'customer_notification' => 1,
   ),
   'install' =>
-  array (
+  array(
     'date' => 'Wed, 19 Jul 2017 00:00:00 +0000',
   ),
   'queue' =>
-  array (
+  array(
     'amqp' =>
-    array (
+    array(
       'host' => '',
       'port' => '',
       'user' => '',

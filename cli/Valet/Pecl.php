@@ -343,7 +343,7 @@ class Pecl extends AbstractPecl
             foreach ($pearConfigSplit as $splitValue) {
                 if (strpos($splitValue, 'php_ini')) {
                     $pearConfig = unserialize($splitValue);
-                } else if (strpos($splitValue, 'Config')) {
+                } elseif (strpos($splitValue, 'Config')) {
                     $pearConfigVersion = $splitValue;
                 } else {
                     continue;
