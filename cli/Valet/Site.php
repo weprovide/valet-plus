@@ -133,13 +133,15 @@ class Site
      * Unlink the given symbolic link.
      *
      * @param  string  $name
-     * @return void
+     * @return bool
      */
     public function unlink($name)
     {
         if ($this->files->exists($path = $this->sitesPath().'/'.$name)) {
             $this->files->unlink($path);
+            return true;
         }
+        return false;
     }
 
     /**

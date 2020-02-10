@@ -190,10 +190,12 @@ if (is_dir(VALET_HOME_PATH)) {
      * Unlink a link from the Valet links directory.
      */
     $app->command('unlink [name]', function ($name) {
-        Site::unlink($name = $name ?: basename(getcwd()));
-
-        info('The ['.$name.'] symbolic link has been removed.');
-    })->descriptions('Remove the specified Valet link');
+        if (!Site::unlink($name = $name ?: basename(getcwd()))) {
+            warning('Error unlinking, make sure the link exists by running `valet links` and do not include `.'. Configuration::read()['domain'] .'`');
+        } else {
+            info('The ['.$name.'] symbolic link has been removed.');
+        }
+    })->descriptions('Remove the specified Valet link, do not include `.'. Configuration::read()['domain'] .'`, ie: to unlink name.'. Configuration::read()['domain'] .' run: `valet unlink name`.');
 
     /**
      * Secure the given domain with a trusted TLS certificate.
