@@ -95,3 +95,6 @@ class Logs extends Facade
 class Valet extends Facade
 {
 }
+class Blackfire extends Facade
+{
+}
