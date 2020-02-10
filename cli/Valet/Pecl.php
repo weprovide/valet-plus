@@ -79,7 +79,7 @@ class Pecl extends AbstractPecl
         ],
         self::BLACKFIRE_EXTENSION => [
             'default' => false,
-            'extension_type' => self::ZEND_EXTENSION_TYPE
+            'extension_type' => self::NORMAL_EXTENSION_TYPE
         ]
     ];
 
