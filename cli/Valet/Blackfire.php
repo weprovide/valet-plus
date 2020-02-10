@@ -118,6 +118,8 @@ class Blackfire extends AbstractService
             return;
         }
 
+        $this->pecl->enableExtension('blackfire');
+        $this->cli->runAsUser('valet restart php');
         info('[' .  self::BF_FORMULA_NAME . '] Restarting');
         $this->cli->quietlyAsUser('brew services restart ' . self::BF_FORMULA_NAME);
     }
