@@ -3,7 +3,7 @@ namespace Valet;
 
 class Logs
 {
-    function __construct(CommandLine $cli)
+    public function __construct(CommandLine $cli)
     {
         $this->cli = $cli;
     }

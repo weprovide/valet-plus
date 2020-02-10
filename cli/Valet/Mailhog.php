@@ -5,12 +5,12 @@ namespace Valet;
 class Mailhog extends AbstractService
 {
     const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/mailhog.conf';
-    CONST NGINX_CONFIGURATION_PATH = '/usr/local/etc/nginx/valet/mailhog.conf';
+    const NGINX_CONFIGURATION_PATH = '/usr/local/etc/nginx/valet/mailhog.conf';
 
-    var $brew;
-    var $cli;
-    var $files;
-    var $site;
+    public $brew;
+    public $cli;
+    public $files;
+    public $site;
 
     /**
      * Create a new instance.
@@ -21,7 +21,7 @@ class Mailhog extends AbstractService
      * @param  Configuration $configuration
      * @param  Site          $site
      */
-    function __construct(
+    public function __construct(
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
@@ -40,7 +40,7 @@ class Mailhog extends AbstractService
      *
      * @return void
      */
-    function install()
+    public function install()
     {
         if ($this->installed()) {
             info('[mailhog] already installed');
@@ -56,7 +56,7 @@ class Mailhog extends AbstractService
      *
      * @return bool
      */
-    function installed()
+    public function installed()
     {
         return $this->brew->installed('mailhog');
     }
@@ -66,7 +66,7 @@ class Mailhog extends AbstractService
      *
      * @return void
      */
-    function restart()
+    public function restart()
     {
         if (!$this->installed() || !$this->isEnabled()) {
             return;
@@ -81,7 +81,7 @@ class Mailhog extends AbstractService
      *
      * @return void
      */
-    function stop()
+    public function stop()
     {
         if (!$this->installed()) {
             return;
@@ -96,12 +96,12 @@ class Mailhog extends AbstractService
      *
      * @return void
      */
-    function uninstall()
+    public function uninstall()
     {
         $this->stop();
     }
 
-    function updateDomain($domain)
+    public function updateDomain($domain)
     {
         $this->files->putAsUser(
             self::NGINX_CONFIGURATION_PATH,

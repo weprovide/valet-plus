@@ -30,12 +30,13 @@ abstract class AbstractPecl
 
     ];
 
-    var $cli, $files;
+    public $cli;
+    public $files;
 
     /**
      * Create a new PECL instance.
      */
-    function __construct(CommandLine $cli, Filesystem $files)
+    public function __construct(CommandLine $cli, Filesystem $files)
     {
         $this->cli = $cli;
         $this->files = $files;
@@ -63,20 +64,20 @@ abstract class AbstractPecl
      */
     public function getPhpIniPath()
     {
-    	$file = str_replace("\n", '', $this->cli->runAsUser('pecl config-get php_ini'));
+        $file = str_replace("\n", '', $this->cli->runAsUser('pecl config-get php_ini'));
 
-    	if($file) {
-    		return $file;
-	    }
+        if ($file) {
+            return $file;
+        }
 
-    	$grep = $this->cli->runAsUser('php -i | grep php.ini');
-    	preg_match('/Path => ([^\s]*)/',$grep, $match);
+        $grep = $this->cli->runAsUser('php -i | grep php.ini');
+        preg_match('/Path => ([^\s]*)/', $grep, $match);
 
-	    if(empty($match[1])) {
-		    return '';
-	    }
+        if (empty($match[1])) {
+            return '';
+        }
 
-    	$path = trim($match[1]);
+        $path = trim($match[1]);
 
         return $path . '/php.ini';
     }
@@ -85,7 +86,7 @@ abstract class AbstractPecl
      * Get the current PHP version from the PECL config.
      *
      * @return string
-     *    The php version as string: 5.6, 7.0, 7.1, 7.2, 7.3
+     *    The php version as string: 5.6, 7.0, 7.1, 7.2, 7.3, 7.4
      */
     protected function getPhpVersion()
     {
@@ -130,7 +131,7 @@ abstract class AbstractPecl
     /**
      * Uninstall all extensions defined in EXTENSIONS.
      */
-    function uninstallExtensions()
+    public function uninstallExtensions()
     {
         throw new \Exception(__METHOD__.' not implemented!');
     }
@@ -141,7 +142,8 @@ abstract class AbstractPecl
      * @param bool $onlyDefaults
      * @throws Exception if not overridden but used.
      */
-    public function installExtensions($onlyDefaults = true){
+    public function installExtensions($onlyDefaults = true)
+    {
         throw new \Exception(__METHOD__.' not implemented!');
     }
 

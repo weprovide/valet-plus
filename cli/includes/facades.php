@@ -29,25 +29,69 @@ class Facade
     }
 }
 
-class Brew extends Facade {}
-class Pecl extends Facade {}
-class PeclCustom extends Facade {}
-class Binaries extends Facade{}
-class Nginx extends Facade {}
-class Memcache extends Facade {}
-class Mysql extends Facade {}
-class RedisTool extends Facade {}
-class Elasticsearch extends Facade {}
-class RabbitMq extends Facade {}
-class Varnish extends Facade {}
-class Mailhog extends Facade {}
-class CommandLine extends Facade {}
-class Configuration extends Facade {}
-class DnsMasq extends Facade {}
-class Filesystem extends Facade {}
-class Ngrok extends Facade {}
-class PhpFpm extends Facade {}
-class DevTools extends Facade {}
-class Site extends Facade {}
-class Logs extends Facade {}
-class Valet extends Facade {}
+class Brew extends Facade
+{
+}
+class Pecl extends Facade
+{
+}
+class PeclCustom extends Facade
+{
+}
+class Binaries extends Facade
+{
+}
+class Nginx extends Facade
+{
+}
+class Memcache extends Facade
+{
+}
+class Mysql extends Facade
+{
+}
+class RedisTool extends Facade
+{
+}
+class Elasticsearch extends Facade
+{
+}
+class RabbitMq extends Facade
+{
+}
+class Varnish extends Facade
+{
+}
+class Mailhog extends Facade
+{
+}
+class CommandLine extends Facade
+{
+}
+class Configuration extends Facade
+{
+}
+class DnsMasq extends Facade
+{
+}
+class Filesystem extends Facade
+{
+}
+class Ngrok extends Facade
+{
+}
+class PhpFpm extends Facade
+{
+}
+class DevTools extends Facade
+{
+}
+class Site extends Facade
+{
+}
+class Logs extends Facade
+{
+}
+class Valet extends Facade
+{
+}

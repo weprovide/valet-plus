@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Suggest an idea for valet-plus
-title: ''
+title: 'Feature request: <Your-Title>'
 labels: Feature request, Needs review
 assignees: ''
 
