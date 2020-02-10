@@ -38,7 +38,7 @@ class PhpFpmTest extends PHPUnit_Framework_TestCase
 
 class StubForUpdatingFpmConfigFiles extends PhpFpm
 {
-    function fpmConfigPath()
+    public function fpmConfigPath()
     {
         return __DIR__.'/output/fpm.conf';
     }

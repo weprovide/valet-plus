@@ -6,7 +6,6 @@ use DomainException;
 
 class Brew
 {
-
     public $cli;
     public $files;
 

@@ -11,7 +11,8 @@ define('VALET_STATIC_PREFIX', '41c270e4-5535-4daa-b23e-c269744c2f45');
  * Load the Valet configuration.
  */
 $valetConfig = json_decode(
-    file_get_contents(VALET_HOME_PATH.'/config.json'), true
+    file_get_contents(VALET_HOME_PATH.'/config.json'),
+    true
 );
 
 /**
@@ -51,7 +52,7 @@ if (isset($valetConfig['rewrites'])) {
 $valetSitePath = apcu_fetch('valet_site_path'.$siteName);
 $domain = array_slice(explode('.', $siteName), -1)[0];
 
-if(!$valetSitePath) {
+if (!$valetSitePath) {
     foreach ($valetConfig['paths'] as $path) {
         if (is_dir($path.'/'.$siteName)) {
             $valetSitePath = $path.'/'.$siteName;
@@ -115,7 +116,9 @@ if ($uri !== '/' && ! $isPhpFile && $staticFilePath = $valetDriver->isStaticFile
  * Attempt to dispatch to a front controller.
  */
 $frontControllerPath = $valetDriver->frontControllerPath(
-    $valetSitePath, $siteName, $uri
+    $valetSitePath,
+    $siteName,
+    $uri
 );
 
 if (! $frontControllerPath) {

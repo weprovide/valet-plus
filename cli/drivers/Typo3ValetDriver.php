@@ -130,7 +130,7 @@ class Typo3ValetDriver extends ValetDriver
                     // this folder can be served by index.html
                     return $absoluteFilePath . '/index.html';
                 }
-            } else if (pathinfo($absoluteFilePath, PATHINFO_EXTENSION) === 'php') {
+            } elseif (pathinfo($absoluteFilePath, PATHINFO_EXTENSION) === 'php') {
                 // this file can be served directly
                 return $this->serveScript($sitePath, $siteName, $uri);
             }

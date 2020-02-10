@@ -39,7 +39,7 @@ class WordPressMultisiteSubdirectoryValetDriver extends BasicValetDriver
 
         // If URI contains one of the main WordPress directories, and it's not a request for the Network Admin,
         // drop the subdirectory segment before routing the request
-        if (( stripos($uri, 'wp-admin') !== false || stripos($uri, 'wp-content') !== false || stripos($uri, 'wp-includes') !== false )) {
+        if ((stripos($uri, 'wp-admin') !== false || stripos($uri, 'wp-content') !== false || stripos($uri, 'wp-includes') !== false)) {
             if (stripos($uri, 'wp-admin/network') === false) {
                 $uri = substr($uri, stripos($uri, '/wp-'));
             }

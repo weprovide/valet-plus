@@ -15,8 +15,8 @@ class Blackfire extends AbstractService
         self::BF_V1300_VERSION => self::BF_V1300_VERSION
     ];
 
-    var $brew;
-    var $cli;
+    public $brew;
+    public $cli;
     /**
      * @var Pecl
      */
@@ -30,7 +30,7 @@ class Blackfire extends AbstractService
      * @param CommandLine $cli
      * @param Pecl $pecl
      */
-    function __construct(
+    public function __construct(
         Configuration $configuration,
         Brew $brew,
         CommandLine $cli,
@@ -48,7 +48,7 @@ class Blackfire extends AbstractService
      * @param string $version
      * @return void
      */
-    function install($version = self::BF_DEFAULT_VERSION)
+    public function install($version = self::BF_DEFAULT_VERSION)
     {
         if (!array_key_exists($version, self::SUPPORTED_BF_VERSIONS)) {
             warning('The Blackfire version you\'re installing is not supported.');
@@ -91,7 +91,7 @@ class Blackfire extends AbstractService
      * @param string $version
      * @return bool
      */
-    function installed($version = null)
+    public function installed($version = null)
     {
         $extensionFile = $this->pecl->getExtensionDirectory() . "/blackfire.so";
         if (!file_exists($extensionFile)) {
@@ -110,7 +110,7 @@ class Blackfire extends AbstractService
      * @param string $version
      * @return void
      */
-    function restart($version = null)
+    public function restart($version = null)
     {
         $version = ($version ? $version : $this->getCurrentVersion());
         $version = $this->installed($version);
@@ -130,7 +130,7 @@ class Blackfire extends AbstractService
      * @param string $version
      * @return void
      */
-    function stop($version = null)
+    public function stop($version = null)
     {
         $version = ($version ? $version : $this->getCurrentVersion());
         $version = $this->installed($version);
@@ -151,7 +151,7 @@ class Blackfire extends AbstractService
      *
      * @return void
      */
-    function uninstall()
+    public function uninstall()
     {
         $this->stop();
     }
@@ -161,7 +161,7 @@ class Blackfire extends AbstractService
      *
      * @return bool|int|string
      */
-    function getCurrentVersion()
+    public function getCurrentVersion()
     {
         $currentVersion = false;
         foreach (self::SUPPORTED_BF_VERSIONS as $version => $formula) {
