@@ -66,7 +66,7 @@ class Blackfire extends AbstractService
         $extensionFile = $this->pecl->getExtensionDirectory() . "/blackfire.so";
         if (!file_exists($extensionFile)) {
             $phpVersion = str_replace('.', '', $this->getPhpVersion());
-            $url = "https://packages.blackfire.io/binaries/blackfire-php/{$version}/blackfire-php-darwin_amd64-php-$phpVersion}.so";
+            $url = "https://packages.blackfire.io/binaries/blackfire-php/{$version}/blackfire-php-darwin_amd64-php-{$phpVersion}.so";
             $this->cli->quietlyAsUser("wget {$url} -O $extensionFile");
             $this->pecl->enableExtension('blackfire');
             $this->cli->runAsUser('valet restart php');
