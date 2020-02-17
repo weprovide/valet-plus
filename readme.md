@@ -18,7 +18,7 @@ This project is a fork of [laravel/valet](https://github.com/laravel/valet). Tha
 - Tim Neutkens ([@timneutkens](https://github.com/timneutkens))
 - Lou van der Laarse ([@Neodork](https://github.com/Neodork))
 - Sam Granger ([@samgranger](https://github.com/samgranger))
-- Sander (@sander Valet+ slack channel)
+- Sander Pott (@sander Valet+ slack channel)
 
 
 ## Get in touch
