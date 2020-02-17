@@ -18,6 +18,7 @@ This project is a fork of [laravel/valet](https://github.com/laravel/valet). Tha
 - Tim Neutkens ([@timneutkens](https://github.com/timneutkens))
 - Lou van der Laarse ([@Neodork](https://github.com/Neodork))
 - Sam Granger ([@samgranger](https://github.com/samgranger))
+- Sander (@sander Valet+ slack channel)
 
 
 ## Get in touch
@@ -25,3 +26,5 @@ This project is a fork of [laravel/valet](https://github.com/laravel/valet). Tha
 [![slack](https://p9.zdassets.com/hc/theme_assets/138842/200037786/logo.png)](https://join.slack.com/t/valet-plus/shared_invite/enQtNDE2MjU2NzgyNjQwLWFiYWNjOWFhOWQ2ZDcyOTEyZTA2MzAzOWYyYzYwMTYzODVlMGE3ZDg3ZWQ1M2JmN2M0OGY3OGUwMDI3NDM1NDU)
 
 We have a slack workspace available [which you can join](https://join.slack.com/t/valet-plus/shared_invite/enQtNDE2MjU2NzgyNjQwLWFiYWNjOWFhOWQ2ZDcyOTEyZTA2MzAzOWYyYzYwMTYzODVlMGE3ZDg3ZWQ1M2JmN2M0OGY3OGUwMDI3NDM1NDU).
+
+Yes, we have a Valet+ fan page https://www.weprovide.com/valet-plus
