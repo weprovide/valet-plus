@@ -5,10 +5,10 @@ trigger:
 # Build on Mojave and High Sierra
 strategy:
   matrix:
+    catalina:
+      imageName: 'macOS-10.15'
     mojave:
       imageName: 'macOS-10.14'
-    highsierra:
-      imageName: 'macOS-10.13'
 
 pool:
   vmImage: $(imageName)
