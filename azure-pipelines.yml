@@ -2,7 +2,7 @@ trigger:
 - master
 - 2.x
 
-# Build on Mojave and High Sierra
+# Build on Catalina and Mojave
 strategy:
   matrix:
     catalina:
