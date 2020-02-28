@@ -15,12 +15,14 @@ This project is a fork of [laravel/valet](https://github.com/laravel/valet). Tha
 
 ## Valet+ Authors
 
-- Mischa Braam ([@mischabraam](https://github.com/mischabraam))
 - Tim Neutkens ([@timneutkens](https://github.com/timneutkens))
-- Lou van der Laarse ([@Neodork](https://github.com/Neodork))
 - Sam Granger ([@samgranger](https://github.com/samgranger))
-- Sander Pott (@sander Valet+ slack channel)
 
+## Valet+ Contributors
+
+- Lou van der Laarse ([@Neodork](https://github.com/Neodork))
+- Sander Pott (@Sander Valet+ slack channel)
+- Mischa Braam ([@mischabraam](https://github.com/mischabraam))
 
 ## Get in touch
 
