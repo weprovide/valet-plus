@@ -4,7 +4,7 @@ namespace Valet;
 
 use DomainException;
 
-class Nginx
+class Nginx extends AbstractService
 {
     public $brew;
     public $cli;
@@ -34,24 +34,32 @@ class Nginx
         $this->site = $site;
         $this->files = $files;
         $this->configuration = $configuration;
+        parent::__construct($configuration);
     }
 
     /**
-     * Install service.
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function install()
     {
-        if (!$this->brew->hasInstalledNginx()) {
+        if (!$this->installed()) {
             $this->brew->installOrFail('nginx');
         }
 
         $this->installConfiguration();
         $this->installServer();
         $this->installNginxDirectory();
+        $this->setEnabled(static::STATE_ENABLED);
 
         return $this->configuration->read()['domain'];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function installed()
+    {
+        return $this->brew->hasInstalledNginx();
     }
 
     /**
@@ -76,8 +84,6 @@ class Nginx
      */
     public function installServer()
     {
-        $domain = $this->configuration->read()['domain'];
-
         $this->files->ensureDirExists('/usr/local/etc/nginx/valet');
 
         $this->files->putAsUser(
@@ -118,10 +124,12 @@ class Nginx
      */
     private function lint()
     {
-        $this->cli->quietly(
+        $this->cli->run(
             'sudo nginx -c '.static::NGINX_CONF.' -t',
             function ($exitCode, $outputMessage) {
-                throw new DomainException("Nginx cannot start, please check your nginx.conf [$exitCode: $outputMessage].");
+                throw new DomainException(
+                    sprintf("Nginx cannot start, please check your nginx.conf, exception:\n%s", $outputMessage)
+                );
             }
         );
     }
@@ -139,26 +147,30 @@ class Nginx
     }
 
     /**
-     * Restart the service.
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function restart()
     {
+        if (!$this->installed() || !$this->isEnabled()) {
+            return;
+        }
+
         $this->lint();
 
+        info('[nginx] Restarting');
         $this->brew->restartService($this->brew->nginxServiceName());
     }
 
     /**
-     * Stop the service.
-     *
-     * @return void
+     * {@inheritDoc}
      */
     public function stop()
     {
-        info('[nginx] Stopping');
+        if (!$this->installed()) {
+            return;
+        }
 
+        info('[nginx] Stopping');
         $this->cli->quietly('sudo brew services stop '. $this->brew->nginxServiceName());
     }
 
@@ -170,5 +182,43 @@ class Nginx
     public function uninstall()
     {
         $this->stop();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function debug()
+    {
+        $messages = [];
+
+        // Check if installed.
+        if (!$this->installed()) {
+            $messages[] = new DebugMessage(
+                'Nginx is not installed.',
+                LOG_WARNING
+            );
+        }
+
+        // Check if config exists.
+        if (!$this->files->exists(static::NGINX_CONF)) {
+            $messages[] = new DebugMessage(
+                sprintf('Could not find nginx.conf at: %s', static::NGINX_CONF),
+                LOG_WARNING
+            );
+            // Break out of debug command since we can't test config.
+            return $messages;
+        }
+
+        // Check if config is correct.
+        try {
+            $this->lint();
+        } catch (\Exception $exception) {
+            $messages[] = new DebugMessage(
+                $exception->getMessage(),
+                LOG_WARNING
+            );
+        }
+
+        return $messages;
     }
 }

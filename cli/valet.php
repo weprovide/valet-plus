@@ -956,6 +956,11 @@ if (is_dir(VALET_HOME_PATH)) {
 
         Logs::open($path);
     })->descriptions('Open the logs for the specified service. (php, php-fpm, nginx, mysql, mailhog, redis)');
+
+    $app->command('debug [--log] [--table]', function ($log, $table) {
+
+        Debug::run($log, $table);
+    })->descriptions('Debugs Valet+ services. Use `--table` for cli table format or `--log` for log file output in ~/.valet/Log/debug.');
 }
 
 /**

@@ -183,3 +183,15 @@ function user()
 
     return '';
 }
+
+/**
+ * Returns array of abstract service facade names.
+ *
+ * @return array
+ */
+function get_services()
+{
+    return [
+        'Nginx',
+    ];
+}

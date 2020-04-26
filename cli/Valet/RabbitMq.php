@@ -98,4 +98,12 @@ class RabbitMq extends AbstractService
     {
         $this->stop();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function debug()
+    {
+        // TODO: Implement debug() method.
+    }
 }

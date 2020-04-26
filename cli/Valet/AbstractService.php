@@ -2,7 +2,10 @@
 
 namespace Valet;
 
-abstract class AbstractService
+use Valet\Interfaces\DebugInterface;
+use Valet\Interfaces\ServiceInterface;
+
+abstract class AbstractService implements ServiceInterface, DebugInterface
 {
     const STATE_DISABLED = false;
     const STATE_ENABLED = true;

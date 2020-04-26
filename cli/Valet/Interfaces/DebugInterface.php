@@ -2,14 +2,16 @@
 
 namespace Valet\Interfaces;
 
+use Valet\DebugMessage;
+
 Interface DebugInterface
 {
 
     /**
-     * Install the service.
+     * Debug the service.
      *
-     * @return mixed
+     * @return DebugMessage[]
+     *   Array with DebugMessage objects.
      */
     public function debug();
-
 }

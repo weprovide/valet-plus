@@ -101,6 +101,11 @@ class Mailhog extends AbstractService
         $this->stop();
     }
 
+    /**
+     * Update the domain for mailhog.
+     *
+     * @param $domain
+     */
     public function updateDomain($domain)
     {
         $this->files->putAsUser(
@@ -111,5 +116,13 @@ class Mailhog extends AbstractService
                 $this->files->get(self::NGINX_CONFIGURATION_STUB)
             )
         );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function debug()
+    {
+        // TODO: Implement debug() method.
     }
 }
