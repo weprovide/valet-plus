@@ -16,6 +16,10 @@ pool:
 steps:
 
 # Valet install command test cases
+- script: |
+    brew update
+    brew uninstall php
+  displayName: '[BREW] update and uninstall brew php'
 
 - script: |
     brew tap henkrehorst/php
