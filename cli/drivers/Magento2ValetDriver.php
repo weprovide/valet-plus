@@ -32,10 +32,10 @@ class Magento2ValetDriver extends ValetDriver
 
         info('Setting elastic search hostname...');
         $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
-        
+
         info('Enabling URL rewrites...');
         $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/seo/use_rewrites 1');
-        
+
         info('Flushing cache...');
         $devtools->cli->quietlyAsUser('n98-magerun2 cache:flush');
 
@@ -84,7 +84,7 @@ class Magento2ValetDriver extends ValetDriver
         $this->loadServerEnvironmentVariables($sitePath, $siteName);
         $isMagentoStatic = false;
         $resource = $uri;
-        
+
         if (strpos($uri, '/errors') === 0 && file_exists($sitePath.'/pub'.$uri)) {
             return $sitePath.'/pub'.$uri;
         }
@@ -125,6 +125,16 @@ class Magento2ValetDriver extends ValetDriver
             exit;
         }
 
+        if (strpos($uri, '/elasticsearch.php') === 0) {
+            include($sitePath . DIRECTORY_SEPARATOR . 'pub' . DIRECTORY_SEPARATOR . 'elasticsearch.php');
+            exit;
+        }
+
+        if (strpos($uri, '/csp_reporter.php') === 0) {
+            include($sitePath . DIRECTORY_SEPARATOR . 'pub' . DIRECTORY_SEPARATOR . 'csp_reporter.php');
+            exit;
+        }
+
         return false;
     }
 
@@ -144,7 +154,7 @@ class Magento2ValetDriver extends ValetDriver
         if (isset($_GET['profile'])) {
             $_SERVER['MAGE_PROFILER'] = 'html';
         }
-        
+
         if (strpos($uri, '/errors') === 0) {
             $file = $sitePath . '/pub' . $uri;
             if (file_exists($file)) {
@@ -169,6 +179,14 @@ class Magento2ValetDriver extends ValetDriver
                 $_SERVER['REQUEST_URI'] = '/';
             }
             return $sitePath.'/setup/index.php';
+        }
+
+        if (strpos($uri, '/elasticsearch.php') === 0) {
+            return $sitePath . DIRECTORY_SEPARATOR . 'pub' . DIRECTORY_SEPARATOR . 'elasticsearch.php';
+        }
+
+        if (strpos($uri, '/csp_reporter.php') === 0) {
+            return $sitePath . DIRECTORY_SEPARATOR . 'pub' . DIRECTORY_SEPARATOR . 'csp_reporter.php';
         }
 
         if (!$this->installed($sitePath)) {
