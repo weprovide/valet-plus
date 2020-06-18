@@ -132,6 +132,22 @@ class DevTools
         }
     }
 
+    public function subl()
+    {
+        info('Opening Sublime Text');
+        $command = trim($this->cli->runAsUser('which subl'));
+
+        if (!$command) {
+            throw new Exception('subl command not found. Please install it.');
+        }
+
+        $output = $this->cli->runAsUser($command . ' $(git rev-parse --show-toplevel)');
+
+        if (strpos($output, 'fatal: Not a git repository') !== false) {
+            throw new Exception('Could not find git directory');
+        }
+    }
+
     public function tower()
     {
         info('Opening git tower');

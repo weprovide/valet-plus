@@ -858,6 +858,10 @@ if (is_dir(VALET_HOME_PATH)) {
         DevTools::vscode();
     })->descriptions('Open closest git project in Visual Studio Code');
 
+    $app->command('subl', function () {
+        DevTools::subl();
+    })->descriptions('Open closest git project in Sublime Text');
+
     $app->command('ssh-key', function () {
         DevTools::sshkey();
     })->descriptions('Copy ssh key');
