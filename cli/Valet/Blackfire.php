@@ -8,7 +8,7 @@ class Blackfire extends AbstractService
 {
     const BF_FORMULA_NAME = 'blackfire-agent';
     const BF_TAP = 'blackfireio/homebrew-blackfire';
-    const BF_V1300_VERSION = '1.30.0';
+    const BF_V1300_VERSION = '1.34.3';
     const BF_DEFAULT_VERSION = self::BF_V1300_VERSION;
 
     const SUPPORTED_BF_VERSIONS = [
