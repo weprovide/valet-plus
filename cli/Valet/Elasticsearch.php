@@ -24,7 +24,7 @@ class Elasticsearch
         self::ES_V24_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V24_VERSION,
         self::ES_V56_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V56_VERSION,
         self::ES_V68_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V68_VERSION,
-        self::ES_V76_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V76_VERSION,
+        self::ES_V76_VERSION => self::ES_FORMULA_NAME,
     ];
 
     public $brew;
