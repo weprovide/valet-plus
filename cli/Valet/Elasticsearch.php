@@ -17,12 +17,14 @@ class Elasticsearch
     const ES_V24_VERSION     = '2.4';
     const ES_V56_VERSION     = '5.6';
     const ES_V68_VERSION     = '6.8';
+    const ES_V76_VERSION     = '7.6';
     const ES_DEFAULT_VERSION = self::ES_V24_VERSION;
 
     const SUPPORTED_ES_FORMULAE = [
         self::ES_V24_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V24_VERSION,
         self::ES_V56_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V56_VERSION,
-        self::ES_V68_VERSION => self::ES_FORMULA_NAME,
+        self::ES_V68_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V68_VERSION,
+        self::ES_V76_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V76_VERSION,
     ];
 
     public $brew;
