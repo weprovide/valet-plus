@@ -133,4 +133,8 @@ return array (
       'ssl' => '',
     ),
   ),
+  'directories' => 
+  array (
+    'document_root_is_pub' => true,
+  ),
 );
