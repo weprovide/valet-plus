@@ -83,6 +83,7 @@ class Magento2ValetDriver extends ValetDriver
     {
         $this->loadServerEnvironmentVariables($sitePath, $siteName);
         $isMagentoStatic = false;
+        $isSitemap = false;
         $resource = $uri;
         
         if (strpos($uri, '/errors') === 0 && file_exists($sitePath.'/pub'.$uri)) {
@@ -96,8 +97,12 @@ class Magento2ValetDriver extends ValetDriver
         if (strpos($uri, '/static/') !== false) {
             $isMagentoStatic = true;
         }
+        
+        if (strpos($uri, '.xml') !== false) {
+            $isSitemap = true;
+        }
 
-        if (!$isMagentoStatic && strpos($uri, '/media/') === false) {
+        if (!$isMagentoStatic && !$isSitemap && strpos($uri, '/media/') === false) {
             return false;
         }
 
@@ -181,7 +186,7 @@ class Magento2ValetDriver extends ValetDriver
             return $sitePath . '/dev/tests/acceptance/utils/command.php';
         }
 
-        $_SERVER['DOCUMENT_ROOT'] = $sitePath;
+        $_SERVER['DOCUMENT_ROOT'] = $sitePath . '/pub/';
 
         return $sitePath . '/pub/index.php';
     }
