@@ -53,10 +53,6 @@ class DrupalValetDriver extends ValetDriver
     {
         $this->loadServerEnvironmentVariables($sitePath, $siteName);
 
-        if (!isset($_GET['q']) && !empty($uri) && $uri !== '/' && strpos($uri, '/jsonapi/') === false) {
-            $_GET['q'] = $uri;
-        }
-
         $_SERVER['DOCUMENT_ROOT'] = $sitePath;
 
         $matches = [];
