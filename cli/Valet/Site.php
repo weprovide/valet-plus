@@ -266,77 +266,27 @@ class Site
     public function createCertificate($url)
     {
         $keyPath = $this->certificatesPath().'/'.$url.'.key';
-        $csrPath = $this->certificatesPath().'/'.$url.'.csr';
         $crtPath = $this->certificatesPath().'/'.$url.'.crt';
-        $confPath = $this->certificatesPath().'/'.$url.'.conf';
 
-        $this->buildCertificateConf($confPath, $url);
-        $this->createPrivateKey($keyPath);
-        $this->createSigningRequest($url, $keyPath, $csrPath, $confPath);
-
-        $this->cli->runAsUser(sprintf(
-            'openssl x509 -req -days 365 -in %s -signkey %s -out %s -extensions v3_req -extfile %s',
-            $csrPath,
-            $keyPath,
-            $crtPath,
-            $confPath
-        ));
-
-        $this->trustCertificate($crtPath);
-    }
-
-    /**
-     * Create the private key for the TLS certificate.
-     *
-     * @param  string  $keyPath
-     * @return void
-     */
-    public function createPrivateKey($keyPath)
-    {
-        $this->cli->runAsUser(sprintf('openssl genrsa -out %s 2048', $keyPath));
-    }
-
-    /**
-     * Create the signing request for the TLS certificate.
-     *
-     * @param  string  $keyPath
-     * @return void
-     */
-    public function createSigningRequest($url, $keyPath, $csrPath, $confPath)
-    {
-        $this->cli->runAsUser(sprintf(
-            'openssl req -new -key %s -out %s -subj "/C=/ST=/O=/localityName=/commonName=*.%s/organizationalUnitName=/emailAddress=/" -config %s -passin pass:',
-            $keyPath,
-            $csrPath,
+        $urls = [
+            'www.' . $url,
+            '*.' . $url,
             $url,
-            $confPath
-        ));
-    }
+            'localhost',
+            '127.0.0.1',
+        ];
 
-    /**
-     * Trust the given certificate file in the Mac Keychain.
-     *
-     * @param  string  $crtPath
-     * @return void
-     */
-    public function trustCertificate($crtPath)
-    {
-        $this->cli->run(sprintf(
-            'sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain %s',
-            $crtPath
-        ));
-    }
+        // @todo test if mkcert has been installed, something like:
+        // if (!MKCERT_INSTALLED) {
+        //     $this->cli->runAsUser('mkcert -install');
+        // }
 
-    /**
-     * Build the SSL config for the given URL.
-     *
-     * @param  string  $url
-     * @return string
-     */
-    public function buildCertificateConf($path, $url)
-    {
-        $config = str_replace('VALET_DOMAIN', $url, $this->files->get(__DIR__.'/../stubs/openssl.conf'));
-        $this->files->putAsUser($path, $config);
+        $this->cli->runAsUser(sprintf(
+            'mkcert -cert-file %s -key-file %s %s',
+            $crtPath,
+            $keyPath,
+            implode(' ', $urls),
+        ));
     }
 
     /**
@@ -382,12 +332,8 @@ class Site
         if ($this->files->exists($this->certificatesPath().'/'.$url.'.crt')) {
             $this->files->unlink(VALET_HOME_PATH.'/Nginx/'.$url);
 
-            $this->files->unlink($this->certificatesPath().'/'.$url.'.conf');
             $this->files->unlink($this->certificatesPath().'/'.$url.'.key');
-            $this->files->unlink($this->certificatesPath().'/'.$url.'.csr');
             $this->files->unlink($this->certificatesPath().'/'.$url.'.crt');
-
-            $this->cli->run(sprintf('sudo security delete-certificate -c "%s" -t', $url));
         }
     }
 
