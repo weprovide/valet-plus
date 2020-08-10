@@ -90,12 +90,13 @@ class Site
         return collect($this->files->scanDir($path))->filter(function ($value, $key) {
             return ends_with($value, '.crt');
         })->map(function ($cert) {
-            return substr($cert, 0, -8);
+            $cert = str_replace('.' . $this->config->read()['domain'], '', $cert);
+            return str_replace('.crt', '', $cert);
         })->flip();
     }
 
     /**
-     * Get list of links and present them formatted.
+     * Get list of links and present theme formatted.
      *
      * @param string $path
      * @param \Illuminate\Support\Collection $certs
