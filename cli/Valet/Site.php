@@ -139,8 +139,12 @@ class Site
     {
         if ($this->files->exists($path = $this->sitesPath().'/'.$name)) {
             $this->files->unlink($path);
+            $url = $name . '.' . $this->config->read()['domain'];
+            $this->deleteCertificate($url);
+            $this->deleteNginxConfiguration($url);
             return true;
         }
+
         return false;
     }
 
@@ -186,7 +190,7 @@ class Site
      */
     public function proxied($url)
     {
-        $path = VALET_HOME_PATH.'/Nginx/'.$url;
+        $path = $this->nginxPath().'/'.$url;
         if (!$this->files->exists($path)) {
             return null;
         }
@@ -240,9 +244,21 @@ class Site
         }
 
         $this->files->putAsUser(
-            VALET_HOME_PATH . '/Nginx/' . $url,
+            $this->nginxPath() . '/' . $url,
             $this->buildNginxConfig($url, $secure, $proxy)
         );
+    }
+
+    /**
+     * Remove the nginx configuration.
+     * @param  string $url
+     * @return void
+     */
+    public function deleteNginxConfiguration($url)
+    {
+        if ($this->files->exists($this->nginxPath() . '/' . $url)) {
+            $this->files->unlink($this->nginxPath() . '/' . $url);
+        }
     }
 
     /**
@@ -276,17 +292,31 @@ class Site
             '127.0.0.1',
         ];
 
-        // @todo test if mkcert has been installed, something like:
-        // if (!MKCERT_INSTALLED) {
-        //     $this->cli->runAsUser('mkcert -install');
-        // }
-
         $this->cli->runAsUser(sprintf(
             'mkcert -cert-file %s -key-file %s %s',
             $crtPath,
             $keyPath,
             implode(' ', $urls),
         ));
+    }
+
+    /**
+     * Delete the certificate for a given URL.
+     * @param  string $url
+     * @return void
+     */
+    public function deleteCertificate($url)
+    {
+        $keyPath = $this->certificatesPath().'/'.$url.'.key';
+        $crtPath = $this->certificatesPath().'/'.$url.'.crt';
+
+        if ($this->files->exists($keyPath)) {
+            $this->files->unlink($keyPath);
+        }
+
+        if ($this->files->exists($crtPath)) {
+            $this->files->unlink($crtPath);
+        }
     }
 
     /**
@@ -330,7 +360,7 @@ class Site
     public function unsecure($url)
     {
         if ($this->files->exists($this->certificatesPath().'/'.$url.'.crt')) {
-            $this->files->unlink(VALET_HOME_PATH.'/Nginx/'.$url);
+            $this->files->unlink($this->nginxPath().'/'.$url);
 
             $this->files->unlink($this->certificatesPath().'/'.$url.'.key');
             $this->files->unlink($this->certificatesPath().'/'.$url.'.crt');
@@ -355,6 +385,16 @@ class Site
     public function certificatesPath()
     {
         return VALET_HOME_PATH.'/Certificates';
+    }
+
+    /**
+     * Get the path to the Nginx configurations.
+     *
+     * @return string
+     */
+    public function nginxPath()
+    {
+        return VALET_HOME_PATH.'/Nginx';
     }
 
     /**
