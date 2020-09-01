@@ -273,7 +273,7 @@ class Site
         $this->createSigningRequest($url, $keyPath, $csrPath, $confPath);
 
         $this->cli->runAsUser(sprintf(
-            'openssl x509 -req -days 365 -in %s -signkey %s -out %s -extensions v3_req -extfile %s',
+            'openssl x509 -req -sha256 -days 365 -in %s -signkey %s -out %s -extensions v3_req -extfile %s',
             $csrPath,
             $keyPath,
             $crtPath,
@@ -303,7 +303,7 @@ class Site
     public function createSigningRequest($url, $keyPath, $csrPath, $confPath)
     {
         $this->cli->runAsUser(sprintf(
-            'openssl req -new -key %s -out %s -subj "/C=/ST=/O=/localityName=/commonName=*.%s/organizationalUnitName=/emailAddress=/" -config %s -passin pass:',
+            'openssl req -new -sha256 -key %s -out %s -subj "/C=/ST=/O=/localityName=/commonName=*.%s/organizationalUnitName=/emailAddress=/" -config %s -passin pass:',
             $keyPath,
             $csrPath,
             $url,
