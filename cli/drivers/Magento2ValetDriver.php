@@ -32,10 +32,10 @@ class Magento2ValetDriver extends ValetDriver
 
         info('Setting elastic search hostname...');
         $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set catalog/search/elasticsearch_server_hostname 127.0.0.1');
-        
+
         info('Enabling URL rewrites...');
         $devtools->cli->quietlyAsUser('n98-magerun2 config:store:set web/seo/use_rewrites 1');
-        
+
         info('Flushing cache...');
         $devtools->cli->quietlyAsUser('n98-magerun2 cache:flush');
 
@@ -82,50 +82,40 @@ class Magento2ValetDriver extends ValetDriver
     public function isStaticFile($sitePath, $siteName, $uri)
     {
         $this->loadServerEnvironmentVariables($sitePath, $siteName);
-        $isMagentoStatic = false;
-        $isSitemap = false;
-        $resource = $uri;
-        
-        if (strpos($uri, '/errors') === 0 && file_exists($sitePath.'/pub'.$uri)) {
-            return $sitePath.'/pub'.$uri;
+
+        if (!preg_match('#^(pub|setup|update)#', $uri)) {
+            $uri = '/pub' . $uri;
         }
 
-        if (strpos($uri, '/pub') === 0 && file_exists($sitePath.'/setup'.$uri)) {
-            return $sitePath.'/setup'.$uri;
+        if (preg_match('#^/pub/media/(downloadable|customer|import|custom_options|theme_customization/.*\.xml)#', $uri)) {
+            include($sitePath . DIRECTORY_SEPARATOR . 'pub' . DIRECTORY_SEPARATOR . 'errors/404.php');
+            exit;
         }
 
-        if (strpos($uri, '/static/') !== false) {
-            $isMagentoStatic = true;
-        }
-        
-        if (strpos($uri, '.xml') !== false) {
-            $isSitemap = true;
-        }
-
-        if (!$isMagentoStatic && !$isSitemap && strpos($uri, '/media/') === false) {
-            return false;
-        }
-
-        if ($isMagentoStatic) {
-            $resource = preg_replace('#static(/version[0-9]+)?/#', '', $uri, 1);
-            $uri = '/static' . $resource;
-        }
+        header('X-Frame-Options: SAMEORIGIN');
 
         if (strpos($uri, '/js-translation.json') !== false) {
             header('Cache-Control: no-store, must-revalidate');
         }
 
-        if (file_exists($staticFilePath = $sitePath . '/pub' . $uri)) {
-            return $staticFilePath;
+        if (strpos($uri, '/pub/static') === 0) {
+            $uri = preg_replace('#^/pub/static/(version\d*/)?#', '/pub/static/', $uri, 1);
+            if (preg_match('#\.(zip|gz|gzip|bz2|csv|xml)$#', $uri)) {
+                header('Cache-Control: no-store, must-revalidate');
+            }
         }
 
-        if (strpos($uri, '/static/') === 0) {
-            $_GET['resource'] = $resource;
+        if ($this->isActualFile($sitePath.$uri)) {
+            return $sitePath.$uri;
+        }
+
+        if (strpos($uri, '/pub/static/') === 0) {
+            $_GET['resource'] = preg_replace('#^/pub/static#','',$uri);
             include($sitePath . DIRECTORY_SEPARATOR . 'pub' . DIRECTORY_SEPARATOR . 'static.php');
             exit;
         }
 
-        if (strpos($uri, '/media/') === 0) {
+        if (strpos($uri, '/pub/media/') === 0) {
             include($sitePath . DIRECTORY_SEPARATOR . 'pub' . DIRECTORY_SEPARATOR . 'get.php');
             exit;
         }
@@ -149,7 +139,7 @@ class Magento2ValetDriver extends ValetDriver
         if (isset($_GET['profile'])) {
             $_SERVER['MAGE_PROFILER'] = 'html';
         }
-        
+
         if (strpos($uri, '/errors') === 0) {
             $file = $sitePath . '/pub' . $uri;
             if (file_exists($file)) {
