@@ -42,7 +42,8 @@
         "nategood/httpful": "~0.2",
         "tightenco/collect": "~5.4.0",
         "sebastian/version": "^2.0",
-        "squizlabs/php_codesniffer": "*"
+        "squizlabs/php_codesniffer": "*",
+        "symfony/debug": "4.4.8"
     },
     "require-dev": {
         "mockery/mockery": "0.9.*",
