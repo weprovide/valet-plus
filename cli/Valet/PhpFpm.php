@@ -43,9 +43,9 @@ class PhpFpm
     /**
      * Create a new PHP FPM class instance.
      *
-     * @param  Brew $brew
-     * @param  CommandLine $cli
-     * @param  Filesystem $files
+     * @param Brew $brew
+     * @param CommandLine $cli
+     * @param Filesystem $files
      */
     public function __construct(Brew $brew, CommandLine $cli, Filesystem $files, Pecl $pecl, PeclCustom $peclCustom)
     {
@@ -464,90 +464,11 @@ class PhpFpm
         $this->files->putAsUser($path, $contents);
     }
 
-    public function checkInstallation()
-    {
-        // Check for errors within the installation of php.
-        info('[php] Checking for errors within the php installation...');
-        if ($this->brew->installed('php56') ||
-            $this->brew->installed('php70') ||
-            $this->brew->installed('php71') ||
-            $this->brew->installed('php72') ||
-            $this->brew->installed('n98-magerun') ||
-            $this->brew->installed('n98-magerun2') ||
-            $this->brew->installed('drush') ||
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '5.6/ext-intl.ini') ||
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '5.6/ext-mcrypt.ini') ||
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '5.6/ext-apcu.ini') ||
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.0/ext-intl.ini') ||
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.0/ext-mcrypt.ini') ||
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.0/ext-apcu.ini') ||
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.1/ext-intl.ini') ||
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.1/ext-mcrypt.ini') ||
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.1/ext-apcu.ini') ||
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.2/ext-intl.ini') ||
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.2/ext-mcrypt.ini') ||
-            $this->files->exists(self::LOCAL_PHP_FOLDER . '7.2/ext-apcu.ini') ||
-            $this->brew->hasTap(self::DEPRECATED_PHP_TAP)
-        ) {
-            // Errors found - prompt to run fix logic
-            throw new DomainException("[php] Valet+ found errors within the installation.\n
-            run: valet fix for valet to try and resolve these errors");
-        }
-    }
-
     /**
      * Fixes common problems with php installations from Homebrew.
      */
     public function fix($reinstall)
     {
-        // Remove old homebrew/php tap packages.
-        info('Removing all old php56- packages from homebrew/php tap');
-        output($this->cli->runAsUser('brew list | grep php56- | xargs brew uninstall'));
-        info('Removing all old php70- packages from homebrew/php tap');
-        output($this->cli->runAsUser('brew list | grep php70- | xargs brew uninstall'));
-        info('Removing all old php71- packages from homebrew/php tap');
-        output($this->cli->runAsUser('brew list | grep php71- | xargs brew uninstall'));
-        info('Removing all old php72- packages from homebrew/php tap');
-        output($this->cli->runAsUser('brew list | grep php72- | xargs brew uninstall'));
-
-        // Remove deprecated n98-magerun packages.
-        info('Removing all old n98-magerun packages from homebrew/php tap');
-        output($this->cli->runAsUser('brew list | grep n98-magerun | xargs brew uninstall'));
-
-        // Remove homebrew/php tap.
-        info('Removing drush package from homebrew/php tap');
-        output($this->cli->runAsUser('brew list | grep drush | xargs brew uninstall'));
-
-        // Disable extensions that are not managed by the PECL manager or within php core.
-        $deprecatedVersions = ['5.6', '7.0', '7.1', '7.2'];
-        $deprecatedExtensions = ['apcu', 'intl', 'mcrypt'];
-        foreach ($deprecatedVersions as $phpVersion) {
-            info('[php' . $phpVersion . '] Disabling modules: ' . implode(', ', $deprecatedExtensions));
-            foreach ($deprecatedExtensions as $extension) {
-                if ($this->files->exists(self::LOCAL_PHP_FOLDER . "$phpVersion/ext-$extension.ini")) {
-                    $this->files->move(
-                        self::LOCAL_PHP_FOLDER . "$phpVersion/ext-$extension.ini",
-                        self::LOCAL_PHP_FOLDER . "$phpVersion/ext-$extension.ini.disabled"
-                    );
-                }
-            }
-        }
-
-        // If full reinstall is required remove PHP formulae. This will also uninstall formulae in the following format:
-        // php@{version}.
-        if ($reinstall) {
-            info('Trying to remove php56...');
-            output($this->cli->runAsUser('brew uninstall php56'));
-            info('Trying to remove php70...');
-            output($this->cli->runAsUser('brew uninstall php70'));
-            info('Trying to remove php71...');
-            output($this->cli->runAsUser('brew uninstall php71'));
-            info('Trying to remove php72...');
-            output($this->cli->runAsUser('brew uninstall php72'));
-            info('Trying to remove php73...');
-            output($this->cli->runAsUser('brew uninstall php73'));
-        }
-
         // If the current php is not 7.2, link 7.2.
         info('Installing and linking new PHP homebrew/core version.');
         output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]));
@@ -555,6 +476,7 @@ class PhpFpm
         output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]));
         output($this->cli->runAsUser('brew link ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION] . ' --force --overwrite'));
 
+        // Untap the deprecated brew tap.
         if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {
             info('[brew] untapping formulae ' . self::DEPRECATED_PHP_TAP);
             $this->brew->unTap(self::DEPRECATED_PHP_TAP);
