@@ -1,6 +1,6 @@
 trigger:
-- master
-- 2.x
+  - master
+  - 2.x
 
 # Build on Catalina and Mojave
 strategy:
@@ -13,144 +13,174 @@ strategy:
 pool:
   vmImage: $(imageName)
 
+# All actions starting with [INSTALL] are installation instructions that can be found
+# in the Valet+ installation wiki page: https://github.com/weprovide/valet-plus/wiki/Installation
 steps:
 
-# Valet install command test cases
-- script: |
-    brew update
-    brew uninstall php
-  displayName: '[BREW] update and uninstall brew php'
+  # Valet install command test cases
+  - script: |
+      brew update
+    displayName: '[INSTALL] Brew update'
 
-- script: |
-    brew tap henkrehorst/php
-    brew install valet-php@7.2
-  displayName: '[INSTALL] valet-php@7.2'
+  # For the Valet+ CI/CD remove the default brew PHP. Instead use valet-php.
+  # An enduser might choose to keep his/her default brew PHP installation.
+  - script: |
+      brew uninstall php
+    displayName: '[INSTALL] Brew uninstall php'
 
-- script: |
-    brew install composer
-    composer install
-  displayName: '[INSTALL] composer'
+  # Install the valet-php brew tap.
+  - script: |
+      brew tap henkrehorst/php
+    displayName: '[INSTALL] Brew tap henkrehost/php'
 
-# If the code style does not pass there is no need to run other tests.
-- script: |
-    ./vendor/squizlabs/php_codesniffer/bin/phpcs
-  displayName: '[CODE STYLE] Check PSR-2'
+  # Install the default PHP version (currently: valet-php@7.2).
+  - script: |
+      brew install valet-php@7.2
+    displayName: '[INSTALL] Brew install valet-php@7.2'
 
-- script: |
-    ./valet fix
-    ./valet install
-  displayName: '[INSTALL] valet-plus'
+  # Link valet-php@7.2 as default php binary.
+  - script: |
+      brew link valet-php@7.2 --force
+      php -v | grep 7.2
+    displayName: '[INSTALL] Brew link valet-php@7.2'
 
-# PHP 5.6 Command test cases
+  # Since the azure CI/CD image comes with composer pre-installed there is no need to install composer.
+  # However the image might change in the future. To ensure installation over several images an IF ELSE used.
+  # If installed print "Composer is already installed!" else install composer from brew.
+  # This way even if the image changes the installation instruction would be checked.
+  - script: |
+      if which composer | grep -q composer; then echo Composer is already installed!; else brew install composer; fi
+    displayName: '[INSTALL] Brew install composer'
 
-- script: |
-    export PATH="$PATH:`pwd`/bin"
-    ./valet use 5.6
-    php -v
-  displayName: '[PHP 5.6] Switch to'
+  - script: |
+      composer install
+    displayName: '[INSTALL] Composer install'
 
-- script: |
-    ./valet xdebug on
-    ./valet xdebug off
-  displayName: '[PHP 5.6] xdebug on and off'
+  # If the code style does not pass there is no need to run other tests.
+  - script: |
+      ./vendor/squizlabs/php_codesniffer/bin/phpcs
+    displayName: '[CODE STYLE] Check PSR-2'
 
-- script: |
-    ./valet ioncube on
-    ./valet ioncube off
-  displayName: '[PHP 5.6] ioncube on and off'
+  # Somewhere around this point the Valet+ binary needs to be referenced in your PATH.
+  # Since the CI/CD targeting the binary directly the CI/CD does not check this.
 
-# PHP 7.0 Command test cases
+  - script: |
+      ./valet fix
+    displayName: '[INSTALL] Valet fix'
 
-- script: |
-    ./valet use 7.0
-    php -v
-  displayName: '[PHP 7.0] Switch to'
+  - script: |
+      ./valet install
+    displayName: '[INSTALL] Valet install'
 
-- script: |
-    ./valet xdebug on
-    ./valet xdebug off
-  displayName: '[PHP 7.0] xdebug on and off'
+  # PHP 5.6 Command test cases
 
-- script: |
-    ./valet ioncube on
-    ./valet ioncube off
-  displayName: '[PHP 7.0] ioncube on and off'
+  - script: |
+      ./valet use 5.6
+      php -v | grep 5.6
+    displayName: '[PHP 5.6] Switch to'
 
-# PHP 7.1 Command test cases
+  - script: |
+      ./valet xdebug on
+      ./valet xdebug off
+    displayName: '[PHP 5.6] xdebug on and off'
 
-- script: |
-    ./valet use 7.1
-    php -v | grep 7.1
-  displayName: '[PHP 7.1] Switch to'
+  - script: |
+      ./valet ioncube on
+      ./valet ioncube off
+    displayName: '[PHP 5.6] ioncube on and off'
 
-- script: |
-    ./valet xdebug on
-    ./valet xdebug off
-  displayName: '[PHP 7.1] xdebug on and off'
+  # PHP 7.0 Command test cases
 
-- script: |
-    ./valet ioncube on
-    ./valet ioncube off
-  displayName: '[PHP 7.1] ioncube on and off'
+  - script: |
+      ./valet use 7.0
+      php -v | grep 7.0
+    displayName: '[PHP 7.0] Switch to'
 
-# PHP 7.2 Command test cases
+  - script: |
+      ./valet xdebug on
+      ./valet xdebug off
+    displayName: '[PHP 7.0] xdebug on and off'
 
-- script: |
-    ./valet use 7.2
-    php -v | grep 7.2
-  displayName: '[PHP 7.2] Switch to'
+  - script: |
+      ./valet ioncube on
+      ./valet ioncube off
+    displayName: '[PHP 7.0] ioncube on and off'
 
-- script: |
-    ./valet xdebug on
-    ./valet xdebug off
-  displayName: '[PHP 7.2] xdebug on and off'
+  # PHP 7.1 Command test cases
 
-- script: |
-    ./valet ioncube on
-    ./valet ioncube off
-  displayName: '[PHP 7.2] ioncube on and off'
+  - script: |
+      ./valet use 7.1
+      php -v | grep 7.1
+    displayName: '[PHP 7.1] Switch to'
 
-# PHP 7.3 Command test cases
+  - script: |
+      ./valet xdebug on
+      ./valet xdebug off
+    displayName: '[PHP 7.1] xdebug on and off'
 
-- script: |
-    ./valet use 7.3
-    php -v | grep 7.3
-  displayName: '[PHP 7.3] Switch to'
+  - script: |
+      ./valet ioncube on
+      ./valet ioncube off
+    displayName: '[PHP 7.1] ioncube on and off'
 
-- script: |
-    ./valet xdebug on
-    ./valet xdebug off
-  displayName: '[PHP 7.3] xdebug on and off'
+  # PHP 7.2 Command test cases
 
-- script: |
-    ./valet ioncube on
-    ./valet ioncube off
-  displayName: '[PHP 7.3] ioncube on and off'
+  - script: |
+      ./valet use 7.2
+      php -v | grep 7.2
+    displayName: '[PHP 7.2] Switch to'
 
-# PHP 7.4 Command test cases
+  - script: |
+      ./valet xdebug on
+      ./valet xdebug off
+    displayName: '[PHP 7.2] xdebug on and off'
 
-- script: |
-    ./valet use 7.4
-    php -v | grep 7.4
-  displayName: '[PHP 7.4] Switch to'
+  - script: |
+      ./valet ioncube on
+      ./valet ioncube off
+    displayName: '[PHP 7.2] ioncube on and off'
 
-- script: |
-    ./valet xdebug on
-    ./valet xdebug off
-  displayName: '[PHP 7.4] xdebug on and off'
+  # PHP 7.3 Command test cases
 
-- script: |
-    ./valet ioncube on
-    ./valet ioncube off
-  displayName: '[PHP 7.4] ioncube on and off'
+  - script: |
+      ./valet use 7.3
+      php -v | grep 7.3
+    displayName: '[PHP 7.3] Switch to'
 
-# Test Memcached
+  - script: |
+      ./valet xdebug on
+      ./valet xdebug off
+    displayName: '[PHP 7.3] xdebug on and off'
 
-- script: |
-    brew reinstall pkg-config
-    ./valet memcache install
-  displayName: '[MEMCACHED] install'
+  - script: |
+      ./valet ioncube on
+      ./valet ioncube off
+    displayName: '[PHP 7.3] ioncube on and off'
 
-- script: |
-    ./valet memcache uninstall
-  displayName: '[MEMCACHED] uninstall'
+  # PHP 7.4 Command test cases
+
+  - script: |
+      ./valet use 7.4
+      php -v | grep 7.4
+    displayName: '[PHP 7.4] Switch to'
+
+  - script: |
+      ./valet xdebug on
+      ./valet xdebug off
+    displayName: '[PHP 7.4] xdebug on and off'
+
+  - script: |
+      ./valet ioncube on
+      ./valet ioncube off
+    displayName: '[PHP 7.4] ioncube on and off'
+
+  # Test Memcached
+
+  - script: |
+      brew reinstall pkg-config
+      ./valet memcache install
+    displayName: '[MEMCACHED] install'
+
+  - script: |
+      ./valet memcache uninstall
+    displayName: '[MEMCACHED] uninstall'
