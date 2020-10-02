@@ -157,16 +157,14 @@ class Elasticsearch
      */
     public function updateDomain($domain)
     {
-        if ($this->files->exists(self::NGINX_CONFIGURATION_PATH)) {
-            $this->files->putAsUser(
-                self::NGINX_CONFIGURATION_PATH,
-                str_replace(
-                    ['VALET_DOMAIN'],
-                    [$domain],
-                    $this->files->get(self::NGINX_CONFIGURATION_PATH)
-                )
-            );
-        }
+        $this->files->putAsUser(
+            self::NGINX_CONFIGURATION_PATH,
+            str_replace(
+                ['VALET_DOMAIN'],
+                [$domain],
+                $this->files->get(self::NGINX_CONFIGURATION_STUB)
+            )
+        );
     }
 
     /**
