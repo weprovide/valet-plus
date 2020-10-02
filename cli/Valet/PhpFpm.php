@@ -470,11 +470,22 @@ class PhpFpm
     public function fix($reinstall)
     {
         // If the current php is not 7.2, link 7.2.
-        info('Installing and linking new PHP homebrew/core version.');
-        output($this->cli->runAsUser('brew uninstall ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]));
-        output($this->cli->runAsUser('brew install ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]));
-        output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]));
-        output($this->cli->runAsUser('brew link ' . self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION] . ' --force --overwrite'));
+        info('Check Valet+ PHP version...');
+        info('Run valet fix with the --reinstall option to trigger a full reinstall of the default PHP version.');
+
+        // If the reinstall flag was passed, uninstall PHP.
+        // If any error occurs return the error for debugging purposes.
+        if ($reinstall) {
+            $this->brew->ensureUninstalled(self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]);
+            $this->brew->ensureInstalled(self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]);
+        }
+
+        // Check the current linked PHP version. If the current version is not the default version.
+        // Then relink the default version.
+        if ($this->linkedPhp() !== self::PHP_V72_VERSION) {
+            $this->unlinkPhp(self::PHP_V72_VERSION);
+            $this->linkPhp(self::PHP_V72_VERSION);
+        }
 
         // Untap the deprecated brew tap.
         if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {

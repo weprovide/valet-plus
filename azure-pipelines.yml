@@ -23,7 +23,7 @@ steps:
     displayName: '[INSTALL] Brew update'
 
   # For the Valet+ CI/CD remove the default brew PHP. Instead use valet-php.
-  # An enduser might choose to keep his/her default brew PHP installation.
+  # On a local installation one might choose to keep his/her default brew PHP installation.
   - script: |
       brew uninstall php
     displayName: '[INSTALL] Brew uninstall php'
@@ -184,3 +184,14 @@ steps:
   - script: |
       ./valet memcache uninstall
     displayName: '[MEMCACHED] uninstall'
+
+  # Extensions of commonly run commands, generally not hit or checked by the installation instructions.
+
+  # Chown the default PHP version to ensure deletion is possible.
+  # If we don't chown we'll get an permission error from the CI/CD.
+  # On local installations the printed instructions can be followed
+  # to manually remove the Cellar files.
+  - script: |
+      sudo chmod -R 777 /usr/local/Cellar/valet-php@7.2
+      ./valet fix --reinstall
+    displayName: '[INSTALL] Valet fix --reinstall'
