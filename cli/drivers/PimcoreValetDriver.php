@@ -14,7 +14,7 @@ class PimcoreValetDriver extends ValetDriver
     public function serves($sitePath, $siteName, $uri)
     {
         if (file_exists($sitePath.'/pimcore')) {
-             return true;
+            return true;
         }
 
         return false;

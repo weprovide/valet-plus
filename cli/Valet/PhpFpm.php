@@ -319,7 +319,6 @@ class PhpFpm
      */
     public function isExtensionEnabled($extension)
     {
-
         $currentPhpVersion = $this->brew->linkedPhp();
 
         if (!$this->brew->installed($currentPhpVersion . '-' . $extension)) {

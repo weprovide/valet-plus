@@ -727,6 +727,45 @@ if (is_dir(VALET_HOME_PATH)) {
         throw new Exception('Sub-command not found. Available: install');
     })->descriptions('Enable / disable Elasticsearch');
 
+    $app->command('blackfire [mode]', function ($mode) {
+        $modes = ['install', 'on', 'enable', 'off', 'disable'];
+
+        if (!in_array($mode, $modes)) {
+            throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
+        }
+
+        switch ($mode) {
+            case 'install':
+                Blackfire::install();
+                return;
+            case 'enable':
+            case 'on':
+                Blackfire::enable();
+                if (Pecl::isEnabled('xdebug') === true) {
+                    info("[PECL] Disabling xdebug extension.");
+                    info("If XDebug is installed, the PHP engine may not behave as expected");
+                    $restart = true;
+                    Pecl::disable('xdebug');
+                }
+                return;
+            case 'test':
+                passthru('blackfire-agent --test');
+                // no break
+            case 'register':
+                passthru('blackfire-agent --register');
+                // no break
+            case 'config':
+                passthru('blackfire config');
+                // no break
+            case 'disable':
+            case 'off':
+                Blackfire::disable();
+                return;
+        }
+
+        throw new Exception('Sub-command not found. Available: install');
+    })->descriptions('Enable / disable Blackfire');
+
     $app->command('rabbitmq [mode]', function ($mode) {
         $modes = ['install', 'on', 'enable', 'off', 'disable'];
 

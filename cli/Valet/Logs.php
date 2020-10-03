@@ -10,7 +10,6 @@ class Logs
 
     public function open($file)
     {
-
         $this->cli->quietly('open ' . $this->resolvePath($file));
     }
 

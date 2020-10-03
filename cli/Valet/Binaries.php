@@ -11,7 +11,6 @@ use DomainException;
  */
 class Binaries
 {
-
     const N98_MAGERUN = 'magerun';
     const N98_MAGERUN_2 = 'magerun2';
     const DRUSH_LAUNCHER = 'drush';
