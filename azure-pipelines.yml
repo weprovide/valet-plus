@@ -72,6 +72,19 @@ steps:
       ./valet install
     displayName: '[INSTALL] Valet install'
 
+
+  # Nginx test cases
+
+  # Check if nginx was able to start correctly.
+  - script: |
+      sudo nginx -t
+    displayName: '[NGINX] Sudo nginx -t'
+
+  # Check if the Valet+ localhost page is reachable.
+  - script: |
+      curl 127.0.0.1 | grep "Valet - Not Found"
+    displayName: '[NGINX] Check local host'
+
   # PHP 5.6 Command test cases
 
   - script: |
