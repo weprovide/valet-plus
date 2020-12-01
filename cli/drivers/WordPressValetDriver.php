@@ -30,7 +30,9 @@ class WordPressValetDriver extends BasicValetDriver
         $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_HOST'];
 
         return parent::frontControllerPath(
-            $sitePath, $siteName, $this->forceTrailingSlash($uri)
+            $sitePath,
+            $siteName,
+            $this->forceTrailingSlash($uri)
         );
     }
 
@@ -43,7 +45,8 @@ class WordPressValetDriver extends BasicValetDriver
     private function forceTrailingSlash($uri)
     {
         if (substr($uri, -1 * strlen('/wp-admin')) == '/wp-admin') {
-            header('Location: '.$uri.'/'); die;
+            header('Location: '.$uri.'/');
+            die;
         }
 
         return $uri;

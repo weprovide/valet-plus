@@ -32,13 +32,13 @@ class Binaries
      */
     const SUPPORTED_CUSTOM_BINARIES = [
         self::N98_MAGERUN => [
-            'url' => 'https://files.magerun.net/n98-magerun-1.101.1.phar',
-            'shasum' => '3c48fb685e569f2c7c97cca1dfbe2d20e6d7841db594b0d706924f517d8d3fd3',
+            'url' => 'https://files.magerun.net/n98-magerun-1.103.1.phar',
+            'shasum' => 'f4de50f5e7f9db70ee82148339ca865f14b7cdf7713d1f7c9357b84067235ce6',
             'bin_location' => '/usr/local/bin/'
         ],
         self::N98_MAGERUN_2 => [
-            'url' => 'https://files.magerun.net/n98-magerun2-3.0.8.phar',
-            'shasum' => '0c103253a9b78f094f043ecb50639129200899774e1584a02047b683c7a51b8e',
+            'url' => 'https://files.magerun.net/n98-magerun2-3.2.0.phar',
+            'shasum' => '5b5b4f7a857f7716950b6ef090c005c455d5e607f800a50b7b7aefa86d1c4e36',
             'bin_location' => '/usr/local/bin/'
         ],
         self::DRUSH_LAUNCHER => [
@@ -48,7 +48,8 @@ class Binaries
         ]
     ];
 
-    var $cli, $files;
+    public $cli;
+    public $files;
 
     /**
      * Create a new Brew instance.
@@ -56,7 +57,7 @@ class Binaries
      * @param  CommandLine $cli
      * @param  Filesystem $files
      */
-    function __construct(CommandLine $cli, Filesystem $files)
+    public function __construct(CommandLine $cli, Filesystem $files)
     {
         $this->cli = $cli;
         $this->files = $files;
@@ -70,7 +71,7 @@ class Binaries
      * @return bool
      *    True if installed, false if not installed.
      */
-    function installed($binary)
+    public function installed($binary)
     {
         return $this->files->exists(self::SUPPORTED_CUSTOM_BINARIES[$binary]['bin_location'] . $binary);
     }
@@ -78,7 +79,7 @@ class Binaries
     /**
      * Install all binaries defined in SUPPORTED_CUSTOM_BINARIES
      */
-    function installBinaries()
+    public function installBinaries()
     {
         info("[binaries] Installing binaries");
         foreach (self::SUPPORTED_CUSTOM_BINARIES as $binary => $versions) {
@@ -94,7 +95,7 @@ class Binaries
      * @param $binary
      *    The binary key name.
      */
-    function installBinary($binary)
+    public function installBinary($binary)
     {
         $url = $this->getUrl($binary);
         $urlSplit = explode('/', $url);
@@ -124,7 +125,7 @@ class Binaries
     /**
      * Uninstall all binaries defined in SUPPORTED_CUSTOM_BINARIES
      */
-    function uninstallBinaries()
+    public function uninstallBinaries()
     {
         info("[binaries] Uninstalling binaries");
         foreach (self::SUPPORTED_CUSTOM_BINARIES as $binary => $versions) {
@@ -140,7 +141,7 @@ class Binaries
      * @param $binary
      *    The binary key name.
      */
-    function uninstallBinary($binary)
+    public function uninstallBinary($binary)
     {
         $binaryLocation = $this->getBinLocation($binary);
         $this->cli->runAsUser('rm ' . $binaryLocation);
@@ -217,4 +218,3 @@ class Binaries
         throw new DomainException('bin_location key is required for binaries.');
     }
 }
-

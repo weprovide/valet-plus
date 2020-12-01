@@ -9,47 +9,50 @@ class Elasticsearch
     const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/elasticsearch.conf';
     const NGINX_CONFIGURATION_PATH = '/usr/local/etc/nginx/valet/elasticsearch.conf';
 
-    const ES_CONFIG_YAML = '/usr/local/etc/elasticsearch/elasticsearch.yml';
-    const ES_CONFIG_DATA_PATH = 'path.data';
+    const ES_CONFIG_YAML          = '/usr/local/etc/elasticsearch/elasticsearch.yml';
+    const ES_CONFIG_DATA_PATH     = 'path.data';
     const ES_CONFIG_DATA_BASEPATH = '/usr/local/var/';
 
-    const ES_FORMULA_NAME = 'elasticsearch@';
-    const ES_V24_VERSION = '2.4';
-    const ES_V56_VERSION = '5.6';
-    const ES_DEFAULT_VERSION = self::ES_V24_VERSION;
+    const ES_FORMULA_NAME    = 'elasticsearch';
+    const ES_V68_VERSION     = '6.8';
+    const ES_V78_VERSION     = '7.8';
+    const ES_DEFAULT_VERSION = self::ES_V78_VERSION;
 
     const SUPPORTED_ES_FORMULAE = [
-        self::ES_V24_VERSION => self::ES_FORMULA_NAME . self::ES_V24_VERSION,
-        self::ES_V56_VERSION => self::ES_FORMULA_NAME . self::ES_V56_VERSION,
+        self::ES_V68_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V68_VERSION,
+        self::ES_V78_VERSION => self::ES_FORMULA_NAME,
     ];
 
-    var $brew;
-    var $cli;
-    var $files;
-    var $configuration;
-    var $site;
+    public $brew;
+    public $cli;
+    public $files;
+    public $configuration;
+    public $site;
+    public $phpFpm;
 
     /**
-     * Create a new instance.
-     *
+     * Elasticsearch constructor.
      * @param Brew          $brew
      * @param CommandLine   $cli
      * @param Filesystem    $files
      * @param Configuration $configuration
      * @param Site          $site
+     * @param PhpFpm        $phpFpm
      */
-    function __construct(
+    public function __construct(
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
         Configuration $configuration,
-        Site $site
+        Site $site,
+        PhpFpm $phpFpm
     ) {
         $this->cli           = $cli;
         $this->brew          = $brew;
         $this->site          = $site;
         $this->files         = $files;
         $this->configuration = $configuration;
+        $this->phpFpm        = $phpFpm;
     }
 
     /**
@@ -58,7 +61,7 @@ class Elasticsearch
      * @param string $version
      * @return void
      */
-    function install($version = self::ES_DEFAULT_VERSION)
+    public function install($version = self::ES_DEFAULT_VERSION)
     {
         if (!array_key_exists($version, self::SUPPORTED_ES_FORMULAE)) {
             warning('The Elasticsearch version you\'re installing is not supported.');
@@ -67,13 +70,16 @@ class Elasticsearch
         }
 
         if ($this->installed($version)) {
-            info('[' . self::ES_FORMULA_NAME . $version . '] already installed');
+            info('[' . self::SUPPORTED_ES_FORMULAE[$version] . '] already installed');
 
             return;
         }
 
+        // Install dependencies
         $this->cli->quietlyAsUser('brew cask install java');
-        $this->brew->installOrFail(self::ES_FORMULA_NAME . $version);
+        $this->cli->quietlyAsUser('brew cask install homebrew/cask-versions/adoptopenjdk8');
+        $this->brew->installOrFail('libyaml');
+        $this->brew->installOrFail(self::SUPPORTED_ES_FORMULAE[$version]);
         $this->restart($version);
     }
 
@@ -83,12 +89,11 @@ class Elasticsearch
      * @param string $version
      * @return bool
      */
-    function installed($version = null)
+    public function installed($version = null)
     {
         $versions = ($version ? [$version] : array_keys(self::SUPPORTED_ES_FORMULAE));
-
         foreach ($versions as $version) {
-            if ($this->brew->installed(self::ES_FORMULA_NAME . $version)) {
+            if ($this->brew->installed(self::SUPPORTED_ES_FORMULAE[$version])) {
                 return $version;
             }
         }
@@ -102,7 +107,7 @@ class Elasticsearch
      * @param string $version
      * @return void
      */
-    function restart($version = null)
+    public function restart($version = null)
     {
         $version = ($version ? $version : $this->getCurrentVersion());
         $version = $this->installed($version);
@@ -110,8 +115,8 @@ class Elasticsearch
             return;
         }
 
-        info('[' . self::ES_FORMULA_NAME . $version . '] Restarting');
-        $this->cli->quietlyAsUser('brew services restart ' . self::ES_FORMULA_NAME . $version);
+        info('[' . self::SUPPORTED_ES_FORMULAE[$version] . '] Restarting');
+        $this->cli->quietlyAsUser('brew services restart ' . self::SUPPORTED_ES_FORMULAE[$version]);
     }
 
     /**
@@ -120,7 +125,7 @@ class Elasticsearch
      * @param string $version
      * @return void
      */
-    function stop($version = null)
+    public function stop($version = null)
     {
         $version = ($version ? $version : $this->getCurrentVersion());
         $version = $this->installed($version);
@@ -128,9 +133,9 @@ class Elasticsearch
             return;
         }
 
-        info('[' . self::ES_FORMULA_NAME . $version . '] Stopping');
-        $this->cli->quietly('sudo brew services stop ' . self::ES_FORMULA_NAME . $version);
-        $this->cli->quietlyAsUser('brew services stop ' . self::ES_FORMULA_NAME . $version);
+        info('[' . self::SUPPORTED_ES_FORMULAE[$version] . '] Stopping');
+        $this->cli->quietly('sudo brew services stop ' . self::SUPPORTED_ES_FORMULAE[$version]);
+        $this->cli->quietlyAsUser('brew services stop ' . self::SUPPORTED_ES_FORMULAE[$version]);
     }
 
     /**
@@ -138,7 +143,7 @@ class Elasticsearch
      *
      * @return void
      */
-    function uninstall()
+    public function uninstall()
     {
         $this->stop();
     }
@@ -146,14 +151,14 @@ class Elasticsearch
     /**
      * @param $domain
      */
-    function updateDomain($domain)
+    public function updateDomain($domain)
     {
         $this->files->putAsUser(
             self::NGINX_CONFIGURATION_PATH,
             str_replace(
                 ['VALET_DOMAIN'],
                 [$domain],
-                $this->files->get(self::NGINX_CONFIGURATION_PATH)
+                $this->files->get(self::NGINX_CONFIGURATION_STUB)
             )
         );
     }
@@ -163,7 +168,7 @@ class Elasticsearch
      *
      * @param $version
      */
-    function switchTo($version)
+    public function switchTo($version)
     {
         $currentVersion = $this->getCurrentVersion();
 
@@ -188,12 +193,17 @@ class Elasticsearch
         // Stop all versions.
         $this->stop($currentVersion);
 
-
         // Alter elasticsearch data path in config yaml.
-        $config                            = yaml_parse_file(self::ES_CONFIG_YAML);
-        $config[self::ES_CONFIG_DATA_PATH] = self::ES_CONFIG_DATA_BASEPATH . self::SUPPORTED_ES_FORMULAE[$version] . '/';
-        yaml_emit_file(self::ES_CONFIG_YAML, $config);
-
+        if (extension_loaded('yaml')) {
+            $config                            = yaml_parse_file(self::ES_CONFIG_YAML);
+            $config[self::ES_CONFIG_DATA_PATH] = self::ES_CONFIG_DATA_BASEPATH . self::ES_FORMULA_NAME . '@' . $version . '/';
+            yaml_emit_file(self::ES_CONFIG_YAML, $config);
+        } else {
+            // Install PHP dependencies through installation of PHP.
+            $this->phpFpm->install();
+            warning("Switching Elasticsearch requires PECL extension yaml. Try switching again.");
+            return;
+        }
 
         // Start requested version.
         $this->restart($version);
@@ -206,7 +216,7 @@ class Elasticsearch
      *
      * @return bool|int|string
      */
-    function getCurrentVersion()
+    public function getCurrentVersion()
     {
         $currentVersion = false;
         foreach (self::SUPPORTED_ES_FORMULAE as $version => $formula) {

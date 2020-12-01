@@ -25,11 +25,11 @@ class KirbyValetDriver extends ValetDriver
      */
     public function isStaticFile($sitePath, $siteName, $uri)
     {
-       if ($this->isActualFile($staticFilePath = $sitePath.$uri)) {
-           return $staticFilePath;
-       }
+        if ($this->isActualFile($staticFilePath = $sitePath.$uri)) {
+            return $staticFilePath;
+        }
 
-       return false;
+        return false;
     }
     /**
      * Get the fully resolved path to the application's front controller.

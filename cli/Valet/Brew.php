@@ -7,7 +7,8 @@ use DomainException;
 class Brew
 {
 
-    var $cli, $files;
+    public $cli;
+    public $files;
 
     /**
      * Create a new Brew instance.
@@ -15,7 +16,7 @@ class Brew
      * @param  CommandLine $cli
      * @param  Filesystem $files
      */
-    function __construct(CommandLine $cli, Filesystem $files)
+    public function __construct(CommandLine $cli, Filesystem $files)
     {
         $this->cli = $cli;
         $this->files = $files;
@@ -27,7 +28,7 @@ class Brew
      * @param  string $formula
      * @return bool
      */
-    function installed($formula)
+    public function installed($formula)
     {
         return in_array($formula, explode(PHP_EOL, $this->cli->runAsUser('brew list | grep ' . $formula)));
     }
@@ -37,7 +38,7 @@ class Brew
      *
      * @return bool
      */
-    function hasInstalledNginx()
+    public function hasInstalledNginx()
     {
         return $this->installed('nginx')
             || $this->installed('nginx-full');
@@ -48,7 +49,7 @@ class Brew
      *
      * @return string
      */
-    function nginxServiceName()
+    public function nginxServiceName()
     {
         return $this->installed('nginx-full') ? 'nginx-full' : 'nginx';
     }
@@ -61,7 +62,7 @@ class Brew
      * @param  array $taps
      * @return void
      */
-    function ensureInstalled($formula, $options = [], $taps = [])
+    public function ensureInstalled($formula, $options = [], $taps = [])
     {
         if (!$this->installed($formula)) {
             $this->installOrFail($formula, $options, $taps);
@@ -76,7 +77,7 @@ class Brew
      * @param  array $taps
      * @return void
      */
-    function ensureUninstalled($formula, $options = [], $taps = [])
+    public function ensureUninstalled($formula, $options = [], $taps = [])
     {
         if ($this->installed($formula)) {
             $this->uninstallOrFail($formula, $options, $taps);
@@ -91,7 +92,7 @@ class Brew
      * @param  array $taps
      * @return void
      */
-    function installOrFail($formula, $options = [], $taps = [])
+    public function installOrFail($formula, $options = [], $taps = [])
     {
         info('[' . $formula . '] Installing');
 
@@ -117,7 +118,7 @@ class Brew
      * @param  array $taps
      * @return void
      */
-    function uninstallOrFail($formula, $options = [], $taps = [])
+    public function uninstallOrFail($formula, $options = [], $taps = [])
     {
         info('[' . $formula . '] Uninstalling');
 
@@ -141,7 +142,7 @@ class Brew
      * @param  dynamic [string]  $formula
      * @return void
      */
-    function tap($formulas)
+    public function tap($formulas)
     {
         $formulas = is_array($formulas) ? $formulas : func_get_args();
 
@@ -156,7 +157,7 @@ class Brew
      * @param  dynamic [string]  $formula
      * @return void
      */
-    function unTap($formulas)
+    public function unTap($formulas)
     {
         $formulas = is_array($formulas) ? $formulas : func_get_args();
 
@@ -171,7 +172,7 @@ class Brew
      * @param $formula
      * @return bool
      */
-    function hasTap($formula)
+    public function hasTap($formula)
     {
         return strpos($this->cli->runAsUser("brew tap | grep $formula"), $formula) !== false;
     }
@@ -181,7 +182,7 @@ class Brew
      *
      * @param
      */
-    function restartService($services)
+    public function restartService($services)
     {
         $services = is_array($services) ? $services : func_get_args();
 
@@ -200,7 +201,7 @@ class Brew
      *
      * @param
      */
-    function stopService($services)
+    public function stopService($services)
     {
         $services = is_array($services) ? $services : func_get_args();
 
@@ -219,7 +220,7 @@ class Brew
      * @param $formula
      * @return bool
      */
-    function isStartedService($formula)
+    public function isStartedService($formula)
     {
         $info = explode(" ", trim(str_replace($formula, "", $this->cli->runAsUser('brew services list | grep ' . $formula))));
         $state = array_shift($info);

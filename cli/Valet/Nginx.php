@@ -6,11 +6,11 @@ use DomainException;
 
 class Nginx
 {
-    var $brew;
-    var $cli;
-    var $files;
-    var $configuration;
-    var $site;
+    public $brew;
+    public $cli;
+    public $files;
+    public $configuration;
+    public $site;
     const NGINX_CONF = '/usr/local/etc/nginx/nginx.conf';
 
     /**
@@ -22,9 +22,13 @@ class Nginx
      * @param  Configuration $configuration
      * @param  Site $site
      */
-    function __construct(Brew $brew, CommandLine $cli, Filesystem $files,
-                         Configuration $configuration, Site $site)
-    {
+    public function __construct(
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
+        Configuration $configuration,
+        Site $site
+    ) {
         $this->cli = $cli;
         $this->brew = $brew;
         $this->site = $site;
@@ -37,7 +41,7 @@ class Nginx
      *
      * @return void
      */
-    function install()
+    public function install()
     {
         if (!$this->brew->hasInstalledNginx()) {
             $this->brew->installOrFail('nginx');
@@ -55,7 +59,7 @@ class Nginx
      *
      * @return void
      */
-    function installConfiguration()
+    public function installConfiguration()
     {
         $contents = $this->files->get(__DIR__.'/../stubs/nginx.conf');
 
@@ -70,7 +74,7 @@ class Nginx
      *
      * @return void
      */
-    function installServer()
+    public function installServer()
     {
         $domain = $this->configuration->read()['domain'];
 
@@ -98,7 +102,7 @@ class Nginx
      *
      * @return void
      */
-    function installNginxDirectory()
+    public function installNginxDirectory()
     {
         if (! $this->files->isDir($nginxDirectory = VALET_HOME_PATH.'/Nginx')) {
             $this->files->mkdirAsUser($nginxDirectory);
@@ -127,7 +131,7 @@ class Nginx
      *
      * @return void
      */
-    function rewriteSecureNginxFiles()
+    public function rewriteSecureNginxFiles()
     {
         $domain = $this->configuration->read()['domain'];
 
@@ -139,7 +143,7 @@ class Nginx
      *
      * @return void
      */
-    function restart()
+    public function restart()
     {
         $this->lint();
 
@@ -151,7 +155,7 @@ class Nginx
      *
      * @return void
      */
-    function stop()
+    public function stop()
     {
         info('[nginx] Stopping');
 
@@ -163,7 +167,7 @@ class Nginx
      *
      * @return void
      */
-    function uninstall()
+    public function uninstall()
     {
         $this->stop();
     }

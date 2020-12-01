@@ -193,7 +193,7 @@ class CraftValetDriver extends ValetDriver
         $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_HOST'];
         $_SERVER['SCRIPT_NAME'] = $scriptName;
         $_SERVER['PHP_SELF'] = $scriptName;
-        $_SERVER['DOCUMENT_ROOT'] = $sitePath.'/'.$frontControllerDirectory;        
+        $_SERVER['DOCUMENT_ROOT'] = $sitePath.'/'.$frontControllerDirectory;
 
         return $indexPath;
     }

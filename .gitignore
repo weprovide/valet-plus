@@ -1,5 +1,4 @@
 .DS_Store
 vendor/
-composer.lock
 error.log
 .idea/

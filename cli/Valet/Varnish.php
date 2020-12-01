@@ -4,10 +4,10 @@ namespace Valet;
 
 class Varnish extends AbstractService
 {
-    var $brew;
-    var $cli;
-    var $files;
-    var $site;
+    public $brew;
+    public $cli;
+    public $files;
+    public $site;
 
     /**
      * Create a new instance.
@@ -18,7 +18,7 @@ class Varnish extends AbstractService
      * @param  Configuration $configuration
      * @param  Site          $site
      */
-    function __construct(
+    public function __construct(
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
@@ -37,7 +37,7 @@ class Varnish extends AbstractService
      *
      * @return void
      */
-    function install()
+    public function install()
     {
         if ($this->installed()) {
             info('[varnish] already installed');
@@ -54,7 +54,7 @@ class Varnish extends AbstractService
      *
      * @return bool
      */
-    function installed()
+    public function installed()
     {
         return $this->brew->installed('varnish');
     }
@@ -64,7 +64,7 @@ class Varnish extends AbstractService
      *
      * @return void
      */
-    function restart()
+    public function restart()
     {
         if (!$this->installed() || !$this->isEnabled()) {
             return;
@@ -79,7 +79,7 @@ class Varnish extends AbstractService
      *
      * @return void
      */
-    function stop()
+    public function stop()
     {
         if (!$this->installed()) {
             return;
@@ -94,7 +94,7 @@ class Varnish extends AbstractService
      *
      * @return void
      */
-    function uninstall()
+    public function uninstall()
     {
         $this->stop();
     }
