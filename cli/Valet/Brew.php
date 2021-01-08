@@ -30,7 +30,7 @@ class Brew
      */
     public function installed($formula)
     {
-        return in_array($formula, explode(PHP_EOL, $this->cli->runAsUser('brew list | grep ' . $formula)));
+        return in_array($formula, explode(PHP_EOL, $this->cli->runAsUser('brew list --formula | grep ' . $formula)));
     }
 
     /**
