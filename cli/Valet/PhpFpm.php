@@ -64,7 +64,7 @@ class PhpFpm
     public function install()
     {
         if (!$this->hasInstalledPhp()) {
-            $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V71_VERSION));
+            $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V72_VERSION));
         }
 
         if (!$this->brew->hasTap(self::VALET_PHP_BREW_TAP)) {
