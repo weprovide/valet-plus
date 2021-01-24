@@ -123,6 +123,7 @@ class PhpFpm
     public function fpmConfigPath()
     {
         $confLookup = [
+            self::PHP_V80_VERSION => self::LOCAL_PHP_FOLDER . '8.0/php-fpm.d/www.conf',
             self::PHP_V74_VERSION => self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
             self::PHP_V73_VERSION => self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
             self::PHP_V72_VERSION => self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
