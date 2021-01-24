@@ -224,7 +224,7 @@ class Brew
     {
         $info = explode(" ", trim(str_replace($formula, "", $this->cli->runAsUser('brew services list | grep ' . $formula))));
         $state = array_shift($info);
-        return ($state === 'started');
+        return in_array($state, ['started', 'unknown', 'error']);
     }
 
     /**
