@@ -77,6 +77,17 @@ jobs:
         run: |
           ./valet install
 
+      # Nginx test cases
+
+      # Check if nginx was able to start correctly.
+      - name: '[NGINX] Sudo nginx -t'
+        run: |
+          sudo nginx -t
+      # Check if the Valet+ localhost page is reachable.
+      - name: '[NGINX] Check local host'
+        run: |
+          curl 127.0.0.1 | grep "Valet - Not Found"
+
       # PHP 5.6 Command test cases
       - name: '[PHP 5.6] Switch to'
         run: |
