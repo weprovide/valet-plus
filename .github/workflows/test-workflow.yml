@@ -54,6 +54,10 @@ jobs:
         run: |
           [[ -f /usr/local/bin/pecl ]] || printf '%s does not exist!\n'
 
+      - name: 'Which pecl'
+        run: |
+          which pecl
+
       # Since the Github actions CI/CD image comes with composer pre-installed there is no need to install composer.
       # However the image might change in the future. To ensure installation over several images an IF ELSE used.
       # If installed print "Composer is already installed!" else install composer from brew.
