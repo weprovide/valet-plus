@@ -67,6 +67,11 @@ jobs:
         run: |
           ./vendor/squizlabs/php_codesniffer/bin/phpcs
 
+      # Temp fix for pecl issue
+      - name: 'Temp fix for pecl installation'
+        run: |
+          ln -sf /usr/local/include/pcre2.h /usr/local/Cellar/valet-php@7.2/*/include/php/ext/pcre
+
       # Somewhere around this point the Valet+ binary needs to be referenced in your PATH.
       # Since the CI/CD targeting the binary directly the CI/CD does not check this.
       - name: '[INSTALL] Valet fix'
