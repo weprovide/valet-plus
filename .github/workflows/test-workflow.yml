@@ -11,7 +11,10 @@ on:
 jobs:
   test:
     # Build on Catalina and later Big Sur (Not public released yet: https://github.com/actions/virtual-environments/issues/2486)
-    runs-on: [macos-10.15]
+    strategy:
+      matrix:
+          os: [macos-10.15]
+    runs-on: ${{matrix.os}}
 
     # A workflow run is made up of one or more jobs that can run sequentially or in parallel# All actions starting with [INSTALL] are installation instructions that can be found
     # in the Valet+ installation wiki page: https://github.com/weprovide/valet-plus/wiki/Installation
