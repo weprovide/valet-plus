@@ -224,6 +224,48 @@ class Brew
     {
         $info = explode(" ", trim(str_replace($formula, "", $this->cli->runAsUser('brew services list | grep ' . $formula))));
         $state = array_shift($info);
-        return ($state === 'started');
+        return in_array($state, ['started', 'unknown', 'error']);
+    }
+
+    /**
+     * Returns array with formulae available in Brew.
+     *
+     * @param $formula
+     * @return string[]
+     */
+    public function getFormulae($formula)
+    {
+        return array_filter(
+            explode(PHP_EOL, trim($this->cli->runAsUser("brew search $formula"))),
+            function ($formula) {
+                return ($formula != '==> Formulae');
+            }
+        );
+    }
+
+    /**
+     * Returns array with available formulae in Brew and their stable and major version.
+     *
+     * @param $formula
+     * @return array
+     */
+    public function getFormulaVersions($formula)
+    {
+        $formulae = $this->getFormulae($formula);
+
+        $versions = [];
+        foreach ($formulae as $_formula) {
+            $stable  = trim($this->cli->runAsUser("brew info $_formula --json=v1 | jq '.[] | .versions | .stable'"), " \t\n\r\0\x0B\"");
+            $version = explode('.', $stable);
+            $major   = reset($version);
+
+            $versions[$major] = [
+                'stable'  => $stable,
+                'major'   => $major,
+                'formula' => $_formula,
+            ];
+        }
+
+        return $versions;
     }
 }
