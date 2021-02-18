@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/weprovide/valet-plus/compare/2.1.0...2.x)
 - [#546] Add support for PHP 8.0
+- Use PHP 7.2 as default version
 
 ## [2.1.0](https://github.com/weprovide/valet-plus/compare/2.0.0...2.1.0)
 ## Removed
