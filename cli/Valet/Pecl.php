@@ -80,6 +80,7 @@ class Pecl extends AbstractPecl
     ];
 
     public $peclCustom;
+    public $brewDir;
 
     /**
      * @inheritdoc
@@ -315,8 +316,9 @@ class Pecl extends AbstractPecl
     /**
      * Fix common problems related to the PECL/PEAR installation.
      */
-    public function fix()
+    public function fix($brewDir="/usr/local")
     {
+        $this->brewDir = $brewDir;
         info('[PECL] Checking pear config...');
         // Check if pear config is set correctly as per:
         // https://github.com/kabel/homebrew-core/blob/2564749d8f73e43cbb8cfc449bca4f564ac0e9e1/Formula/php%405.6.rb
@@ -324,7 +326,7 @@ class Pecl extends AbstractPecl
         foreach (PhpFpm::SUPPORTED_PHP_FORMULAE as $phpVersion => $brewname) {
             output("Checking php $phpVersion...");
 
-            $pearConfigPath = PhpFpm::LOCAL_PHP_FOLDER . "$phpVersion/pear.conf";
+            $pearConfigPath = $this->brewDir . PhpFpm::LOCAL_PHP_FOLDER . "$phpVersion/pear.conf";
 
             if (!$this->files->exists($pearConfigPath)) {
                 warning("    Skipping $phpVersion, Pear config path could not be found at: $pearConfigPath");
@@ -354,16 +356,16 @@ class Pecl extends AbstractPecl
             $pearName = $this->replacePhpWithPear($brewname);
 
             $phpIniPath = str_replace('pear.conf', 'php.ini', $pearConfigPath);
-            $phpDirPath = "/usr/local/share/$pearName";
-            $pearDocDirPath = "/usr/local/share/$pearName/doc";
+            $phpDirPath = $this->brewDir . "/share/$pearName";
+            $pearDocDirPath = $this->brewDir . "/share/$pearName/doc";
             $phpExtensionDirPath = '/usr/local/lib/php/pecl/'.basename($pearConfig['ext_dir']);
-            $phpBinPath = "/usr/local/opt/$brewname/bin";
-            $pearDataDirPath = "/usr/local/share/$pearName/data";
-            $pearCfgDirPath = "/usr/local/share/$pearName/cfg";
-            $pearWwwDirPath = "/usr/local/share/$pearName/htdocs";
+            $phpBinPath = $this->brewDir . "/opt/$brewname/bin";
+            $pearDataDirPath = $this->brewDir . "/share/$pearName/data";
+            $pearCfgDirPath = $this->brewDir . "/share/$pearName/cfg";
+            $pearWwwDirPath = $this->brewDir . "/share/$pearName/htdocs";
             $pearManDirPath = '/usr/local/share/man';
-            $pearTestDirPath = "/usr/local/share/$pearName/test";
-            $phpBinDirPath = "/usr/local/opt/$brewname/bin/php";
+            $pearTestDirPath = $this->brewDir . "/share/$pearName/test";
+            $phpBinDirPath = $this->brewDir . "/opt/$brewname/bin/php";
 
             // Check php_ini value of par config.
             if (empty($pearConfig['php_ini']) || $pearConfig['php_ini'] !== $phpIniPath) {

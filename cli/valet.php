@@ -38,7 +38,8 @@ if (is_dir(VALET_HOME_PATH)) {
 /**
  * Allow Valet to be run more conveniently by allowing the Node proxy to run password-less sudo.
  */
-$app->command('install [--with-mariadb]', function ($withMariadb) {
+$app->command('install [--with-mariadb] [--brew-opt]', function ($withMariadb, $brewOpt) {
+        
     Nginx::stop();
     PhpFpm::stop();
     Mysql::stop();
@@ -48,7 +49,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
 
     Configuration::install();
     $domain = Nginx::install();
-    PhpFpm::install();
+    PhpFpm::install($brewOpt ? '/opt/homebrew' : '/usr/local');
     DnsMasq::install();
     Mysql::install($withMariadb ? 'mariadb' : 'mysql@5.7');
     RedisTool::install();
@@ -66,13 +67,13 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
 /**
  * Fix common problems within the Valet+ installation.
  */
-$app->command('fix [--reinstall]', function ($reinstall) {
+$app->command('fix [--reinstall] [--brew-opt]', function ($reinstall, $brewOpt) {
     if (file_exists($_SERVER['HOME'] . '/.my.cnf')) {
         warning('You have an .my.cnf file in your home directory. This can affect the mysql installation negatively.');
     }
 
-    PhpFpm::fix($reinstall);
-    Pecl::fix();
+    PhpFpm::fix($reinstall, $brewOpt ? '/opt/homebrew' : '/usr/local');
+    Pecl::fix($brewOpt ? '/opt/homebrew' : '/usr/local');
 })->descriptions('Fixes common installation problems that prevent Valet+ from working');
 
 /**

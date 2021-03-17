@@ -31,13 +31,15 @@ class PhpFpm
         self::PHP_V71_VERSION
     ];
 
-    const LOCAL_PHP_FOLDER = '/usr/local/etc/valet-php/';
+    const LOCAL_PHP_FOLDER = '/etc/valet-php/';
 
     public $brew;
     public $cli;
     public $files;
     public $pecl;
     public $peclCustom;
+
+    public $brewDir;
 
     const DEPRECATED_PHP_TAP = 'homebrew/php';
     const VALET_PHP_BREW_TAP = 'henkrehorst/php';
@@ -63,8 +65,10 @@ class PhpFpm
      *
      * @return void
      */
-    public function install()
+    public function install($brewDir="/usr/local")
     {
+        $this->brewDir = $brewDir;
+
         if (!$this->hasInstalledPhp()) {
             $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V72_VERSION));
         }
@@ -78,7 +82,7 @@ class PhpFpm
 
         $version = $this->linkedPhp();
 
-        $this->files->ensureDirExists('/usr/local/var/log', user());
+        $this->files->ensureDirExists($this->brewDir . '/var/log', user());
         $this->updateConfiguration();
         $this->pecl->updatePeclChannel();
         $this->pecl->installExtensions($version);
@@ -123,13 +127,13 @@ class PhpFpm
     public function fpmConfigPath()
     {
         $confLookup = [
-            self::PHP_V80_VERSION => self::LOCAL_PHP_FOLDER . '8.0/php-fpm.d/www.conf',
-            self::PHP_V74_VERSION => self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
-            self::PHP_V73_VERSION => self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
-            self::PHP_V72_VERSION => self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
-            self::PHP_V71_VERSION => self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
-            self::PHP_V70_VERSION => self::LOCAL_PHP_FOLDER . '7.0/php-fpm.d/www.conf',
-            self::PHP_V56_VERSION => self::LOCAL_PHP_FOLDER . '5.6/php-fpm.conf',
+            self::PHP_V80_VERSION => $this->brewDir . self::LOCAL_PHP_FOLDER . '8.0/php-fpm.d/www.conf',
+            self::PHP_V74_VERSION => $this->brewDir . self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
+            self::PHP_V73_VERSION => $this->brewDir . self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
+            self::PHP_V72_VERSION => $this->brewDir . self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
+            self::PHP_V71_VERSION => $this->brewDir . self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
+            self::PHP_V70_VERSION => $this->brewDir . self::LOCAL_PHP_FOLDER . '7.0/php-fpm.d/www.conf',
+            self::PHP_V56_VERSION => $this->brewDir . self::LOCAL_PHP_FOLDER . '5.6/php-fpm.conf',
         ];
 
         return $confLookup[$this->linkedPhp()];
@@ -372,11 +376,11 @@ class PhpFpm
      */
     public function linkedPhp()
     {
-        if (!$this->files->isLink('/usr/local/bin/php')) {
+        if (!$this->files->isLink($this->brewDir . '/bin/php')) {
             throw new DomainException("Unable to determine linked PHP.");
         }
 
-        $resolvedPath = $this->files->readLink('/usr/local/bin/php');
+        $resolvedPath = $this->files->readLink($this->brewDir . '/bin/php');
 
         $versions = self::SUPPORTED_PHP_FORMULAE;
 
@@ -470,8 +474,10 @@ class PhpFpm
     /**
      * Fixes common problems with php installations from Homebrew.
      */
-    public function fix($reinstall)
+    public function fix($reinstall, $brewDir="/usr/local")
     {
+        $this->brewDir = $brewDir;
+        
         // If the current php is not 7.2, link 7.2.
         info('Check Valet+ PHP version...');
         info('Run valet fix with the --reinstall option to trigger a full reinstall of the default PHP version.');
