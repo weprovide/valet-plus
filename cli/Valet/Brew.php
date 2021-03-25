@@ -268,4 +268,28 @@ class Brew
 
         return $versions;
     }
+
+
+    /**
+     * Create the "sudoers.d" entry for running Brew.
+     *
+     * @return void
+     */
+    public function createSudoersEntry()
+    {
+        $this->files->ensureDirExists('/etc/sudoers.d');
+
+        $this->files->put('/etc/sudoers.d/brew', 'Cmnd_Alias BREW = '.BREW_PREFIX.'/bin/brew *
+%admin ALL=(root) NOPASSWD:SETENV: BREW'.PHP_EOL);
+    }
+
+    /**
+     * Remove the "sudoers.d" entry for running Brew.
+     *
+     * @return void
+     */
+    public function removeSudoersEntry()
+    {
+        $this->cli->quietly('rm /etc/sudoers.d/brew');
+    }
 }

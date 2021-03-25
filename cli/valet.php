@@ -481,6 +481,25 @@ if (is_dir(VALET_HOME_PATH)) {
     })->descriptions('Determine if this is the latest version of Valet');
 
     /**
+     * Install the sudoers.d entries so password is no longer required.
+     */
+    $app->command('trust [--off]', function ($off) {
+        if ($off) {
+            Brew::removeSudoersEntry();
+            Valet::removeSudoersEntry();
+
+            return info('Sudoers entries have been removed for Brew and Valet.');
+        }
+
+        Brew::createSudoersEntry();
+        Valet::createSudoersEntry();
+
+        info('Sudoers entries have been added for Brew and Valet.');
+    })->descriptions('Add sudoers files for Brew and Valet to make Valet commands run without passwords', [
+        '--off' => 'Remove the sudoers files so normal sudo password prompts are required.'
+    ]);
+
+    /**
      * Switch between versions of PHP (Default) or Elasticsearch
      */
     $app->command('use [service] [targetVersion]', function ($service, $targetVersion) {

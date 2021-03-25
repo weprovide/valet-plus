@@ -66,4 +66,28 @@ class Valet
 
         return version_compare($currentVersion->getVersion(), $response->body->tag_name, '>=');
     }
+
+
+    /**
+     * Create the "sudoers.d" entry for running Valet.
+     *
+     * @return void
+     */
+    public function createSudoersEntry()
+    {
+        $this->files->ensureDirExists('/etc/sudoers.d');
+
+        $this->files->put('/etc/sudoers.d/valet', 'Cmnd_Alias VALET = '.BREW_PREFIX.'/bin/valet *
+%admin ALL=(root) NOPASSWD:SETENV: VALET'.PHP_EOL);
+    }
+
+    /**
+     * Remove the "sudoers.d" entry for running Valet.
+     *
+     * @return void
+     */
+    public function removeSudoersEntry()
+    {
+        $this->cli->quietly('rm /etc/sudoers.d/valet');
+    }
 }
