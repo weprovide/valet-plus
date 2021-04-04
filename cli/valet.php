@@ -50,8 +50,8 @@ $app->command('install [--with-mariadb] [--brew-opt]', function ($withMariadb, $
     Configuration::install();
     $domain = Nginx::install();
     PhpFpm::install($brewOpt ? '/opt/homebrew' : '/usr/local');
-    DnsMasq::install();
-    Mysql::install($withMariadb ? 'mariadb' : 'mysql@5.7');
+    DnsMasq::install('test', $brewOpt ? '/opt/homebrew' : '/usr/local');
+    Mysql::install($withMariadb ? 'mariadb' : 'mysql@5.7', $brewOpt ? '/opt/homebrew' : '/usr/local');
     RedisTool::install();
     Mailhog::install();
     Nginx::restart();
