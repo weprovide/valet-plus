@@ -8,10 +8,8 @@ class DnsMasq
     public $cli;
     public $files;
 
-    public $brewPath = '/usr/local';
-
     public $resolverPath = '/etc/resolver';
-    public $configPath = 'etc/dnsmasq.conf';
+    public $configPath = '/usr/local/etc/dnsmasq.conf';
     public $exampleConfigPath = 'opt/dnsmasq/dnsmasq.conf.example';
 
     /**
@@ -33,9 +31,8 @@ class DnsMasq
      *
      * @return void
      */
-    public function install($domain = 'test', $brewPath)
+    public function install($domain = 'test')
     {
-        $this->brewPath = $brewPath;
         $this->brew->ensureInstalled('dnsmasq');
 
         // For DnsMasq, we create our own custom configuration file which will be imported
@@ -72,10 +69,10 @@ class DnsMasq
      */
     public function copyExampleConfig()
     {
-        if (! $this->files->exists($this-> brewPath . "/" . $this->configPath)) {
+        if (! $this->files->exists($this->configPath)) {
             $this->files->copyAsUser(
-                $this-> brewPath . "/" . $this->exampleConfigPath,
-                $this-> brewPath . "/" . $this->configPath
+                BREW_PATH . "/" . $this->exampleConfigPath,
+                $this->configPath
             );
         }
     }
@@ -90,7 +87,7 @@ class DnsMasq
     {
         if (! $this->customConfigIsBeingImported($customConfigPath)) {
             $this->files->appendAsUser(
-                $this-> brewPath . "/" . $this->configPath,
+                $this->configPath,
                 PHP_EOL.'conf-file='.$customConfigPath.PHP_EOL
             );
         }
@@ -104,7 +101,7 @@ class DnsMasq
      */
     public function customConfigIsBeingImported($customConfigPath)
     {
-        return strpos($this->files->get($this-> brewPath . "/" . $this->configPath), $customConfigPath) !== false;
+        return strpos($this->files->get($this->configPath), $customConfigPath) !== false;
     }
 
     /**
