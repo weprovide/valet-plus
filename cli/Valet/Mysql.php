@@ -14,8 +14,7 @@ class Mysql
     const MYSQL_DIR = 'var/mysql';
     const MYSQL_ROOT_PASSWORD = 'root';
 
-    public $brew;
-    public $brewPath;
+    public $brew;    
     public $cli;
     public $files;
     public $configuration;
@@ -54,10 +53,8 @@ class Mysql
      *
      * @param $type
      */
-    public function install($type = 'mysql@5.7', $brewPath = '/usr/local')
+    public function install($type = 'mysql@5.7')
     {
-        $this->brewPath = $brewPath;
-
         $this->verifyType($type);
         $currentlyInstalled = $this->installedVersion();
         if ($currentlyInstalled) {
@@ -129,8 +126,8 @@ class Mysql
      */
     private function removeConfiguration($type = 'mysql@5.7')
     {
-        $this->files->unlink($this->brewPath . "/" . static::MYSQL_CONF);
-        $this->files->unlink($this->brewPath . "/" . static::MYSQL_CONF . '.default');
+        $this->files->unlink(BREW_PATH . "/" . static::MYSQL_CONF);
+        $this->files->unlink(BREW_PATH . "/" . static::MYSQL_CONF . '.default');
     }
 
     /**
@@ -154,9 +151,9 @@ class Mysql
     {
         info('[' . $type . '] Configuring');
 
-        $this->files->chmodPath($this->brewPath . "/" . static::MYSQL_DIR, 0777);
+        $this->files->chmodPath(BREW_PATH . "/" . static::MYSQL_DIR, 0777);
 
-        if (!$this->files->isDir($directory = $this->brewPath . "/" . static::MYSQL_CONF_DIR)) {
+        if (!$this->files->isDir($directory = BREW_PATH . "/" . static::MYSQL_CONF_DIR)) {
             $this->files->mkdirAsUser($directory);
         }
 
@@ -166,7 +163,7 @@ class Mysql
         }
 
         $this->files->putAsUser(
-            $this->brewPath . "/" . static::MYSQL_CONF,
+            BREW_PATH . "/" . static::MYSQL_CONF,
             \str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents)
         );
     }

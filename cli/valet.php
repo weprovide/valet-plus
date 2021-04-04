@@ -40,6 +40,8 @@ if (is_dir(VALET_HOME_PATH)) {
  */
 $app->command('install [--with-mariadb] [--brew-opt]', function ($withMariadb, $brewOpt) {
         
+    define('BREW_PATH', $brewOpt ? '/opt/homebrew' : '/usr/local');
+
     Nginx::stop();
     PhpFpm::stop();
     Mysql::stop();
@@ -48,12 +50,12 @@ $app->command('install [--with-mariadb] [--brew-opt]', function ($withMariadb, $
     Binaries::installBinaries();
 
     Configuration::install();
-    $domain = Nginx::install();
+    $domain = Nginx::install($brewOpt ? '/opt/homebrew' : '/usr/local');
     PhpFpm::install($brewOpt ? '/opt/homebrew' : '/usr/local');
     DnsMasq::install('test', $brewOpt ? '/opt/homebrew' : '/usr/local');
     Mysql::install($withMariadb ? 'mariadb' : 'mysql@5.7', $brewOpt ? '/opt/homebrew' : '/usr/local');
     RedisTool::install();
-    Mailhog::install();
+    Mailhog::install($brewOpt ? '/opt/homebrew' : '/usr/local');
     Nginx::restart();
     Valet::symlinkToUsersBin();
     Mysql::setRootPassword();
