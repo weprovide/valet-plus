@@ -69,13 +69,16 @@ $app->command('install [--with-mariadb] [--brew-opt]', function ($withMariadb, $
 /**
  * Fix common problems within the Valet+ installation.
  */
-$app->command('fix [--reinstall] [--brew-opt]', function ($reinstall, $brewOpt) {
+$app->command('fix [--reinstall]', function ($reinstall) {
     if (file_exists($_SERVER['HOME'] . '/.my.cnf')) {
         warning('You have an .my.cnf file in your home directory. This can affect the mysql installation negatively.');
     }
 
-    PhpFpm::fix($reinstall, $brewOpt ? '/opt/homebrew' : '/usr/local');
-    Pecl::fix($brewOpt ? '/opt/homebrew' : '/usr/local');
+    $config = Configuration::read();
+    define('BREW_PATH', $config['brewPath']);
+
+    PhpFpm::fix($reinstall);
+    Pecl::fix();
 })->descriptions('Fixes common installation problems that prevent Valet+ from working');
 
 /**
@@ -357,6 +360,10 @@ if (is_dir(VALET_HOME_PATH)) {
      * Restart the daemon services.
      */
     $app->command('restart [services]*', function ($services) {
+
+        $config = Configuration::read();
+        define('BREW_PATH', $config['brewPath']);
+
         if (empty($services)) {
             DnsMasq::restart();
             PhpFpm::restart();
@@ -497,6 +504,9 @@ if (is_dir(VALET_HOME_PATH)) {
             $service       = 'php';
         }
         $service = (isset($supportedServices[$service]) ? $supportedServices[$service] : false);
+
+        $config = Configuration::read();
+        define('BREW_PATH', $config['brewPath']);
 
         switch ($service) {
             case 'php':
