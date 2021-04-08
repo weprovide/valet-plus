@@ -50,12 +50,12 @@ $app->command('install [--with-mariadb] [--brew-opt]', function ($withMariadb, $
     Binaries::installBinaries();
 
     Configuration::install();
-    $domain = Nginx::install($brewOpt ? '/opt/homebrew' : '/usr/local');
-    PhpFpm::install($brewOpt ? '/opt/homebrew' : '/usr/local');
-    DnsMasq::install('test', $brewOpt ? '/opt/homebrew' : '/usr/local');
-    Mysql::install($withMariadb ? 'mariadb' : 'mysql@5.7', $brewOpt ? '/opt/homebrew' : '/usr/local');
+    $domain = Nginx::install();
+    PhpFpm::install();
+    DnsMasq::install('test');
+    Mysql::install($withMariadb ? 'mariadb' : 'mysql@5.7');
     RedisTool::install();
-    Mailhog::install($brewOpt ? '/opt/homebrew' : '/usr/local');
+    Mailhog::install();
     Nginx::restart();
     Valet::symlinkToUsersBin();
     Mysql::setRootPassword();
@@ -69,13 +69,13 @@ $app->command('install [--with-mariadb] [--brew-opt]', function ($withMariadb, $
 /**
  * Fix common problems within the Valet+ installation.
  */
-$app->command('fix [--reinstall]', function ($reinstall) {
+$app->command('fix [--reinstall] [--brew-opt]', function ($reinstall, $brewOpt) {
+
+    define('BREW_PATH', $brewOpt ? '/opt/homebrew' : '/usr/local');
+
     if (file_exists($_SERVER['HOME'] . '/.my.cnf')) {
         warning('You have an .my.cnf file in your home directory. This can affect the mysql installation negatively.');
     }
-
-    $config = Configuration::read();
-    define('BREW_PATH', $config['brewPath']);
 
     PhpFpm::fix($reinstall);
     Pecl::fix();
@@ -361,8 +361,7 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app->command('restart [services]*', function ($services) {
 
-        $config = Configuration::read();
-        define('BREW_PATH', $config['brewPath']);
+        define('BREW_PATH', Configuration::read()['brewPath']);
 
         if (empty($services)) {
             DnsMasq::restart();
@@ -506,7 +505,7 @@ if (is_dir(VALET_HOME_PATH)) {
         $service = (isset($supportedServices[$service]) ? $supportedServices[$service] : false);
 
         $config = Configuration::read();
-        define('BREW_PATH', $config['brewPath']);
+        define('BREW_PATH', Configuration::read()['brewPath']);
 
         switch ($service) {
             case 'php':

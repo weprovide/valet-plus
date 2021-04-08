@@ -435,10 +435,6 @@ class Pecl extends AbstractPecl
 
             // Put config back into the pear.conf file.
             $this->files->put($pearConfigPath, $pearConfig);
-
-
-            // pecl config-set php_dir /opt/homebrew/share/valet-pear@7.2
-            // pear config-set php_dir /opt/homebrew/share/valet-pear@7.2
         }
     }
 
