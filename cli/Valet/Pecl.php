@@ -54,7 +54,7 @@ class Pecl extends AbstractPecl
             '7.1' => '5.1.17',
             '7.0' => '5.1.17',
             '5.6' => '4.0.11',
-            'extension_type' => self::NORMAL_EXTENSION_TYPE            
+            'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
         // self::GEOIP_EXTENSION => [
         //     '7.4' => '1.1.1',
@@ -139,11 +139,11 @@ class Pecl extends AbstractPecl
     protected function install($extension, $version = null)
     {
         if ($version === null) {
-            if($this->hasBrewDependency($extension)) {
+            if ($this->hasBrewDependency($extension)) {
                 $result = $this->cli->runAsUser("echo $(brew --prefix " . $this->getBrewDependency($extension) . ") | pecl install $extension");
             } else {
                 $result = $this->cli->runAsUser("pecl install $extension");
-            }            
+            }
         } else {
             $result = $this->cli->runAsUser("pecl install $extension-$version");
         }
@@ -536,9 +536,9 @@ class Pecl extends AbstractPecl
 
     /**
      * Check if the extension has any brew dependency
-     * 
-     * @param mixed $extension 
-     * @return bool 
+     *
+     * @param mixed $extension
+     * @return bool
      */
     private function hasBrewDependency($extension)
     {
@@ -548,9 +548,9 @@ class Pecl extends AbstractPecl
 
     /**
      * Get the brew dependency for the pecl command
-     * 
-     * @param mixed $extension 
-     * @return mixed 
+     *
+     * @param mixed $extension
+     * @return mixed
      */
     private function getBrewDependency($extension)
     {

@@ -473,7 +473,7 @@ class PhpFpm
      * Fixes common problems with php installations from Homebrew.
      */
     public function fix($reinstall)
-    {        
+    {
         // If the current php is not 7.2, link 7.2.
         info('Check Valet+ PHP version...');
         info('Run valet fix with the --reinstall option to trigger a full reinstall of the default PHP version.');

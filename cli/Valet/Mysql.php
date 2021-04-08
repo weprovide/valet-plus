@@ -14,7 +14,7 @@ class Mysql
     const MYSQL_DIR = 'var/mysql';
     const MYSQL_ROOT_PASSWORD = 'root';
 
-    public $brew;    
+    public $brew;
     public $cli;
     public $files;
     public $configuration;
