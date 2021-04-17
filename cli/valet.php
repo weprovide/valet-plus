@@ -205,6 +205,9 @@ if (is_dir(VALET_HOME_PATH)) {
      * Secure the given domain with a trusted TLS certificate.
      */
     $app->command('secure [domain]', function ($domain = null) {
+
+        define('BREW_PATH', Configuration::read()['brewPath']);
+
         $url = ($domain ?: Site::host(getcwd())).'.'.Configuration::read()['domain'];
 
         Site::secure($url);
@@ -220,6 +223,9 @@ if (is_dir(VALET_HOME_PATH)) {
      * Stop serving the given domain over HTTPS and remove the trusted TLS certificate.
      */
     $app->command('unsecure [domain]', function ($domain = null) {
+
+        define('BREW_PATH', Configuration::read()['brewPath']);
+
         $url = ($domain ?: Site::host(getcwd())).'.'.Configuration::read()['domain'];
 
         $proxied = Site::proxied($url);
