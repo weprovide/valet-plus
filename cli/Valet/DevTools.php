@@ -65,7 +65,7 @@ class DevTools
 
         foreach (self::SUPPORTED_TOOLS as $tool) {
             if ($this->brew->installed($tool)) {
-                info('[devtools] ' . $tool . ' already installed');
+                output("\t" . $tool . ' already installed, skipping...');
             } else {
                 $this->brew->ensureInstalled($tool, []);
             }
