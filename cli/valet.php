@@ -532,6 +532,8 @@ if (is_dir(VALET_HOME_PATH)) {
         $helper = $this->getHelperSet()->get('question');
         $defaults = $input->getOptions();
 
+        define('BREW_PATH', Configuration::read()['brewPath']);
+
         if ($run === 'list' || $run === 'ls') {
             Mysql::listDatabases();
             return;
