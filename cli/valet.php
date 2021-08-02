@@ -22,7 +22,7 @@ use Symfony\Component\Console\Question\Question;
 Container::setInstance(new Container);
 
 // get current version based on git describe and tags
-$version = new Version('2.0.0', __DIR__ . '/../');
+$version = new Version('2.1.0', __DIR__ . '/../');
 
 $app = new Application('Valet+', $version->getVersion());
 
@@ -39,8 +39,6 @@ if (is_dir(VALET_HOME_PATH)) {
  * Allow Valet to be run more conveniently by allowing the Node proxy to run password-less sudo.
  */
 $app->command('install [--with-mariadb]', function ($withMariadb) {
-    PhpFpm::checkInstallation();
-
     Nginx::stop();
     PhpFpm::stop();
     Mysql::stop();

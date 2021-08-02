@@ -13,19 +13,9 @@ class Elasticsearch
     const ES_CONFIG_DATA_PATH     = 'path.data';
     const ES_CONFIG_DATA_BASEPATH = '/usr/local/var/';
 
-    const ES_FORMULA_NAME    = 'elasticsearch';
-    const ES_V24_VERSION     = '2.4';
-    const ES_V56_VERSION     = '5.6';
-    const ES_V68_VERSION     = '6.8';
-    const ES_V76_VERSION     = '7.6';
-    const ES_DEFAULT_VERSION = self::ES_V24_VERSION;
+    const ES_FORMULA_NAME = 'elasticsearch';
 
-    const SUPPORTED_ES_FORMULAE = [
-        self::ES_V24_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V24_VERSION,
-        self::ES_V56_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V56_VERSION,
-        self::ES_V68_VERSION => self::ES_FORMULA_NAME . '@' . self::ES_V68_VERSION,
-        self::ES_V76_VERSION => self::ES_FORMULA_NAME,
-    ];
+    protected $versions;
 
     public $brew;
     public $cli;
@@ -65,16 +55,20 @@ class Elasticsearch
      * @param string $version
      * @return void
      */
-    public function install($version = self::ES_DEFAULT_VERSION)
+    public function install($version = null)
     {
-        if (!array_key_exists($version, self::SUPPORTED_ES_FORMULAE)) {
+        $versions = $this->getVersions();
+        $version  = ($version ? $version : $this->getLatestVersion());
+
+        if (!$this->isSupportedVersion($version)) {
             warning('The Elasticsearch version you\'re installing is not supported.');
+            warning('Available versions are: ' . implode(', ', array_keys($this->getVersions())));
 
             return;
         }
 
         if ($this->installed($version)) {
-            info('[' . self::SUPPORTED_ES_FORMULAE[$version] . '] already installed');
+            info('[' . $versions[$version]['formula'] . '] (version: ' . $versions[$version]['stable'] . ') already installed');
 
             return;
         }
@@ -83,7 +77,9 @@ class Elasticsearch
         $this->cli->quietlyAsUser('brew cask install java');
         $this->cli->quietlyAsUser('brew cask install homebrew/cask-versions/adoptopenjdk8');
         $this->brew->installOrFail('libyaml');
-        $this->brew->installOrFail(self::SUPPORTED_ES_FORMULAE[$version]);
+        // Install elasticsearch
+        $this->brew->installOrFail($versions[$version]['formula']);
+        // Restart just to make sure
         $this->restart($version);
     }
 
@@ -95,9 +91,13 @@ class Elasticsearch
      */
     public function installed($version = null)
     {
-        $versions = ($version ? [$version] : array_keys(self::SUPPORTED_ES_FORMULAE));
-        foreach ($versions as $version) {
-            if ($this->brew->installed(self::SUPPORTED_ES_FORMULAE[$version])) {
+        // todo; if we have let's say version 5.6 installed the check can give a false-positive
+        //  return when current version (7.10) in Brew has the same formula now as 5.6 at the time.
+
+        $versions = $this->getVersions();
+        $majors   = ($version ? [$version] : array_keys($versions));
+        foreach ($majors as $version) {
+            if ($this->brew->installed($versions[$version]['formula'])) {
                 return $version;
             }
         }
@@ -114,13 +114,14 @@ class Elasticsearch
     public function restart($version = null)
     {
         $version = ($version ? $version : $this->getCurrentVersion());
-        $version = $this->installed($version);
-        if (!$version) {
+
+        if (!$this->installed($version)) {
             return;
         }
 
-        info('[' . self::SUPPORTED_ES_FORMULAE[$version] . '] Restarting');
-        $this->cli->quietlyAsUser('brew services restart ' . self::SUPPORTED_ES_FORMULAE[$version]);
+        $versions = $this->getVersions();
+        info('[' . $versions[$version]['formula'] . '] Restarting');
+        $this->cli->quietlyAsUser('brew services restart ' . $versions[$version]['formula']);
     }
 
     /**
@@ -132,14 +133,17 @@ class Elasticsearch
     public function stop($version = null)
     {
         $version = ($version ? $version : $this->getCurrentVersion());
-        $version = $this->installed($version);
         if (!$version) {
             return;
         }
 
-        info('[' . self::SUPPORTED_ES_FORMULAE[$version] . '] Stopping');
-        $this->cli->quietly('sudo brew services stop ' . self::SUPPORTED_ES_FORMULAE[$version]);
-        $this->cli->quietlyAsUser('brew services stop ' . self::SUPPORTED_ES_FORMULAE[$version]);
+        if (!$this->installed($version)) {
+            return;
+        }
+
+        $versions = $this->getVersions();
+        info('[' . $versions[$version]['formula'] . '] Stopping');
+        $this->cli->quietlyAsUser('brew services stop ' . $versions[$version]['formula']);
     }
 
     /**
@@ -150,6 +154,7 @@ class Elasticsearch
     public function uninstall()
     {
         $this->stop();
+        // todo; should do a 'brew remove <formula>' and 'rm -rf <stuff>'?
     }
 
     /**
@@ -157,16 +162,14 @@ class Elasticsearch
      */
     public function updateDomain($domain)
     {
-        if ($this->files->exists(self::NGINX_CONFIGURATION_PATH)) {
-            $this->files->putAsUser(
-                self::NGINX_CONFIGURATION_PATH,
-                str_replace(
-                    ['VALET_DOMAIN'],
-                    [$domain],
-                    $this->files->get(self::NGINX_CONFIGURATION_PATH)
-                )
-            );
-        }
+        $this->files->putAsUser(
+            self::NGINX_CONFIGURATION_PATH,
+            str_replace(
+                ['VALET_DOMAIN'],
+                [$domain],
+                $this->files->get(self::NGINX_CONFIGURATION_STUB)
+            )
+        );
     }
 
     /**
@@ -177,13 +180,11 @@ class Elasticsearch
     public function switchTo($version)
     {
         $currentVersion = $this->getCurrentVersion();
-
-        if (!array_key_exists($version, self::SUPPORTED_ES_FORMULAE)) {
-            throw new DomainException("This version of Elasticsearch is not supported. The following versions are supported: " . implode(', ', array_keys(self::SUPPORTED_ES_FORMULAE)) . ($currentVersion ? "\nCurrent version is " . $currentVersion : ""));
+        if (!$this->isSupportedVersion($version)) {
+            throw new DomainException("This version of Elasticsearch is not supported. The following versions are supported: " . implode(', ', array_keys($this->getVersions())) . ($currentVersion ? "\nCurrent version is " . $currentVersion : ""));
         }
 
-
-        // If the current version equals that of the current PHP version, do not switch.
+        // If the requested version equals that of the current running version, do not switch.
         if ($version === $currentVersion) {
             info('Already on this version');
 
@@ -191,15 +192,23 @@ class Elasticsearch
         }
 
         // Make sure the requested version is installed.
-        $installed = $this->brew->installed(self::SUPPORTED_ES_FORMULAE[$version]);
+        $versions  = $this->getVersions();
+        $installed = $this->installed($version);
         if (!$installed) {
-            $this->brew->ensureInstalled(self::SUPPORTED_ES_FORMULAE[$version]);
+            $this->brew->ensureInstalled($versions[$version]['formula']);
         }
 
-        // Stop all versions.
-        $this->stop($currentVersion);
+        if ($currentVersion) {
+            // Stop current version.
+            $this->stop($currentVersion);
+        }
 
         // Alter elasticsearch data path in config yaml.
+        // Elasticsearch stores the indices on disk. In this yaml the path to those indices is configured.
+        // The indices are not compatible accross different Elasticsearch versions. So, we configure a data
+        // path for each Elasticsearch version to keep them stored and thus prevent having to index after
+        // switching or even break Elasticsearch (it can't start properly with indices from another version).
+        // todo; hmmm maybe we should do this also when installing?
         if (extension_loaded('yaml')) {
             $config                            = yaml_parse_file(self::ES_CONFIG_YAML);
             $config[self::ES_CONFIG_DATA_PATH] = self::ES_CONFIG_DATA_BASEPATH . self::ES_FORMULA_NAME . '@' . $version . '/';
@@ -208,29 +217,69 @@ class Elasticsearch
             // Install PHP dependencies through installation of PHP.
             $this->phpFpm->install();
             warning("Switching Elasticsearch requires PECL extension yaml. Try switching again.");
+
             return;
         }
 
         // Start requested version.
         $this->restart($version);
 
-        info("Valet is now using " . self::SUPPORTED_ES_FORMULAE[$version] . ". You might need to reindex your data.");
+        info("Valet is now using [" . $versions[$version]['formula'] . "]. You might need to reindex your data.");
     }
 
     /**
-     * Returns the current running version.
+     * Returns the current running major version.
      *
      * @return bool|int|string
      */
     public function getCurrentVersion()
     {
         $currentVersion = false;
-        foreach (self::SUPPORTED_ES_FORMULAE as $version => $formula) {
-            if ($this->brew->isStartedService($formula)) {
-                $currentVersion = $version;
+        $versions       = $this->getVersions();
+
+        foreach ($versions as $major => $version) {
+            if ($this->brew->isStartedService($version['formula'])) {
+                $currentVersion = $major;
             }
         }
 
         return $currentVersion;
+    }
+
+    /**
+     * Returns array with available formulae in Brew and their stable and major version.
+     *
+     * @return array
+     */
+    public function getVersions()
+    {
+        if ($this->versions === null) {
+            $this->versions = $this->brew->getFormulaVersions(self::ES_FORMULA_NAME);
+        }
+
+        return $this->versions;
+    }
+
+    /**
+     * Returns the major of the latest version.
+     */
+    public function getLatestVersion()
+    {
+        $versions = $this->getVersions();
+
+        return max(array_keys($versions));
+    }
+
+    /**
+     * Returns wether the version is supported in Brew.
+     *
+     * @param $version
+     * @return bool
+     */
+    public function isSupportedVersion($version)
+    {
+        $versions = $this->getVersions();
+
+        return in_array($version, array_keys($versions));
     }
 }
