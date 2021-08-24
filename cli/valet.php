@@ -33,6 +33,8 @@ if (is_dir(VALET_HOME_PATH)) {
     Configuration::prune();
 
     Site::pruneLinks();
+
+    define('BREW_PATH', Configuration::read()['brewPath']);
 }
 
 /**
@@ -206,8 +208,6 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app->command('secure [domain]', function ($domain = null) {
 
-        define('BREW_PATH', Configuration::read()['brewPath']);
-
         $url = ($domain ?: Site::host(getcwd())).'.'.Configuration::read()['domain'];
 
         Site::secure($url);
@@ -223,8 +223,6 @@ if (is_dir(VALET_HOME_PATH)) {
      * Stop serving the given domain over HTTPS and remove the trusted TLS certificate.
      */
     $app->command('unsecure [domain]', function ($domain = null) {
-
-        define('BREW_PATH', Configuration::read()['brewPath']);
 
         $url = ($domain ?: Site::host(getcwd())).'.'.Configuration::read()['domain'];
 
@@ -367,8 +365,6 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app->command('restart [services]*', function ($services) {
 
-        define('BREW_PATH', Configuration::read()['brewPath']);
-
         if (empty($services)) {
             DnsMasq::restart();
             PhpFpm::restart();
@@ -510,9 +506,6 @@ if (is_dir(VALET_HOME_PATH)) {
         }
         $service = (isset($supportedServices[$service]) ? $supportedServices[$service] : false);
 
-        $config = Configuration::read();
-        define('BREW_PATH', Configuration::read()['brewPath']);
-
         switch ($service) {
             case 'php':
                 PhpFpm::switchTo($targetVersion);
@@ -531,8 +524,6 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('db [run] [name] [optional] [-y|--yes]', function ($input, $output, $run, $name, $optional) {
         $helper = $this->getHelperSet()->get('question');
         $defaults = $input->getOptions();
-
-        define('BREW_PATH', Configuration::read()['brewPath']);
 
         if ($run === 'list' || $run === 'ls') {
             Mysql::listDatabases();
@@ -954,11 +945,11 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('logs [service]', function ($service) {
         $logs = [
             'php' => '$HOME/.valet/Log/php.log',
-            'php-fpm' => '/usr/local/var/log/php-fpm.log',
+            'php-fpm' => BREW_PATH . '/var/log/php-fpm.log',
             'nginx' => '$HOME/.valet/Log/nginx-error.log',
             'mysql' => '$HOME/.valet/Log/mysql.log',
-            'mailhog' => '/usr/local/var/log/mailhog.log',
-            'redis' => '/usr/local/var/log/redis.log',
+            'mailhog' => BREW_PATH . '/var/log/mailhog.log',
+            'redis' => BREW_PATH . '/var/log/redis.log',
         ];
 
         if (!isset($logs[$service])) {

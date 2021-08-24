@@ -367,7 +367,7 @@ class Pecl extends AbstractPecl
             $pearDataDirPath = BREW_PATH . "/share/$pearName/data";
             $pearCfgDirPath = BREW_PATH . "/share/$pearName/cfg";
             $pearWwwDirPath = BREW_PATH . "/share/$pearName/htdocs";
-            $pearManDirPath = '/usr/local/share/man';
+            $pearManDirPath = BREW_PATH . '/share/man';
             $pearTestDirPath = BREW_PATH . "/share/$pearName/test";
             $phpBinDirPath = BREW_PATH . "/opt/$brewname/bin/php";
 
