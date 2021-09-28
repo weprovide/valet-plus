@@ -176,7 +176,7 @@ class PhpFpm
 
         $installed = $this->brew->installed(self::SUPPORTED_PHP_FORMULAE[$version]);
         if (!$installed) {
-            $this->brew->ensureInstalled(self::SUPPORTED_PHP_FORMULAE[$version]);
+            $this->brew->ensureInstalled(self::SUPPORTED_PHP_FORMULAE[$version], ['--build-from-source']);
         }
 
         // Unlink the current PHP version.
@@ -483,7 +483,7 @@ class PhpFpm
         // If any error occurs return the error for debugging purposes.
         if ($reinstall) {
             $this->brew->ensureUninstalled(self::SUPPORTED_PHP_FORMULAE[self::PHP_V73_VERSION]);
-            $this->brew->ensureInstalled(self::SUPPORTED_PHP_FORMULAE[self::PHP_V73_VERSION]);
+            $this->brew->ensureInstalled(self::SUPPORTED_PHP_FORMULAE[self::PHP_V73_VERSION], ['--build-from-source']);
         }
 
         // Check the current linked PHP version. If the current version is not the default version.
