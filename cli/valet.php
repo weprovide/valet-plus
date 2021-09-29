@@ -696,25 +696,25 @@ if (is_dir(VALET_HOME_PATH)) {
             throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
         }
 
-        if (PeclCustom::isInstalled('ioncube_loader_dar') === false) {
+        if (PeclCustom::isInstalled('ioncube_loader_mac') === false) {
             info('[PECL-CUSTOM] Ioncube loader not found, installing...');
-            PeclCustom::installExtension('ioncube_loader_dar');
+            PeclCustom::installExtension('ioncube_loader_mac');
         }
 
-        if (PeclCustom::isEnabled('ioncube_loader_dar') === false && ($mode === 'on' || $mode === 'enable')) {
-            info("[PECL-CUSTOM] Enabling ioncube_loader_dar extension");
-            PeclCustom::enableExtension('ioncube_loader_dar');
+        if (PeclCustom::isEnabled('ioncube_loader_mac') === false && ($mode === 'on' || $mode === 'enable')) {
+            info("[PECL-CUSTOM] Enabling ioncube_loader_mac extension");
+            PeclCustom::enableExtension('ioncube_loader_mac');
             PhpFpm::restart();
         } elseif ($mode === 'on' || $mode === 'enable') {
-            info("[PECL-CUSTOM] ioncube_loader_dar extension is already installed");
+            info("[PECL-CUSTOM] ioncube_loader_mac extension is already installed");
         }
 
-        if (PeclCustom::isEnabled('ioncube_loader_dar') === true && ($mode === 'off' || $mode === 'disable')) {
-            info("[PECL-CUSTOM] Disabling ioncube_loader_dar extension");
-            PeclCustom::disable('ioncube_loader_dar');
+        if (PeclCustom::isEnabled('ioncube_loader_mac') === true && ($mode === 'off' || $mode === 'disable')) {
+            info("[PECL-CUSTOM] Disabling ioncube_loader_mac extension");
+            PeclCustom::disable('ioncube_loader_mac');
             PhpFpm::restart();
         } elseif ($mode === 'off' || $mode === 'disable') {
-            info("[PECL-CUSTOM] ioncube_loader_dar extension is already uninstalled");
+            info("[PECL-CUSTOM] ioncube_loader_mac extension is already uninstalled");
         }
     })->descriptions('Enable / disable ioncube');
 
