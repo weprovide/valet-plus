@@ -28,7 +28,8 @@ class PhpFpm
     const EOL_PHP_VERSIONS = [
         self::PHP_V56_VERSION,
         self::PHP_V70_VERSION,
-        self::PHP_V71_VERSION
+        self::PHP_V71_VERSION,
+        self::PHP_V72_VERSION
     ];
 
     const LOCAL_PHP_FOLDER = '/usr/local/etc/valet-php/';
@@ -472,22 +473,24 @@ class PhpFpm
      */
     public function fix($reinstall)
     {
-        // If the current php is not 7.2, link 7.2.
+        // If the current php is not 7.3, link 7.3.
         info('Check Valet+ PHP version...');
-        info('Run valet fix with the --reinstall option to trigger a full reinstall of the default PHP version.');
+        if (!$reinstall) {
+            info('Run valet fix with the --reinstall option to trigger a full reinstall of the default PHP version.');
+        }
 
         // If the reinstall flag was passed, uninstall PHP.
         // If any error occurs return the error for debugging purposes.
         if ($reinstall) {
-            $this->brew->ensureUninstalled(self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]);
-            $this->brew->ensureInstalled(self::SUPPORTED_PHP_FORMULAE[self::PHP_V72_VERSION]);
+            $this->brew->ensureUninstalled(self::SUPPORTED_PHP_FORMULAE[self::PHP_V73_VERSION]);
+            $this->brew->ensureInstalled(self::SUPPORTED_PHP_FORMULAE[self::PHP_V73_VERSION]);
         }
 
         // Check the current linked PHP version. If the current version is not the default version.
         // Then relink the default version.
-        if ($this->linkedPhp() !== self::PHP_V72_VERSION) {
-            $this->unlinkPhp(self::PHP_V72_VERSION);
-            $this->linkPhp(self::PHP_V72_VERSION);
+        if ($this->linkedPhp() !== self::PHP_V73_VERSION) {
+            $this->unlinkPhp(self::PHP_V73_VERSION);
+            $this->linkPhp(self::PHP_V73_VERSION);
         }
 
         // Untap the deprecated brew tap.
@@ -497,7 +500,7 @@ class PhpFpm
         }
 
         warning("Please check your linked php version, you might need to restart your terminal!" .
-            "\nLinked PHP should be php 7.2:");
+            "\nLinked PHP should be php 7.3:");
         output($this->cli->runAsUser('php -v'));
     }
 }
