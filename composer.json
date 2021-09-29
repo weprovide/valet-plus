@@ -34,20 +34,20 @@
     "replace": {
         "laravel/valet": "*"
     },
+    "config": {
+        "platform-check": false
+    },
     "require": {
         "php": ">=5.6",
-        "illuminate/container": "~5.1",
+        "illuminate/container": "~5.1|^6.0|^7.0|^8.0",
         "mnapoli/silly": "~1.5.0",
-        "symfony/process": "~2.7|~3.0",
+        "symfony/process": "~2.7|~3.0|~4.0|~5.0",
         "nategood/httpful": "~0.2",
-        "tightenco/collect": "~5.4.0",
-        "sebastian/version": "^2.0",
-        "squizlabs/php_codesniffer": "*",
-        "symfony/debug": "4.4.8"
+        "tightenco/collect": "~5.4.0|^6.0|^7.0|^8.0"
     },
     "require-dev": {
-        "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~5.7"
+        "mockery/mockery": "^1.2.3",
+        "phpunit/phpunit": "^9"
     },
     "bin": [
         "valet"
