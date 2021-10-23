@@ -8,7 +8,7 @@ class PeclCustom extends AbstractPecl
 {
 
     // Extensions.
-    const IONCUBE_LOADER_EXTENSION = 'ioncube_loader_dar';
+    const IONCUBE_LOADER_EXTENSION = 'ioncube_loader_mac';
 
     // File extensions.
     const TAR_GZ_FILE_EXTENSION = '.tar.gz';
@@ -53,11 +53,12 @@ class PeclCustom extends AbstractPecl
      */
     const EXTENSIONS = [
         self::IONCUBE_LOADER_EXTENSION => [
-            '7.3' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
-            '7.2' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
-            '7.1' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
-            '7.0' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
-            '5.6' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_dar_x86-64.tar.gz',
+            '7.4' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_mac_x86-64.tar.gz',
+            '7.3' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_mac_x86-64.tar.gz',
+            '7.2' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_mac_x86-64.tar.gz',
+            '7.1' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_mac_x86-64.tar.gz',
+            '7.0' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_mac_x86-64.tar.gz',
+            '5.6' => 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_mac_x86-64.tar.gz',
             'file_extension' => self::TAR_GZ_FILE_EXTENSION,
             'packaged_directory' => 'ioncube',
             'default' => false,

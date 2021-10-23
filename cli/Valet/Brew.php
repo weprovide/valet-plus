@@ -30,7 +30,8 @@ class Brew
      */
     public function installed($formula)
     {
-        return in_array($formula, explode(PHP_EOL, $this->cli->runAsUser('brew list --formula | grep ' . $formula)));
+        $formulae = $this->cli->runAsUser('brew list --formula | grep ' . $formula);
+        return in_array($formula, explode(PHP_EOL, $formulae));
     }
 
     /**
@@ -103,7 +104,7 @@ class Brew
         $this->cli->runAsUser(
             trim('brew install ' . $formula . ' ' . implode(' ', $options)),
             function ($exitCode, $errorOutput) use ($formula) {
-                output($errorOutput);
+                output($exitCode . ' : ' . $errorOutput);
 
                 throw new DomainException('Brew was unable to install [' . $formula . '].');
             }

@@ -11,13 +11,16 @@ class DevTools
     const PV_TOOL = 'pv';
     const GEOIP_TOOL = 'geoip';
     const ZLIB_TOOL = 'zlib';
-
+    const JQ = 'jq';
+    const LIBYAML = 'libyaml';
 
     const SUPPORTED_TOOLS = [
         self::WP_CLI_TOOL,
         self::PV_TOOL,
         self::GEOIP_TOOL,
-        self::ZLIB_TOOL
+        self::ZLIB_TOOL,
+        self::JQ,
+        self::LIBYAML
     ];
 
     public $brew;
@@ -64,7 +67,7 @@ class DevTools
 
         foreach (self::SUPPORTED_TOOLS as $tool) {
             if ($this->brew->installed($tool)) {
-                info('[devtools] ' . $tool . ' already installed');
+                output("\t" . $tool . ' already installed, skipping...');
             } else {
                 $this->brew->ensureInstalled($tool, []);
             }
