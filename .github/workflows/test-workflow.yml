@@ -42,13 +42,13 @@ jobs:
       - name: '[INSTALL] Brew install valet-php@7.2'
         run: |
           rm /usr/local/bin/2to3
-          brew install valet-php@7.2
+          brew install valet-php@7.3 --build-from-source
 
       # Link valet-php@7.2 as default php binary.
       - name: '[INSTALL] Brew link valet-php@7.2'
         run: |
-          brew link valet-php@7.2 --force
-          php -v | grep 7.2
+          brew link valet-php@7.3 --force
+          php -v | grep 7.3
 
       # Since the Github actions CI/CD image comes with composer pre-installed there is no need to install composer.
       # However the image might change in the future. To ensure installation over several images an IF ELSE used.
@@ -239,6 +239,6 @@ jobs:
       # to manually remove the Cellar files.
       - name: '[INSTALL] Valet fix --reinstall'
         run: |
-          sudo chmod -R 777 /usr/local/Cellar/valet-php@7.2
+          sudo chmod -R 777 /usr/local/Cellar/valet-php@7.3
           ./valet fix --reinstall
 
