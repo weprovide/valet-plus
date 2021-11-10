@@ -116,16 +116,16 @@ class DevTools
         info('Opening Visual Studio Code');
         $command = false;
 
-        if ($this->files->exists('/usr/local/bin/code')) {
-            $command = '/usr/local/bin/code';
+        if ($this->files->exists(BREW_PATH . '/bin/code')) {
+            $command = BREW_PATH . '/bin/code';
         }
 
-        if ($this->files->exists('/usr/local/bin/vscode')) {
-            $command = '/usr/local/bin/vscode';
+        if ($this->files->exists(BREW_PATH . '/bin/vscode')) {
+            $command = BREW_PATH . '/bin/vscode';
         }
 
         if (!$command) {
-            throw new Exception('/usr/local/bin/code command not found. Please install it.');
+            throw new Exception(BREW_PATH . '/bin/code command not found. Please install it.');
         }
 
         $output = $this->cli->runAsUser($command . ' $(git rev-parse --show-toplevel)');

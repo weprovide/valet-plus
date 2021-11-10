@@ -7,7 +7,7 @@ use DomainException;
 class Elasticsearch
 {
     const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/elasticsearch.conf';
-    const NGINX_CONFIGURATION_PATH = '/usr/local/etc/nginx/valet/elasticsearch.conf';
+    const NGINX_CONFIGURATION_PATH = 'etc/nginx/valet/elasticsearch.conf';
 
     const ES_CONFIG_YAML          = '/usr/local/etc/elasticsearch/elasticsearch.yml';
     const ES_CONFIG_DATA_PATH     = 'path.data';
@@ -163,7 +163,7 @@ class Elasticsearch
     public function updateDomain($domain)
     {
         $this->files->putAsUser(
-            self::NGINX_CONFIGURATION_PATH,
+            BREW_PATH . '/' . self::NGINX_CONFIGURATION_PATH,
             str_replace(
                 ['VALET_DOMAIN'],
                 [$domain],

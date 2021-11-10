@@ -11,7 +11,7 @@ class Nginx
     public $files;
     public $configuration;
     public $site;
-    const NGINX_CONF = '/usr/local/etc/nginx/nginx.conf';
+    const NGINX_CONF = 'etc/nginx/nginx.conf';
 
     /**
      * Create a new Nginx instance.
@@ -64,7 +64,7 @@ class Nginx
         $contents = $this->files->get(__DIR__.'/../stubs/nginx.conf');
 
         $this->files->putAsUser(
-            static::NGINX_CONF,
+            BREW_PATH . "/" . static::NGINX_CONF,
             str_replace(['VALET_USER', 'VALET_HOME_PATH'], [user(), VALET_HOME_PATH], $contents)
         );
     }
@@ -78,10 +78,10 @@ class Nginx
     {
         $domain = $this->configuration->read()['domain'];
 
-        $this->files->ensureDirExists('/usr/local/etc/nginx/valet');
+        $this->files->ensureDirExists(BREW_PATH . '/etc/nginx/valet');
 
         $this->files->putAsUser(
-            '/usr/local/etc/nginx/valet/valet.conf',
+            BREW_PATH . '/etc/nginx/valet/valet.conf',
             str_replace(
                 ['VALET_HOME_PATH', 'VALET_SERVER_PATH', 'VALET_STATIC_PREFIX'],
                 [VALET_HOME_PATH, VALET_SERVER_PATH, VALET_STATIC_PREFIX],
@@ -90,7 +90,7 @@ class Nginx
         );
 
         $this->files->putAsUser(
-            '/usr/local/etc/nginx/fastcgi_params',
+            BREW_PATH . '/etc/nginx/fastcgi_params',
             $this->files->get(__DIR__.'/../stubs/fastcgi_params')
         );
     }
@@ -119,7 +119,7 @@ class Nginx
     private function lint()
     {
         $this->cli->quietly(
-            'sudo nginx -c '.static::NGINX_CONF.' -t',
+            'sudo nginx -c '.BREW_PATH ."/".static::NGINX_CONF.' -t',
             function ($exitCode, $outputMessage) {
                 throw new DomainException("Nginx cannot start, please check your nginx.conf [$exitCode: $outputMessage].");
             }

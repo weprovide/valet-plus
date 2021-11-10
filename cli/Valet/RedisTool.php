@@ -9,7 +9,7 @@ class RedisTool extends AbstractService
     public $files;
     public $site;
 
-    const REDIS_CONF = '/usr/local/etc/redis.conf';
+    const REDIS_CONF = 'etc/redis.conf';
 
     /**
      * Create a new instance.
@@ -70,7 +70,12 @@ class RedisTool extends AbstractService
      */
     public function installConfiguration()
     {
-        $this->files->copy(__DIR__.'/../stubs/redis.conf', static::REDIS_CONF);
+        $contents = $this->files->get(__DIR__.'/../stubs/redis.conf');
+
+        $this->files->put(
+            BREW_PATH . "/" . static::REDIS_CONF, 
+            str_replace('BREW_PATH', BREW_PATH, $contents)
+        );
     }
 
     /**
