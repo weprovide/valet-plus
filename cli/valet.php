@@ -31,18 +31,15 @@ $app = new Application('Valet+', $version->getVersion());
  */
 if (is_dir(VALET_HOME_PATH)) {
     Configuration::prune();
-
     Site::pruneLinks();
-
-    define('BREW_PATH', Configuration::read()['brewPath']);
+    Architecture::defineBrewPath();
 }
 
 /**
  * Allow Valet to be run more conveniently by allowing the Node proxy to run password-less sudo.
  */
-$app->command('install [--with-mariadb] [--brew-opt]', function ($withMariadb, $brewOpt) {
-        
-    define('BREW_PATH', $brewOpt ? '/opt/homebrew' : '/usr/local');
+$app->command('install [--with-mariadb]', function ($withMariadb) {
+    Architecture::defineBrewPath();
 
     Nginx::stop();
     PhpFpm::stop();
@@ -55,7 +52,7 @@ $app->command('install [--with-mariadb] [--brew-opt]', function ($withMariadb, $
     $domain = Nginx::install();
     PhpFpm::install();
     DnsMasq::install('test');
-    Mysql::install($withMariadb ? 'mariadb' : 'mysql@5.7');
+    Mysql::install($withMariadb ? 'mariadb' : 'mysql');
     RedisTool::install();
     Mailhog::install();
     Nginx::restart();
@@ -207,7 +204,6 @@ if (is_dir(VALET_HOME_PATH)) {
      * Secure the given domain with a trusted TLS certificate.
      */
     $app->command('secure [domain]', function ($domain = null) {
-
         $url = ($domain ?: Site::host(getcwd())).'.'.Configuration::read()['domain'];
 
         Site::secure($url);

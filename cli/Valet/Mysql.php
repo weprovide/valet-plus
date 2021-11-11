@@ -19,7 +19,7 @@ class Mysql
     public $files;
     public $configuration;
     public $site;
-    public $systemDatabase = ['sys', 'performance_schema', 'information_schema', 'mysql@5.7'];
+    public $systemDatabase = ['sys', 'performance_schema', 'information_schema', 'mysql'];
     /**
      * @var Mysqli
      */
@@ -53,7 +53,7 @@ class Mysql
      *
      * @param $type
      */
-    public function install($type = 'mysql@5.7')
+    public function install($type = 'mysql@')
     {
         $this->verifyType($type);
         $currentlyInstalled = $this->installedVersion();
@@ -91,7 +91,7 @@ class Mysql
     public function verifyType($type)
     {
         if (!\in_array($type, $this->supportedVersions())) {
-            throw new DomainException('Invalid Mysql type given. Available: mysql@5.7/mariadb');
+            throw new DomainException('Invalid Mysql type given. Available: mysql/mariadb');
         }
     }
 
@@ -102,7 +102,7 @@ class Mysql
      */
     public function supportedVersions()
     {
-        return ['mysql@5.7', 'mariadb'];
+        return ['mysql', 'mariadb', 'mysql'];
     }
 
     /**
@@ -124,7 +124,7 @@ class Mysql
      *
      * @param string $type
      */
-    private function removeConfiguration($type = 'mysql@5.7')
+    private function removeConfiguration($type = 'mysql')
     {
         $this->files->unlink(BREW_PATH . "/" . static::MYSQL_CONF);
         $this->files->unlink(BREW_PATH . "/" . static::MYSQL_CONF . '.default');
@@ -135,7 +135,7 @@ class Mysql
      */
     public function stop()
     {
-        $version = $this->installedVersion('mysql@5.7');
+        $version = $this->installedVersion('mysql');
         info('[' . $version . '] Stopping');
 
         $this->cli->quietly('sudo brew services stop ' . $version);
@@ -147,7 +147,7 @@ class Mysql
      *
      * @param string $type
      */
-    public function installConfiguration($type = 'mysql@5.7')
+    public function installConfiguration($type = 'mysql')
     {
         info('[' . $type . '] Configuring');
 
@@ -173,7 +173,7 @@ class Mysql
      */
     public function restart()
     {
-        $version = $this->installedVersion() ?: 'mysql@5.7';
+        $version = $this->installedVersion() ?: 'mysql';
         info('[' . $version . '] Restarting');
         $this->cli->quietlyAsUser('brew services restart ' . $version);
     }

@@ -7,29 +7,12 @@ use DomainException;
 class PhpFpm
 {
     const PHP_FORMULA_NAME = 'valet-php@';
-    const PHP_V56_VERSION = '5.6';
-    const PHP_V70_VERSION = '7.0';
-    const PHP_V71_VERSION = '7.1';
-    const PHP_V72_VERSION = '7.2';
-    const PHP_V73_VERSION = '7.3';
     const PHP_V74_VERSION = '7.4';
     const PHP_V80_VERSION = '8.0';
 
     const SUPPORTED_PHP_FORMULAE = [
-        self::PHP_V56_VERSION => self::PHP_FORMULA_NAME . self::PHP_V56_VERSION,
-        self::PHP_V70_VERSION => self::PHP_FORMULA_NAME . self::PHP_V70_VERSION,
-        self::PHP_V71_VERSION => self::PHP_FORMULA_NAME . self::PHP_V71_VERSION,
-        self::PHP_V72_VERSION => self::PHP_FORMULA_NAME . self::PHP_V72_VERSION,
-        self::PHP_V73_VERSION => self::PHP_FORMULA_NAME . self::PHP_V73_VERSION,
         self::PHP_V74_VERSION => self::PHP_FORMULA_NAME . self::PHP_V74_VERSION,
         self::PHP_V80_VERSION => self::PHP_FORMULA_NAME . self::PHP_V80_VERSION
-    ];
-
-    const EOL_PHP_VERSIONS = [
-        self::PHP_V56_VERSION,
-        self::PHP_V70_VERSION,
-        self::PHP_V71_VERSION,
-        self::PHP_V72_VERSION
     ];
 
     const LOCAL_PHP_FOLDER = '/etc/valet-php/';
@@ -128,11 +111,6 @@ class PhpFpm
         $confLookup = [
             self::PHP_V80_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '8.0/php-fpm.d/www.conf',
             self::PHP_V74_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
-            self::PHP_V73_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
-            self::PHP_V72_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
-            self::PHP_V71_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
-            self::PHP_V70_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '7.0/php-fpm.d/www.conf',
-            self::PHP_V56_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '5.6/php-fpm.conf',
         ];
 
         return $confLookup[$this->linkedPhp()];
@@ -169,11 +147,6 @@ class PhpFpm
         if ($version === $currentVersion) {
             info('Already on this version');
             return;
-        }
-
-        if (in_array($version, self::EOL_PHP_VERSIONS)) {
-            warning('Caution! The PHP version you\'re switching to is EOL.');
-            warning('Please check http://php.net/supported-versions.php for more information.');
         }
 
         $installed = $this->brew->installed(self::SUPPORTED_PHP_FORMULAE[$version]);
@@ -375,7 +348,8 @@ class PhpFpm
      */
     public function linkedPhp()
     {
-        if (!$this->files->isLink(BREW_PATH . '/bin/php')) {
+        $phpPath = BREW_PATH . '/bin/php';
+        if (!$this->files->isLink($phpPath)) {
             throw new DomainException("Unable to determine linked PHP.");
         }
 
