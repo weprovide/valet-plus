@@ -187,7 +187,7 @@ class Mysql
     {
         $success = true;
         $this->cli->runAsUser("mysqladmin -u root --password='".$oldPwd."' password ".$newPwd, function () use (&$success) {
-            warning('Setting password for root user failed. ');
+            warning('Setting mysql password for root user failed. ');
             $success = false;
         });
 
