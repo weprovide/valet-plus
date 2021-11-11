@@ -235,6 +235,7 @@ class Site
         $this->unsecure($url);
 
         if ($secure) {
+
             $this->files->ensureDirExists($this->certificatesPath(), user());
             $this->createCertificate($url);
         }
@@ -253,8 +254,41 @@ class Site
      */
     public function secure($url)
     {
+        $this->files->ensureDirExists($this->caPath(), user());
+        $this->createCa();
+
         $proxied = $this->proxied($url);
         $this->configure($url, true, $proxied);
+    }
+
+    /**
+     * If CA and root certificates are nonexistent, create them and trust the root cert.
+     *
+     * @return void
+     */
+    public function createCa()
+    {
+        $caPemPath = $this->caPath() . '/LaravelValetCASelfSigned.pem';
+        $caKeyPath = $this->caPath() . '/LaravelValetCASelfSigned.key';
+        if ($this->files->exists($caKeyPath) && $this->files->exists($caPemPath)) {
+            return;
+        }
+        $oName = 'Laravel Valet CA Self Signed Organization';
+        $cName = 'Laravel Valet CA Self Signed CN';
+        if ($this->files->exists($caKeyPath)) {
+            $this->files->unlink($caKeyPath);
+        }
+        if ($this->files->exists($caPemPath)) {
+            $this->files->unlink($caPemPath);
+        }
+        $this->cli->runAsUser(sprintf(
+                                  'openssl req -new -newkey rsa:2048 -days 730 -nodes -x509 -subj "/O=%s/commonName=%s/organizationalUnitName=Developers/emailAddress=%s/" -keyout "%s" -out "%s"',
+                                  $oName,
+                                  $cName,
+                                  'rootcertificate@laravel.valet',
+                                  $caKeyPath,
+                                  $caPemPath
+                              ));
     }
 
     /**
@@ -265,6 +299,9 @@ class Site
      */
     public function createCertificate($url)
     {
+        $caPemPath = $this->caPath() . '/LaravelValetCASelfSigned.pem';
+        $caKeyPath = $this->caPath() . '/LaravelValetCASelfSigned.key';
+        $caSrlPath = $this->caPath() . '/LaravelValetCASelfSigned.srl';
         $keyPath = $this->certificatesPath().'/'.$url.'.key';
         $csrPath = $this->certificatesPath().'/'.$url.'.csr';
         $crtPath = $this->certificatesPath().'/'.$url.'.crt';
@@ -274,10 +311,16 @@ class Site
         $this->createPrivateKey($keyPath);
         $this->createSigningRequest($url, $keyPath, $csrPath, $confPath);
 
+        $caSrlParam = ' -CAcreateserial';
+        if ($this->files->exists($caSrlPath)) {
+            $caSrlParam = ' -CAserial ' . $caSrlPath;
+        }
         $this->cli->runAsUser(sprintf(
-            'openssl x509 -req -days 365 -in %s -signkey %s -out %s -extensions v3_req -extfile %s',
+            'openssl x509 -req -sha256 -days 365 -CA "%s" -CAkey "%s"%s -in "%s" -out "%s" -extensions v3_req -extfile "%s"',
+            $caPemPath,
+            $caKeyPath,
+            $caSrlParam,
             $csrPath,
-            $keyPath,
             $crtPath,
             $confPath
         ));
@@ -484,5 +527,15 @@ class Site
         }
 
         return false;
+    }
+
+    /**
+     * Get the path to the Valet CA certificates.
+     *
+     * @return string
+     */
+    public function caPath()
+    {
+        return VALET_HOME_PATH . '/CA';
     }
 }
