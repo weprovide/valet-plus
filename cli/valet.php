@@ -69,8 +69,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
  * Fix common problems within the Valet+ installation.
  */
 $app->command('fix [--reinstall] [--brew-opt]', function ($reinstall, $brewOpt) {
-
-    define('BREW_PATH', $brewOpt ? '/opt/homebrew' : '/usr/local');
+    Architecture::defineBrewPath();
 
     if (file_exists($_SERVER['HOME'] . '/.my.cnf')) {
         warning('You have an .my.cnf file in your home directory. This can affect the mysql installation negatively.');
