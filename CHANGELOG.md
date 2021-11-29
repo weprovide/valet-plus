@@ -4,9 +4,23 @@ All notable changes to valet-plus will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/weprovide/valet-plus/compare/2.1.0...2.x)
+## [Unreleased](https://github.com/weprovide/valet-plus/compare/2.2.1...2.x)
+- [#587] Minimum version of symfony/process causes fatal error
+- [#549] Fix xdebug veriosn 2.9.8 for PHP 7.x
+- Start highest installed major of Elasticsearch on valet start
+- Add libyaml as brew devtool
+- Use PHP 7.2 as default version
+
+## [2.2.1](https://github.com/weprovide/valet-plus/compare/2.2.0...2.2.1)
+- Fix missing dependencies of sebastian/version
+
+## [2.2.0](https://github.com/weprovide/valet-plus/compare/2.1.0...2.2.0)
+- [#517] Nginx config changes for fastcgi_buffers
+- [#554] Fix for Brew 2.7.0: brew list without commands
 - [#551] Replace hardcoded Elasticsearch versions by fetching from Brew
 - [#546] Add support for PHP 8.0
+- [#583] Add support for ioncube on PHP 7.4
+- Add --build-from-source when installing PHP
 - Use PHP 7.2 as default version
 
 ## [2.1.0](https://github.com/weprovide/valet-plus/compare/2.0.0...2.1.0)
