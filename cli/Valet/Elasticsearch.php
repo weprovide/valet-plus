@@ -115,6 +115,11 @@ class Elasticsearch
     {
         $version = ($version ? $version : $this->getCurrentVersion());
 
+        if (!$version) {
+            // Fallback to highest major.
+            $version = $this->installed();
+        }
+
         if (!$this->installed($version)) {
             return;
         }
