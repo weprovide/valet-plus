@@ -43,6 +43,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
     PhpFpm::stop();
     Mysql::stop();
     RedisTool::stop();
+    Mkcert::install();
     DevTools::install();
     Binaries::installBinaries();
 
@@ -465,6 +466,7 @@ if (is_dir(VALET_HOME_PATH)) {
         Elasticsearch::uninstall();
         RabbitMq::uninstall();
         Varnish::uninstall();
+        Mkcert::uninstall();
 
         info('Valet has been uninstalled.');
     })->descriptions('Uninstall the Valet services');
