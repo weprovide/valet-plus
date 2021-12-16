@@ -4,6 +4,9 @@ namespace Valet;
 
 class Architecture
 {
+    public const ARM_BREW_PATH = '/opt/homebrew';
+    public const INTEL_BREW_PATH = '/usr/local';
+
     /**
      * @var CommandLine
      */
@@ -28,7 +31,15 @@ class Architecture
     public function defineBrewPath() : void
     {
         if (!defined('BREW_PATH')) {
-            define('BREW_PATH', $this->isArm64() ? '/opt/homebrew' : '/usr/local');
+            define('BREW_PATH', $this->isArm64() ? self::ARM_BREW_PATH : self::INTEL_BREW_PATH);
         }
+    }
+
+    public function getBrewPath() : string
+    {
+        if (!defined('BREW_PATH')) {
+            $this->defineBrewPath();
+        }
+        return BREW_PATH;
     }
 }

@@ -29,19 +29,27 @@ class PhpFpm
     const VALET_PHP_BREW_TAP = 'henkrehorst/php';
 
     /**
-     * Create a new PHP FPM class instance.
-     *
+     * @param Architecture $architecture
      * @param Brew $brew
      * @param CommandLine $cli
      * @param Filesystem $files
+     * @param Pecl $pecl
+     * @param PeclCustom $peclCustom
      */
-    public function __construct(Brew $brew, CommandLine $cli, Filesystem $files, Pecl $pecl, PeclCustom $peclCustom)
-    {
+    public function __construct(
+        Architecture $architecture,
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
+        Pecl $pecl,
+        PeclCustom $peclCustom
+    ) {
         $this->cli = $cli;
         $this->brew = $brew;
         $this->files = $files;
         $this->pecl = $pecl;
         $this->peclCustom = $peclCustom;
+        $this->architecture = $architecture;
     }
 
     /**
@@ -137,10 +145,12 @@ class PhpFpm
         $currentVersion = $this->linkedPhp();
 
         if (!array_key_exists($version, self::SUPPORTED_PHP_FORMULAE)) {
-            throw new DomainException("This version of PHP not available. The following versions are available: " . implode(
-                ' ',
-                array_keys(self::SUPPORTED_PHP_FORMULAE)
-            ));
+            throw new DomainException(
+                "This version of PHP not available. The following versions are available: " . implode(
+                    ' ',
+                    array_keys(self::SUPPORTED_PHP_FORMULAE)
+                )
+            );
         }
 
         // If the current version equals that of the current PHP version, do not switch.
@@ -161,7 +171,9 @@ class PhpFpm
 
         // Relink libjpeg
         info('[libjpeg] Relinking');
-        $this->cli->passthru('sudo ln -fs /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib');
+        $this->cli->passthru(
+            'sudo ln -fs /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib'
+        );
 
         if (!$this->linkPHP($version, $currentVersion)) {
             return;
@@ -183,9 +195,12 @@ class PhpFpm
     {
         $isLinked = true;
         info("[php@$version] Linking");
-        $output = $this->cli->runAsUser('brew link ' . self::SUPPORTED_PHP_FORMULAE[$version] . ' --force --overwrite', function () use (&$isLinked) {
-            $isLinked = false;
-        });
+        $output = $this->cli->runAsUser(
+            'brew link ' . self::SUPPORTED_PHP_FORMULAE[$version] . ' --force --overwrite',
+            function () use (&$isLinked) {
+                $isLinked = false;
+            }
+        );
 
         // The output is about how many symlinks were created.
         // Sanitize the second half to prevent users from being confused.
@@ -198,9 +213,11 @@ class PhpFpm
         output($output);
 
         if ($isLinked === false) {
-            warning("Could not link PHP version!" . PHP_EOL .
+            warning(
+                "Could not link PHP version!" . PHP_EOL .
                 "There appears to be an issue with your PHP $version installation!" . PHP_EOL .
-                "See the output above for more information." . PHP_EOL);
+                "See the output above for more information." . PHP_EOL
+            );
         }
 
         if ($currentVersion !== null && $isLinked === false) {
@@ -221,13 +238,19 @@ class PhpFpm
     {
         $isUnlinked = true;
         info("[php@$version] Unlinking");
-        output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[$version], function () use (&$isUnlinked) {
-            $isUnlinked = false;
-        }));
+        output(
+            $this->cli->runAsUser(
+                'brew unlink ' . self::SUPPORTED_PHP_FORMULAE[$version], function () use (&$isUnlinked) {
+                $isUnlinked = false;
+            }
+            )
+        );
         if ($isUnlinked === false) {
-            warning("Could not unlink PHP version!" . PHP_EOL .
+            warning(
+                "Could not unlink PHP version!" . PHP_EOL .
                 "There appears to be an issue with your PHP $version installation!" . PHP_EOL .
-                "See the output above for more information.");
+                "See the output above for more information."
+            );
         }
 
         return $isUnlinked;
@@ -320,7 +343,9 @@ class PhpFpm
     {
         $iniPath = $this->iniPath();
         if ($this->files->exists($iniPath . 'z-performance.ini')) {
-            $this->cli->passthru('sed -i "" "s/xdebug.remote_autostart=0/xdebug.remote_autostart=1/g" ' . $iniPath . 'z-performance.ini');
+            $this->cli->passthru(
+                'sed -i "" "s/xdebug.remote_autostart=0/xdebug.remote_autostart=1/g" ' . $iniPath . 'z-performance.ini'
+            );
             info('xdebug.remote_autostart is now enabled.');
             return true;
         }
@@ -332,12 +357,39 @@ class PhpFpm
     {
         $iniPath = $this->iniPath();
         if ($this->files->exists($iniPath . 'z-performance.ini')) {
-            $this->cli->passthru('sed -i "" "s/xdebug.remote_autostart=1/xdebug.remote_autostart=0/g" ' . $iniPath . 'z-performance.ini');
+            $this->cli->passthru(
+                'sed -i "" "s/xdebug.remote_autostart=1/xdebug.remote_autostart=0/g" ' . $iniPath . 'z-performance.ini'
+            );
             info('xdebug.remote_autostart is now disabled.');
             return true;
         }
         warning('Cannot find z-performance.ini, please re-install Valet+');
         return false;
+    }
+
+    /**
+     * The send mail path in z-performance.ini is incorrect for M1 macs with ARM64 processors, let's fix that.
+     * @return bool
+     */
+    public function arm64FixMailPath()
+    {
+        if ($this->architecture->isArm64() === false) {
+            return false;
+        }
+        $initPath = $this->iniPath();
+        if (!$this->files->exists($initPath . 'z-performance.ini')) {
+            warning('Cannot find z-performance.ini, please re-install Valet+');
+            return false;
+        }
+
+        $zPerformanceLocation = $initPath . 'z-performance.ini';
+
+        $this->cli->passthru(
+            // phpcs:ignore
+            sprintf('sed -i "" "s|%s|%s|" %s', Architecture::INTEL_BREW_PATH, Architecture::ARM_BREW_PATH, $zPerformanceLocation)
+        );
+        info('Sendmail path updated to work with M1 mac\'s');
+        return true;
     }
 
     /**
@@ -475,8 +527,10 @@ class PhpFpm
             $this->brew->unTap(self::DEPRECATED_PHP_TAP);
         }
 
-        warning("Please check your linked php version, you might need to restart your terminal!" .
-            "\nLinked PHP should be php 7.3:");
+        warning(
+            "Please check your linked php version, you might need to restart your terminal!" .
+            "\nLinked PHP should be php 7.3:"
+        );
         output($this->cli->runAsUser('php -v'));
     }
 }

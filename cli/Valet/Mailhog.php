@@ -7,21 +7,37 @@ class Mailhog extends AbstractService
     const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/mailhog.conf';
     const NGINX_CONFIGURATION_PATH = 'etc/nginx/valet/mailhog.conf';
 
+    /**
+     * @var Brew
+     */
     public $brew;
+    /**
+     * @var CommandLine
+     */
     public $cli;
+    /**
+     * @var Filesystem
+     */
     public $files;
+    /**
+     * @var Site
+     */
     public $site;
+    /**
+     * @var PhpFpm
+     */
+    public $phpFpm;
 
     /**
-     * Create a new instance.
-     *
-     * @param  Brew          $brew
-     * @param  CommandLine   $cli
-     * @param  Filesystem    $files
-     * @param  Configuration $configuration
-     * @param  Site          $site
+     * @param PhpFpm $phpFpm
+     * @param Brew $brew
+     * @param CommandLine $cli
+     * @param Filesystem $files
+     * @param Configuration $configuration
+     * @param Site $site
      */
     public function __construct(
+        PhpFpm $phpFpm,
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
@@ -32,6 +48,8 @@ class Mailhog extends AbstractService
         $this->brew  = $brew;
         $this->site  = $site;
         $this->files = $files;
+        $this->configuration = $configuration;
+        $this->phpFpm = $phpFpm;
         parent::__construct($configuration);
     }
 
@@ -42,6 +60,11 @@ class Mailhog extends AbstractService
      */
     public function install()
     {
+        // Fix sendmail path for M1 Mac's.
+        if ($this->phpFpm->arm64FixMailPath()) {
+            $this->phpFpm->restart();
+        }
+
         if ($this->installed()) {
             info('[mailhog] already installed');
         } else {
