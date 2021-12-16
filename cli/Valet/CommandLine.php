@@ -75,7 +75,12 @@ class CommandLine
         $onError = $onError ?: function () {
         };
 
-        $process = Process::fromShellCommandline($command);
+        $process = null;
+        if (is_callable(Process::class, 'fromShellCommandline')) {
+            $process = Process::fromShellCommandline($command);
+        } else {
+            $process = new Process($command);
+        }
 
         $processOutput = '';
         $process->setTimeout(null)->run(function ($type, $line) use (&$processOutput) {
