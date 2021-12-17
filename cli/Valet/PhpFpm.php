@@ -89,7 +89,7 @@ class PhpFpm
 
         $version = $this->linkedPhp();
 
-        $this->files->ensureDirExists(Architecture::getBrewPath() . '/var/log', user());
+        $this->files->ensureDirExists($this->architecture->getBrewPath() . '/var/log', user());
         $this->updateConfiguration();
         $this->pecl->updatePeclChannel();
         $this->pecl->installExtensions($version);
@@ -133,14 +133,15 @@ class PhpFpm
      */
     public function fpmConfigPath()
     {
+        $brewPath = $this->architecture->getBrewPath();
         $confLookup = [
-            self::PHP_V80_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '8.0/php-fpm.d/www.conf',
-            self::PHP_V74_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
-            self::PHP_V73_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
-            self::PHP_V72_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
-            self::PHP_V71_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
-            self::PHP_V70_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '7.0/php-fpm.d/www.conf',
-            self::PHP_V56_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '5.6/php-fpm.conf',
+            self::PHP_V80_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '8.0/php-fpm.d/www.conf',
+            self::PHP_V74_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
+            self::PHP_V73_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
+            self::PHP_V72_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
+            self::PHP_V71_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
+            self::PHP_V70_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.0/php-fpm.d/www.conf',
+            self::PHP_V56_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '5.6/php-fpm.conf',
         ];
 
         return $confLookup[$this->linkedPhp()];
@@ -471,7 +472,7 @@ class PhpFpm
      */
     public function linkedPhp()
     {
-        $phpPath = Architecture::getBrewPath() . '/bin/php';
+        $phpPath = $this->architecture->getBrewPath() . '/bin/php';
         if (!$this->files->isLink($phpPath)) {
             throw new DomainException("Unable to determine linked PHP.");
         }
@@ -563,7 +564,7 @@ class PhpFpm
         $contents = $this->files->get(__DIR__ . '/../stubs/z-performance.ini');
         $contents = str_replace('TIMEZONE', $systemZoneName, $contents);
         // Fix brew path in z-performance.ini
-        $contents = str_replace('BREW_PATH', Architecture::getBrewPath(), $contents);
+        $contents = str_replace('BREW_PATH', $this->architecture->getBrewPath(), $contents);
 
         $iniPath = $this->iniPath();
         $this->files->ensureDirExists($iniPath, user());

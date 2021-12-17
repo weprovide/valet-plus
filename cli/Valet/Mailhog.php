@@ -23,8 +23,13 @@ class Mailhog extends AbstractService
      * @var Site
      */
     public $site;
+    /**
+     * @var Architecture
+     */
+    private $architecture;
 
     /**
+     * @param Architecture $architecture
      * @param Brew $brew
      * @param CommandLine $cli
      * @param Filesystem $files
@@ -32,6 +37,7 @@ class Mailhog extends AbstractService
      * @param Site $site
      */
     public function __construct(
+        Architecture $architecture,
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
@@ -44,6 +50,7 @@ class Mailhog extends AbstractService
         $this->files = $files;
         $this->configuration = $configuration;
         parent::__construct($configuration);
+        $this->architecture = $architecture;
     }
 
     /**
@@ -115,7 +122,7 @@ class Mailhog extends AbstractService
     public function updateDomain($domain)
     {
         $this->files->putAsUser(
-            Architecture::getBrewPath() . '/' . self::NGINX_CONFIGURATION_PATH,
+            $this->architecture->getBrewPath() . '/' . self::NGINX_CONFIGURATION_PATH,
             str_replace(
                 ['VALET_DOMAIN'],
                 [$domain],

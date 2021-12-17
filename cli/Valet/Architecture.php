@@ -12,26 +12,35 @@ class Architecture
     /**
      * @var string|null
      */
-    private static $brewPath = null;
+    private $brewPath = null;
+
+    /**
+     * @var CommandLine
+     */
+    private $cli;
+
+    public function __construct(CommandLine $cli)
+    {
+        $this->cli = $cli;
+    }
 
     /**
      * @return string
      */
-    public static function getBrewPath()
+    public function getBrewPath()
     {
-        if (Architecture::$brewPath === null) {
-            Architecture::defineBrewPath();
+        if ($this->brewPath === null) {
+            $this->defineBrewPath();
         }
-        return Architecture::$brewPath;
+        return $this->brewPath;
     }
 
     /**
      * @return bool
      */
-    public static function isArm64()
+    public function isArm64()
     {
-        $cli = new CommandLine();
-        if (strpos($cli->run('uname -m'), self::ARM_64) !== false) {
+        if (strpos($this->cli->run('uname -m'), self::ARM_64) !== false) {
             info('ARM Mac detected');
             return true;
         }
@@ -42,9 +51,9 @@ class Architecture
     /**
      * @return void
      */
-    private static function defineBrewPath()
+    private function defineBrewPath()
     {
-            Architecture::$brewPath = Architecture::isArm64() ?
+            $this->brewPath = $this->isArm64() ?
                 Architecture::ARM_BREW_PATH :
                 Architecture::INTEL_BREW_PATH;
     }

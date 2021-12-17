@@ -17,23 +17,47 @@ class Elasticsearch
 
     protected $versions;
 
+    /**
+     * @var Brew
+     */
     public $brew;
+    /**
+     * @var CommandLine
+     */
     public $cli;
+    /**
+     * @var Filesystem
+     */
     public $files;
+    /**
+     * @var Configuration
+     */
     public $configuration;
+    /**
+     * @var Site
+     */
     public $site;
+    /**
+     * @var PhpFpm
+     */
     public $phpFpm;
+    /**
+     * @var Architecture
+     */
+    private $architecture;
 
     /**
      * Elasticsearch constructor.
-     * @param Brew          $brew
-     * @param CommandLine   $cli
-     * @param Filesystem    $files
+     * @param Architecture $architecture
+     * @param Brew $brew
+     * @param CommandLine $cli
+     * @param Filesystem $files
      * @param Configuration $configuration
-     * @param Site          $site
-     * @param PhpFpm        $phpFpm
+     * @param Site $site
+     * @param PhpFpm $phpFpm
      */
     public function __construct(
+        Architecture $architecture,
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
@@ -47,6 +71,7 @@ class Elasticsearch
         $this->files         = $files;
         $this->configuration = $configuration;
         $this->phpFpm        = $phpFpm;
+        $this->architecture = $architecture;
     }
 
     /**
@@ -168,7 +193,7 @@ class Elasticsearch
     public function updateDomain($domain)
     {
         $this->files->putAsUser(
-            Architecture::getBrewPath() . '/' . self::NGINX_CONFIGURATION_PATH,
+            $this->architecture->getBrewPath() . '/' . self::NGINX_CONFIGURATION_PATH,
             str_replace(
                 ['VALET_DOMAIN'],
                 [$domain],

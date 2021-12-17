@@ -48,19 +48,31 @@ class Binaries
         ]
     ];
 
+    /**
+     * @var CommandLine
+     */
     public $cli;
+    /**
+     * @var Filesystem
+     */
     public $files;
+    /**
+     * @var Architecture
+     */
+    private $architecture;
 
     /**
      * Create a new Brew instance.
      *
-     * @param  CommandLine $cli
-     * @param  Filesystem $files
+     * @param Architecture $architecture
+     * @param CommandLine $cli
+     * @param Filesystem $files
      */
-    public function __construct(CommandLine $cli, Filesystem $files)
+    public function __construct(Architecture $architecture, CommandLine $cli, Filesystem $files)
     {
         $this->cli = $cli;
         $this->files = $files;
+        $this->architecture = $architecture;
     }
 
     /**
@@ -213,7 +225,7 @@ class Binaries
     private function getBinLocation($binary)
     {
         if (array_key_exists('bin_location', self::SUPPORTED_CUSTOM_BINARIES[$binary])) {
-            return Architecture::getBrewPath() . self::SUPPORTED_CUSTOM_BINARIES[$binary]['bin_location'] . $binary;
+            return $this->architecture->getBrewPath() . self::SUPPORTED_CUSTOM_BINARIES[$binary]['bin_location'] . $binary;
         }
         throw new DomainException('bin_location key is required for binaries.');
     }

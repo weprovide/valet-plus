@@ -15,11 +15,33 @@ class Mysql
     const MYSQL_DIR = 'var/mysql';
     const MYSQL_ROOT_PASSWORD = 'root';
 
+    /**
+     * @var Brew
+     */
     public $brew;
+    /**
+     * @var CommandLine
+     */
     public $cli;
+    /**
+     * @var Filesystem
+     */
     public $files;
+    /**
+     * @var Configuration
+     */
     public $configuration;
+    /**
+     * @var Site
+     */
     public $site;
+    /**
+     * @var Architecture
+     */
+    private $architecture;
+    /**
+     * @var string[]
+     */
     public $systemDatabase = ['sys', 'performance_schema', 'information_schema', 'mysql'];
     /**
      * @var Mysqli
@@ -29,13 +51,15 @@ class Mysql
     /**
      * Create a new instance.
      *
-     * @param Brew          $brew
-     * @param CommandLine   $cli
-     * @param Filesystem    $files
+     * @param Architecture $architecture
+     * @param Brew $brew
+     * @param CommandLine $cli
+     * @param Filesystem $files
      * @param Configuration $configuration
-     * @param Site          $site
+     * @param Site $site
      */
     public function __construct(
+        Architecture $architecture,
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
@@ -47,6 +71,7 @@ class Mysql
         $this->site = $site;
         $this->files = $files;
         $this->configuration = $configuration;
+        $this->architecture = $architecture;
     }
 
     /**
@@ -128,8 +153,8 @@ class Mysql
      */
     private function removeConfiguration()
     {
-        $this->files->unlink(Architecture::getBrewPath() . "/" . static::MYSQL_CONF);
-        $this->files->unlink(Architecture::getBrewPath() . "/" . static::MYSQL_CONF . '.default');
+        $this->files->unlink($this->architecture->getBrewPath() . "/" . static::MYSQL_CONF);
+        $this->files->unlink($this->architecture->getBrewPath() . "/" . static::MYSQL_CONF . '.default');
     }
 
     /**
@@ -153,9 +178,9 @@ class Mysql
     {
         info('[' . $type . '] Configuring');
 
-        $this->files->chmodPath(Architecture::getBrewPath() . "/" . static::MYSQL_DIR, 0777);
+        $this->files->chmodPath($this->architecture->getBrewPath() . "/" . static::MYSQL_DIR, 0777);
 
-        if (!$this->files->isDir($directory = Architecture::getBrewPath() . "/" . static::MYSQL_CONF_DIR)) {
+        if (!$this->files->isDir($directory = $this->architecture->getBrewPath() . "/" . static::MYSQL_CONF_DIR)) {
             $this->files->mkdirAsUser($directory);
         }
 
@@ -177,7 +202,7 @@ class Mysql
         $contents = str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents);
 
         $this->files->putAsUser(
-            Architecture::getBrewPath() . "/" . static::MYSQL_CONF,
+            $this->architecture->getBrewPath() . "/" . static::MYSQL_CONF,
             $contents
         );
     }
