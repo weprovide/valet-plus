@@ -380,6 +380,79 @@ class PhpFpm
         return false;
     }
 
+    /**
+     * Xdebug 3 has different configuration fields in z-performance.ini than Xdebug 2.0.
+     * This function will enable/disable the version specific settings in z-performance.ini.
+     * @see https://xdebug.org/docs/upgrade_guide#New-Concepts
+     * @return void
+     */
+    public function installXdebugConfiguration()
+    {
+        $version = $this->getXdebugVersion();
+        if (!$version) {
+            warning('Xdebug not found. You have to fix your z-performance.ini yourself if you are using Xdebug 3');
+        }
+
+        $iniPath = $this->iniPath();
+        $zPerformancePath = $iniPath . 'z-performance.ini';
+        $majorVersion = (int) substr($version, 0, 1);
+
+        if (!$this->files->exists($zPerformancePath)) {
+            warning('Cannot find z-performance.ini, please re-install Valet+');
+        }
+        info('Patching z-performance.ini so it will work with Xdebug '. $version);
+        $content = $this->files->get($zPerformancePath);
+
+        if ($majorVersion === 3) {
+            // Disable Xdebug 2 options
+            $content = preg_replace('/(xdebug.remote_enable=1)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.remote_host=localhost)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.remote_port=9000)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.remote_autostart=1)/', ';$1', $content);
+
+            // Enable Xdebug 3 options
+            $content = preg_replace('/;+(xdebug.mode=debug)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.client_host=localhost)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.client_port=9003)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.start_with_request=1)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.log_level=0)/', '$1', $content);
+        }
+
+        if ($majorVersion === 2) {
+            // Enable Xdebug 2 options
+            $content = preg_replace('/;+(xdebug.remote_enable=1)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.remote_host=localhost)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.remote_port=9000)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.remote_autostart=1)/', '$1', $content);
+
+            // Disable Xdebug 3 options
+            $content = preg_replace('/(xdebug.mode=debug)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.client_host=localhost)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.client_port=9003)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.start_with_request=1)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.log_level=0)/', ';$1', $content);
+        }
+
+        $this->files->put($zPerformancePath, $content);
+        info('z-performance.ini patched and ready to use with Xdebug ' . $version);
+    }
+
+    /**
+     * @return string|bool
+     */
+    public function getXdebugVersion()
+    {
+        $output = $this->cli->run('php -v | grep "with Xdebug"');
+        // Extract the Xdebug version
+        preg_match('/with Xdebug v(\d\.\d\.\d),/', $output, $matches);
+
+        if (count($matches) === 2) {
+            return $matches[1];
+        }
+
+        return false;
+    }
+
     public function disableAutoStart()
     {
         $iniPath = $this->iniPath();

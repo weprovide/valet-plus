@@ -662,6 +662,7 @@ if (is_dir(VALET_HOME_PATH)) {
         if (Pecl::isInstalled('xdebug') === false) {
             info('[PECL] Xdebug not found, installing...');
             Pecl::installExtension('xdebug');
+            PhpFpm::installXdebugConfiguration();
             $restart = true;
         }
 
