@@ -63,11 +63,11 @@ class Pecl extends AbstractPecl
         ],
         self::GEOIP_EXTENSION => [
             '8.0' => false, //todo; will probably be 1.1.2
-            '7.4' => false,
-            '7.3' => false,
-            '7.2' => false,
-            '7.1' => false,
-            '7.0' => false,
+            '7.4' => '1.1.1',
+            '7.3' => '1.1.1',
+            '7.2' => '1.1.1',
+            '7.1' => '1.1.1',
+            '7.0' => '1.1.1',
             'extension_type' => self::NORMAL_EXTENSION_TYPE,
             'brew_dependency' => 'geoip'
         ],
