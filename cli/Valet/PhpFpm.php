@@ -395,31 +395,6 @@ class PhpFpm
     }
 
     /**
-     * The send mail path in z-performance.ini is incorrect for M1 macs with ARM64 processors, let's fix that.
-     * @return bool
-     */
-    public function arm64FixMailPath()
-    {
-        if ($this->architecture->isArm64() === false) {
-            return false;
-        }
-        $initPath = $this->iniPath();
-        if (!$this->files->exists($initPath . 'z-performance.ini')) {
-            warning('Cannot find z-performance.ini, please re-install Valet+');
-            return false;
-        }
-
-        $zPerformanceLocation = $initPath . 'z-performance.ini';
-
-        $this->cli->passthru(
-            // phpcs:ignore
-            sprintf('sed -i "" "s|%s|%s|" %s', Architecture::INTEL_BREW_PATH, Architecture::ARM_BREW_PATH, $zPerformanceLocation)
-        );
-        info('Sendmail path updated to work with M1 mac\'s');
-        return true;
-    }
-
-    /**
      * Determine which version of PHP is linked with Homebrew.
      *
      * @return string
@@ -515,8 +490,11 @@ class PhpFpm
         $systemZoneName = str_replace('/usr/share/zoneinfo/', '', $systemZoneName);
         // macOS High Sierra has a new location for the timezone info
         $systemZoneName = str_replace('/var/db/timezone/zoneinfo/', '', $systemZoneName);
+
         $contents = $this->files->get(__DIR__ . '/../stubs/z-performance.ini');
         $contents = str_replace('TIMEZONE', $systemZoneName, $contents);
+        // Fix brew path in z-performance.ini
+        $contents = str_replace('BREW_PATH', Architecture::getBrewPath(), $contents);
 
         $iniPath = $this->iniPath();
         $this->files->ensureDirExists($iniPath, user());

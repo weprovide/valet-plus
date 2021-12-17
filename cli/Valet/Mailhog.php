@@ -23,13 +23,8 @@ class Mailhog extends AbstractService
      * @var Site
      */
     public $site;
-    /**
-     * @var PhpFpm
-     */
-    public $phpFpm;
 
     /**
-     * @param PhpFpm $phpFpm
      * @param Brew $brew
      * @param CommandLine $cli
      * @param Filesystem $files
@@ -37,7 +32,6 @@ class Mailhog extends AbstractService
      * @param Site $site
      */
     public function __construct(
-        PhpFpm $phpFpm,
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
@@ -49,7 +43,6 @@ class Mailhog extends AbstractService
         $this->site  = $site;
         $this->files = $files;
         $this->configuration = $configuration;
-        $this->phpFpm = $phpFpm;
         parent::__construct($configuration);
     }
 
@@ -60,11 +53,6 @@ class Mailhog extends AbstractService
      */
     public function install()
     {
-        // Fix sendmail path for M1 Mac's.
-        if ($this->phpFpm->arm64FixMailPath()) {
-            $this->phpFpm->restart();
-        }
-
         if ($this->installed()) {
             info('[mailhog] already installed');
         } else {
