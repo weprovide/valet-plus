@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Start highest installed major of Elasticsearch on valet start
 - Add libyaml as brew devtool
 - Use PHP 7.2 as default version
+
+### Added
 - [#572] Add support for usage on ARM processors (M1 mac's) 
 - [#563] Add support for Xdebug 3
 - Add support for Mysql 8
