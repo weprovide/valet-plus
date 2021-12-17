@@ -51,7 +51,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
     Configuration::install();
     $domain = Nginx::install();
     PhpFpm::install();
-    DnsMasq::install('test');
+    DnsMasq::install();
     Mysql::install($withMariadb ? 'mariadb' : 'mysql');
     RedisTool::install();
     Mailhog::install();
@@ -68,7 +68,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
 /**
  * Fix common problems within the Valet+ installation.
  */
-$app->command('fix [--reinstall] [--brew-opt]', function ($reinstall, $brewOpt) {
+$app->command('fix [--reinstall]', function ($reinstall) {
     Architecture::defineBrewPath();
 
     if (file_exists($_SERVER['HOME'] . '/.my.cnf')) {

@@ -38,7 +38,7 @@
         "platform-check": false
     },
     "require": {
-        "php": ">=7.1",
+        "php": ">=5.6",
         "illuminate/container": "~5.1|^6.0|^7.0|^8.0",
         "mnapoli/silly": "~1.5.0",
         "symfony/process": "~2.7|~3.0|~4.0|~5.0",
