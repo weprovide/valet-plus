@@ -265,13 +265,9 @@ class PhpFpm
     {
         $isUnlinked = true;
         info("[php@$version] Unlinking");
-        output(
-            $this->cli->runAsUser(
-                'brew unlink ' . self::SUPPORTED_PHP_FORMULAE[$version], function () use (&$isUnlinked) {
-                $isUnlinked = false;
-            }
-            )
-        );
+        output($this->cli->runAsUser('brew unlink ' . self::SUPPORTED_PHP_FORMULAE[$version], function () use (&$isUnlinked) {
+            $isUnlinked = false;
+        }));
         if ($isUnlinked === false) {
             warning(
                 "Could not unlink PHP version!" . PHP_EOL .

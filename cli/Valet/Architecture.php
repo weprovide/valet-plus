@@ -12,7 +12,7 @@ class Architecture
     /**
      * @var string|null
      */
-    static $brewPath = null;
+    private static $brewPath = null;
 
     /**
      * @return string
