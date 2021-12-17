@@ -187,7 +187,7 @@ class Mysql
      */
     public function restart()
     {
-        $version = $this->installedVersion() ?: 'mysql';
+        $version = $this->installedVersion() ?: 'mysql@5.7';
         info('[' . $version . '] Restarting');
         $this->cli->quietlyAsUser('brew services restart ' . $version);
     }
