@@ -5,6 +5,7 @@ namespace Valet;
 use DomainException;
 use mysqli;
 use MYSQLI_ASSOC;
+use function str_replace;
 
 class Mysql
 {
@@ -53,7 +54,7 @@ class Mysql
      *
      * @param $type
      */
-    public function install($type = 'mysql@')
+    public function install($type = 'mysql@5.7')
     {
         $this->verifyType($type);
         $currentlyInstalled = $this->installedVersion();
@@ -61,7 +62,7 @@ class Mysql
             $type = $currentlyInstalled;
         }
 
-        $this->removeConfiguration($type);
+        $this->removeConfiguration();
         $this->files->copy(__DIR__ . '/../stubs/limit.maxfiles.plist', static::MAX_FILES_CONF);
         $this->cli->quietly('launchctl load -w ' . static::MAX_FILES_CONF);
 
@@ -91,7 +92,10 @@ class Mysql
     public function verifyType($type)
     {
         if (!\in_array($type, $this->supportedVersions())) {
-            throw new DomainException('Invalid Mysql type given. Available: mysql/mariadb');
+            $supportedVersionsString = implode(', ', $this->supportedVersions());
+            throw new DomainException(
+                sprintf('Invalid Mysql type given. Available: %s', $supportedVersionsString)
+            );
         }
     }
 
@@ -102,7 +106,7 @@ class Mysql
      */
     public function supportedVersions()
     {
-        return ['mysql', 'mariadb', 'mysql'];
+        return ['mysql', 'mariadb', 'mysql@5.7'];
     }
 
     /**
@@ -121,10 +125,8 @@ class Mysql
 
     /**
      * Remove current configuration before install new version.
-     *
-     * @param string $type
      */
-    private function removeConfiguration($type = 'mysql')
+    private function removeConfiguration()
     {
         $this->files->unlink(Architecture::getBrewPath() . "/" . static::MYSQL_CONF);
         $this->files->unlink(Architecture::getBrewPath() . "/" . static::MYSQL_CONF . '.default');
@@ -147,7 +149,7 @@ class Mysql
      *
      * @param string $type
      */
-    public function installConfiguration($type = 'mysql')
+    public function installConfiguration($type = 'mysql@5.7')
     {
         info('[' . $type . '] Configuring');
 
@@ -158,13 +160,25 @@ class Mysql
         }
 
         $contents = $this->files->get(__DIR__ . '/../stubs/my.cnf');
-        if ($type === 'mariadb') {
-            $contents = \str_replace('show_compatibility_56=ON', '', $contents);
+
+        // MariaDB + Mysql 8 specific my.cnf changes
+        if ($type === 'mariadb' || $type === 'mysql') {
+            $contents = str_replace('show_compatibility_56=ON', '', $contents);
         }
+
+        // Mysql 8 specific my.cnf changes. Disable query cache since this feature is removed in mysql 8.
+        if ($type === 'mysql') {
+            $contents = str_replace('query_cache_size=67108864', '', $contents);
+            $contents = str_replace('query_cache_type=1', '', $contents);
+            $contents = str_replace('uery_cache_limit=4194304', '', $contents);
+        }
+
+        // Set Mysql home
+        $contents = str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents);
 
         $this->files->putAsUser(
             Architecture::getBrewPath() . "/" . static::MYSQL_CONF,
-            \str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents)
+            $contents
         );
     }
 
@@ -470,7 +484,7 @@ class Mysql
 
         $this->files->putAsUser(
             $tmpName,
-            \str_replace(
+            str_replace(
                 ['DB_NAME', 'DB_HOST', 'DB_USER', 'DB_PASS', 'DB_PORT'],
                 [$this->getDatabaseName($name), '127.0.0.1', 'root', $this->getRootPassword(), '3306'],
                 $contents

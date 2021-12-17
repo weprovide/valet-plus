@@ -37,7 +37,13 @@ if (is_dir(VALET_HOME_PATH)) {
 /**
  * Allow Valet to be run more conveniently by allowing the Node proxy to run password-less sudo.
  */
-$app->command('install [--with-mariadb]', function ($withMariadb) {
+$app->command('install [--with-mariadb] [--with-mysql-8]', function ($withMariadb, $withMysql8) {
+    if ($withMariadb && $withMysql8) {
+        throw new Exception('Cannot install Valet+ with both MariaDB and Mysql8, please pick one.');
+    }
+    $dbVersion = $withMariadb ? 'mariadb' : 'mysql@5.7';
+    $dbVersion = $withMysql8 ? 'mysql' : $dbVersion;
+
     Nginx::stop();
     PhpFpm::stop();
     Mysql::stop();
@@ -49,7 +55,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
     $domain = Nginx::install();
     PhpFpm::install();
     DnsMasq::install();
-    Mysql::install($withMariadb ? 'mariadb' : 'mysql');
+    Mysql::install($dbVersion);
     RedisTool::install();
     Mailhog::install();
     Nginx::restart();
