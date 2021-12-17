@@ -32,15 +32,12 @@ $app = new Application('Valet+', $version->getVersion());
 if (is_dir(VALET_HOME_PATH)) {
     Configuration::prune();
     Site::pruneLinks();
-    Architecture::defineBrewPath();
 }
 
 /**
  * Allow Valet to be run more conveniently by allowing the Node proxy to run password-less sudo.
  */
 $app->command('install [--with-mariadb]', function ($withMariadb) {
-    Architecture::defineBrewPath();
-
     Nginx::stop();
     PhpFpm::stop();
     Mysql::stop();
@@ -69,8 +66,6 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
  * Fix common problems within the Valet+ installation.
  */
 $app->command('fix [--reinstall]', function ($reinstall) {
-    Architecture::defineBrewPath();
-
     if (file_exists($_SERVER['HOME'] . '/.my.cnf')) {
         warning('You have an .my.cnf file in your home directory. This can affect the mysql installation negatively.');
     }
@@ -940,11 +935,11 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('logs [service]', function ($service) {
         $logs = [
             'php' => '$HOME/.valet/Log/php.log',
-            'php-fpm' => BREW_PATH . '/var/log/php-fpm.log',
+            'php-fpm' => \Valet\Architecture::getBrewPath() . '/var/log/php-fpm.log',
             'nginx' => '$HOME/.valet/Log/nginx-error.log',
             'mysql' => '$HOME/.valet/Log/mysql.log',
-            'mailhog' => BREW_PATH . '/var/log/mailhog.log',
-            'redis' => BREW_PATH . '/var/log/redis.log',
+            'mailhog' => \Valet\Architecture::getBrewPath() . '/var/log/mailhog.log',
+            'redis' => \Valet\Architecture::getBrewPath() . '/var/log/redis.log',
         ];
 
         if (!isset($logs[$service])) {

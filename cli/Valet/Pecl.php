@@ -335,7 +335,7 @@ class Pecl extends AbstractPecl
         foreach (PhpFpm::SUPPORTED_PHP_FORMULAE as $phpVersion => $brewname) {
             output("Checking php $phpVersion...");
 
-            $pearConfigPath = BREW_PATH . PhpFpm::LOCAL_PHP_FOLDER . "$phpVersion/pear.conf";
+            $pearConfigPath = Architecture::getBrewPath() . PhpFpm::LOCAL_PHP_FOLDER . "$phpVersion/pear.conf";
 
             if (!$this->files->exists($pearConfigPath)) {
                 warning("    Skipping $phpVersion, Pear config path could not be found at: $pearConfigPath");
@@ -365,16 +365,16 @@ class Pecl extends AbstractPecl
             $pearName = $this->replacePhpWithPear($brewname);
 
             $phpIniPath = str_replace('pear.conf', 'php.ini', $pearConfigPath);
-            $phpDirPath = BREW_PATH . "/share/$pearName";
-            $pearDocDirPath = BREW_PATH . "/share/$pearName/doc";
-            $phpExtensionDirPath = BREW_PATH . '/lib/php/pecl/'.basename($pearConfig['ext_dir']);
-            $phpBinPath = BREW_PATH . "/opt/$brewname/bin";
-            $pearDataDirPath = BREW_PATH . "/share/$pearName/data";
-            $pearCfgDirPath = BREW_PATH . "/share/$pearName/cfg";
-            $pearWwwDirPath = BREW_PATH . "/share/$pearName/htdocs";
-            $pearManDirPath = BREW_PATH . '/share/man';
-            $pearTestDirPath = BREW_PATH . "/share/$pearName/test";
-            $phpBinDirPath = BREW_PATH . "/opt/$brewname/bin/php";
+            $phpDirPath = Architecture::getBrewPath() . "/share/$pearName";
+            $pearDocDirPath = Architecture::getBrewPath() . "/share/$pearName/doc";
+            $phpExtensionDirPath = Architecture::getBrewPath() . '/lib/php/pecl/'.basename($pearConfig['ext_dir']);
+            $phpBinPath = Architecture::getBrewPath() . "/opt/$brewname/bin";
+            $pearDataDirPath = Architecture::getBrewPath() . "/share/$pearName/data";
+            $pearCfgDirPath = Architecture::getBrewPath() . "/share/$pearName/cfg";
+            $pearWwwDirPath = Architecture::getBrewPath() . "/share/$pearName/htdocs";
+            $pearManDirPath = Architecture::getBrewPath() . '/share/man';
+            $pearTestDirPath = Architecture::getBrewPath() . "/share/$pearName/test";
+            $phpBinDirPath = Architecture::getBrewPath() . "/opt/$brewname/bin/php";
 
             // Check php_ini value of par config.
             if (empty($pearConfig['php_ini']) || $pearConfig['php_ini'] !== $phpIniPath) {

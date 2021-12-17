@@ -89,7 +89,7 @@ class PhpFpm
 
         $version = $this->linkedPhp();
 
-        $this->files->ensureDirExists(BREW_PATH . '/var/log', user());
+        $this->files->ensureDirExists(Architecture::getBrewPath() . '/var/log', user());
         $this->updateConfiguration();
         $this->pecl->updatePeclChannel();
         $this->pecl->installExtensions($version);
@@ -134,13 +134,13 @@ class PhpFpm
     public function fpmConfigPath()
     {
         $confLookup = [
-            self::PHP_V80_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '8.0/php-fpm.d/www.conf',
-            self::PHP_V74_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
-            self::PHP_V73_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
-            self::PHP_V72_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
-            self::PHP_V71_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
-            self::PHP_V70_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '7.0/php-fpm.d/www.conf',
-            self::PHP_V56_VERSION => BREW_PATH . self::LOCAL_PHP_FOLDER . '5.6/php-fpm.conf',
+            self::PHP_V80_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '8.0/php-fpm.d/www.conf',
+            self::PHP_V74_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
+            self::PHP_V73_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
+            self::PHP_V72_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
+            self::PHP_V71_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
+            self::PHP_V70_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '7.0/php-fpm.d/www.conf',
+            self::PHP_V56_VERSION => Architecture::getBrewPath() . self::LOCAL_PHP_FOLDER . '5.6/php-fpm.conf',
         ];
 
         return $confLookup[$this->linkedPhp()];
@@ -427,12 +427,12 @@ class PhpFpm
      */
     public function linkedPhp()
     {
-        $phpPath = BREW_PATH . '/bin/php';
+        $phpPath = Architecture::getBrewPath() . '/bin/php';
         if (!$this->files->isLink($phpPath)) {
             throw new DomainException("Unable to determine linked PHP.");
         }
 
-        $resolvedPath = $this->files->readLink(BREW_PATH . '/bin/php');
+        $resolvedPath = $this->files->readLink($phpPath);
 
         $versions = self::SUPPORTED_PHP_FORMULAE;
 

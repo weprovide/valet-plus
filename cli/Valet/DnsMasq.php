@@ -69,10 +69,10 @@ class DnsMasq
      */
     public function copyExampleConfig()
     {
-        if (! $this->files->exists(BREW_PATH . "/" . $this->configPath)) {
+        if (! $this->files->exists(Architecture::getBrewPath() . "/" . $this->configPath)) {
             $this->files->copyAsUser(
-                BREW_PATH . "/" . $this->exampleConfigPath,
-                BREW_PATH . "/" . $this->configPath
+                Architecture::getBrewPath() . "/" . $this->exampleConfigPath,
+                Architecture::getBrewPath() . "/" . $this->configPath
             );
         }
     }
@@ -87,7 +87,7 @@ class DnsMasq
     {
         if (! $this->customConfigIsBeingImported($customConfigPath)) {
             $this->files->appendAsUser(
-                BREW_PATH . "/" . $this->configPath,
+                Architecture::getBrewPath() . "/" . $this->configPath,
                 PHP_EOL.'conf-file='.$customConfigPath.PHP_EOL
             );
         }
@@ -101,7 +101,7 @@ class DnsMasq
      */
     public function customConfigIsBeingImported($customConfigPath)
     {
-        return strpos($this->files->get(BREW_PATH . "/" . $this->configPath), $customConfigPath) !== false;
+        return strpos($this->files->get(Architecture::getBrewPath() . "/" . $this->configPath), $customConfigPath) !== false;
     }
 
     /**

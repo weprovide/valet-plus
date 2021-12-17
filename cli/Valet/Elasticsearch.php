@@ -168,7 +168,7 @@ class Elasticsearch
     public function updateDomain($domain)
     {
         $this->files->putAsUser(
-            BREW_PATH . '/' . self::NGINX_CONFIGURATION_PATH,
+            Architecture::getBrewPath() . '/' . self::NGINX_CONFIGURATION_PATH,
             str_replace(
                 ['VALET_DOMAIN'],
                 [$domain],

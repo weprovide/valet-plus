@@ -73,8 +73,8 @@ class RedisTool extends AbstractService
         $contents = $this->files->get(__DIR__.'/../stubs/redis.conf');
 
         $this->files->put(
-            BREW_PATH . "/" . static::REDIS_CONF, 
-            str_replace('BREW_PATH', BREW_PATH, $contents)
+            Architecture::getBrewPath() . "/" . static::REDIS_CONF,
+            str_replace('BREW_PATH', Architecture::getBrewPath(), $contents)
         );
     }
 

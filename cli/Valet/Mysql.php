@@ -126,8 +126,8 @@ class Mysql
      */
     private function removeConfiguration($type = 'mysql')
     {
-        $this->files->unlink(BREW_PATH . "/" . static::MYSQL_CONF);
-        $this->files->unlink(BREW_PATH . "/" . static::MYSQL_CONF . '.default');
+        $this->files->unlink(Architecture::getBrewPath() . "/" . static::MYSQL_CONF);
+        $this->files->unlink(Architecture::getBrewPath() . "/" . static::MYSQL_CONF . '.default');
     }
 
     /**
@@ -151,9 +151,9 @@ class Mysql
     {
         info('[' . $type . '] Configuring');
 
-        $this->files->chmodPath(BREW_PATH . "/" . static::MYSQL_DIR, 0777);
+        $this->files->chmodPath(Architecture::getBrewPath() . "/" . static::MYSQL_DIR, 0777);
 
-        if (!$this->files->isDir($directory = BREW_PATH . "/" . static::MYSQL_CONF_DIR)) {
+        if (!$this->files->isDir($directory = Architecture::getBrewPath() . "/" . static::MYSQL_CONF_DIR)) {
             $this->files->mkdirAsUser($directory);
         }
 
@@ -163,7 +163,7 @@ class Mysql
         }
 
         $this->files->putAsUser(
-            BREW_PATH . "/" . static::MYSQL_CONF,
+            Architecture::getBrewPath() . "/" . static::MYSQL_CONF,
             \str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents)
         );
     }

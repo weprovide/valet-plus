@@ -1,26 +1,37 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace Valet;
 
 class Architecture
 {
-    public const ARM_BREW_PATH = '/opt/homebrew';
-    public const INTEL_BREW_PATH = '/usr/local';
+    const ARM_BREW_PATH = '/opt/homebrew';
+    const INTEL_BREW_PATH = '/usr/local';
+
+    const ARM_64 = 'arm64';
 
     /**
-     * @var CommandLine
+     * @var string|null
      */
-    private $cli;
+    static $brewPath = null;
 
-    public function __construct(CommandLine $cli)
+    /**
+     * @return string
+     */
+    public static function getBrewPath()
     {
-        $this->cli = $cli;
+        if (Architecture::$brewPath === null) {
+            Architecture::defineBrewPath();
+        }
+        return Architecture::$brewPath;
     }
 
-    public function isArm64() : bool
+    /**
+     * @return bool
+     */
+    public static function isArm64()
     {
-        $architechture = $this->cli->run('uname -m');
-        if ($architechture = 'arm64') {
+        $cli = new CommandLine();
+        if (strpos($cli->run('uname -m'), self::ARM_64) !== false) {
             info('ARM Mac detected');
             return true;
         }
@@ -28,18 +39,13 @@ class Architecture
         return false;
     }
 
-    public function defineBrewPath() : void
+    /**
+     * @return void
+     */
+    private static function defineBrewPath()
     {
-        if (!defined('BREW_PATH')) {
-            define('BREW_PATH', $this->isArm64() ? self::ARM_BREW_PATH : self::INTEL_BREW_PATH);
-        }
-    }
-
-    public function getBrewPath() : string
-    {
-        if (!defined('BREW_PATH')) {
-            $this->defineBrewPath();
-        }
-        return BREW_PATH;
+            Architecture::$brewPath = Architecture::isArm64() ?
+                Architecture::ARM_BREW_PATH :
+                Architecture::INTEL_BREW_PATH;
     }
 }
