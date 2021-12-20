@@ -31,14 +31,19 @@ $app = new Application('Valet+', $version->getVersion());
  */
 if (is_dir(VALET_HOME_PATH)) {
     Configuration::prune();
-
     Site::pruneLinks();
 }
 
 /**
  * Allow Valet to be run more conveniently by allowing the Node proxy to run password-less sudo.
  */
-$app->command('install [--with-mariadb]', function ($withMariadb) {
+$app->command('install [--with-mariadb] [--with-mysql-8]', function ($withMariadb, $withMysql8) {
+    if ($withMariadb && $withMysql8) {
+        throw new Exception('Cannot install Valet+ with both MariaDB and Mysql8, please pick one.');
+    }
+    $dbVersion = $withMariadb ? 'mariadb' : 'mysql@5.7';
+    $dbVersion = $withMysql8 ? 'mysql' : $dbVersion;
+
     Nginx::stop();
     PhpFpm::stop();
     Mysql::stop();
@@ -50,7 +55,7 @@ $app->command('install [--with-mariadb]', function ($withMariadb) {
     $domain = Nginx::install();
     PhpFpm::install();
     DnsMasq::install();
-    Mysql::install($withMariadb ? 'mariadb' : 'mysql@5.7');
+    Mysql::install($dbVersion);
     RedisTool::install();
     Mailhog::install();
     Nginx::restart();
@@ -214,6 +219,7 @@ if (is_dir(VALET_HOME_PATH)) {
      * Stop serving the given domain over HTTPS and remove the trusted TLS certificate.
      */
     $app->command('unsecure [domain]', function ($domain = null) {
+
         $url = ($domain ?: Site::host(getcwd())).'.'.Configuration::read()['domain'];
 
         $proxied = Site::proxied($url);
@@ -354,6 +360,7 @@ if (is_dir(VALET_HOME_PATH)) {
      * Restart the daemon services.
      */
     $app->command('restart [services]*', function ($services) {
+
         if (empty($services)) {
             DnsMasq::restart();
             PhpFpm::restart();
@@ -655,6 +662,7 @@ if (is_dir(VALET_HOME_PATH)) {
         if (Pecl::isInstalled('xdebug') === false) {
             info('[PECL] Xdebug not found, installing...');
             Pecl::installExtension('xdebug');
+            PhpFpm::installXdebugConfiguration();
             $restart = true;
         }
 
@@ -934,11 +942,11 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('logs [service]', function ($service) {
         $logs = [
             'php' => '$HOME/.valet/Log/php.log',
-            'php-fpm' => '/usr/local/var/log/php-fpm.log',
+            'php-fpm' => \Valet\Architecture::getBrewPath() . '/var/log/php-fpm.log',
             'nginx' => '$HOME/.valet/Log/nginx-error.log',
             'mysql' => '$HOME/.valet/Log/mysql.log',
-            'mailhog' => '/usr/local/var/log/mailhog.log',
-            'redis' => '/usr/local/var/log/redis.log',
+            'mailhog' => \Valet\Architecture::getBrewPath() . '/var/log/mailhog.log',
+            'redis' => \Valet\Architecture::getBrewPath() . '/var/log/redis.log',
         ];
 
         if (!isset($logs[$service])) {

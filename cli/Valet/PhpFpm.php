@@ -29,34 +29,44 @@ class PhpFpm
         self::PHP_V56_VERSION,
         self::PHP_V70_VERSION,
         self::PHP_V71_VERSION,
-        self::PHP_V72_VERSION
+        self::PHP_V72_VERSION,
+        self::PHP_V73_VERSION
     ];
 
-    const LOCAL_PHP_FOLDER = '/usr/local/etc/valet-php/';
+    const LOCAL_PHP_FOLDER = '/etc/valet-php/';
 
     public $brew;
     public $cli;
     public $files;
     public $pecl;
     public $peclCustom;
+    public $brewDir;
 
     const DEPRECATED_PHP_TAP = 'homebrew/php';
     const VALET_PHP_BREW_TAP = 'henkrehorst/php';
 
     /**
-     * Create a new PHP FPM class instance.
-     *
+     * @param Architecture $architecture
      * @param Brew $brew
      * @param CommandLine $cli
      * @param Filesystem $files
+     * @param Pecl $pecl
+     * @param PeclCustom $peclCustom
      */
-    public function __construct(Brew $brew, CommandLine $cli, Filesystem $files, Pecl $pecl, PeclCustom $peclCustom)
-    {
+    public function __construct(
+        Architecture $architecture,
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
+        Pecl $pecl,
+        PeclCustom $peclCustom
+    ) {
         $this->cli = $cli;
         $this->brew = $brew;
         $this->files = $files;
         $this->pecl = $pecl;
         $this->peclCustom = $peclCustom;
+        $this->architecture = $architecture;
     }
 
     /**
@@ -79,7 +89,7 @@ class PhpFpm
 
         $version = $this->linkedPhp();
 
-        $this->files->ensureDirExists('/usr/local/var/log', user());
+        $this->files->ensureDirExists($this->architecture->getBrewPath() . '/var/log', user());
         $this->updateConfiguration();
         $this->pecl->updatePeclChannel();
         $this->pecl->installExtensions($version);
@@ -123,14 +133,15 @@ class PhpFpm
      */
     public function fpmConfigPath()
     {
+        $brewPath = $this->architecture->getBrewPath();
         $confLookup = [
-            self::PHP_V80_VERSION => self::LOCAL_PHP_FOLDER . '8.0/php-fpm.d/www.conf',
-            self::PHP_V74_VERSION => self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
-            self::PHP_V73_VERSION => self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
-            self::PHP_V72_VERSION => self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
-            self::PHP_V71_VERSION => self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
-            self::PHP_V70_VERSION => self::LOCAL_PHP_FOLDER . '7.0/php-fpm.d/www.conf',
-            self::PHP_V56_VERSION => self::LOCAL_PHP_FOLDER . '5.6/php-fpm.conf',
+            self::PHP_V80_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '8.0/php-fpm.d/www.conf',
+            self::PHP_V74_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
+            self::PHP_V73_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
+            self::PHP_V72_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
+            self::PHP_V71_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
+            self::PHP_V70_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.0/php-fpm.d/www.conf',
+            self::PHP_V56_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '5.6/php-fpm.conf',
         ];
 
         return $confLookup[$this->linkedPhp()];
@@ -157,10 +168,12 @@ class PhpFpm
         $currentVersion = $this->linkedPhp();
 
         if (!array_key_exists($version, self::SUPPORTED_PHP_FORMULAE)) {
-            throw new DomainException("This version of PHP not available. The following versions are available: " . implode(
-                ' ',
-                array_keys(self::SUPPORTED_PHP_FORMULAE)
-            ));
+            throw new DomainException(
+                "This version of PHP not available. The following versions are available: " . implode(
+                    ' ',
+                    array_keys(self::SUPPORTED_PHP_FORMULAE)
+                )
+            );
         }
 
         // If the current version equals that of the current PHP version, do not switch.
@@ -186,7 +199,9 @@ class PhpFpm
 
         // Relink libjpeg
         info('[libjpeg] Relinking');
-        $this->cli->passthru('sudo ln -fs /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib');
+        $this->cli->passthru(
+            'sudo ln -fs /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib'
+        );
 
         if (!$this->linkPHP($version, $currentVersion)) {
             return;
@@ -208,9 +223,12 @@ class PhpFpm
     {
         $isLinked = true;
         info("[php@$version] Linking");
-        $output = $this->cli->runAsUser('brew link ' . self::SUPPORTED_PHP_FORMULAE[$version] . ' --force --overwrite', function () use (&$isLinked) {
-            $isLinked = false;
-        });
+        $output = $this->cli->runAsUser(
+            'brew link ' . self::SUPPORTED_PHP_FORMULAE[$version] . ' --force --overwrite',
+            function () use (&$isLinked) {
+                $isLinked = false;
+            }
+        );
 
         // The output is about how many symlinks were created.
         // Sanitize the second half to prevent users from being confused.
@@ -223,9 +241,11 @@ class PhpFpm
         output($output);
 
         if ($isLinked === false) {
-            warning("Could not link PHP version!" . PHP_EOL .
+            warning(
+                "Could not link PHP version!" . PHP_EOL .
                 "There appears to be an issue with your PHP $version installation!" . PHP_EOL .
-                "See the output above for more information." . PHP_EOL);
+                "See the output above for more information." . PHP_EOL
+            );
         }
 
         if ($currentVersion !== null && $isLinked === false) {
@@ -250,9 +270,11 @@ class PhpFpm
             $isUnlinked = false;
         }));
         if ($isUnlinked === false) {
-            warning("Could not unlink PHP version!" . PHP_EOL .
+            warning(
+                "Could not unlink PHP version!" . PHP_EOL .
                 "There appears to be an issue with your PHP $version installation!" . PHP_EOL .
-                "See the output above for more information.");
+                "See the output above for more information."
+            );
         }
 
         return $isUnlinked;
@@ -345,7 +367,9 @@ class PhpFpm
     {
         $iniPath = $this->iniPath();
         if ($this->files->exists($iniPath . 'z-performance.ini')) {
-            $this->cli->passthru('sed -i "" "s/xdebug.remote_autostart=0/xdebug.remote_autostart=1/g" ' . $iniPath . 'z-performance.ini');
+            $this->cli->passthru(
+                'sed -i "" "s/xdebug.remote_autostart=0/xdebug.remote_autostart=1/g" ' . $iniPath . 'z-performance.ini'
+            );
             info('xdebug.remote_autostart is now enabled.');
             return true;
         }
@@ -353,11 +377,86 @@ class PhpFpm
         return false;
     }
 
+    /**
+     * Xdebug 3 has different configuration fields in z-performance.ini than Xdebug 2.0.
+     * This function will enable/disable the version specific settings in z-performance.ini.
+     * @see https://xdebug.org/docs/upgrade_guide#New-Concepts
+     * @return void
+     */
+    public function installXdebugConfiguration()
+    {
+        $version = $this->getXdebugVersion();
+        if (!$version) {
+            warning('Xdebug not found. You have to fix your z-performance.ini yourself if you are using Xdebug 3');
+        }
+
+        $iniPath = $this->iniPath();
+        $zPerformancePath = $iniPath . 'z-performance.ini';
+        $majorVersion = (int) substr($version, 0, 1);
+
+        if (!$this->files->exists($zPerformancePath)) {
+            warning('Cannot find z-performance.ini, please re-install Valet+');
+        }
+        info('Patching z-performance.ini so it will work with Xdebug '. $version);
+        $content = $this->files->get($zPerformancePath);
+
+        if ($majorVersion === 3) {
+            // Disable Xdebug 2 options
+            $content = preg_replace('/(xdebug.remote_enable=1)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.remote_host=localhost)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.remote_port=9000)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.remote_autostart=1)/', ';$1', $content);
+
+            // Enable Xdebug 3 options
+            $content = preg_replace('/;+(xdebug.mode=debug)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.client_host=localhost)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.client_port=9003)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.start_with_request=1)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.log_level=0)/', '$1', $content);
+        }
+
+        if ($majorVersion === 2) {
+            // Enable Xdebug 2 options
+            $content = preg_replace('/;+(xdebug.remote_enable=1)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.remote_host=localhost)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.remote_port=9000)/', '$1', $content);
+            $content = preg_replace('/;+(xdebug.remote_autostart=1)/', '$1', $content);
+
+            // Disable Xdebug 3 options
+            $content = preg_replace('/(xdebug.mode=debug)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.client_host=localhost)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.client_port=9003)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.start_with_request=1)/', ';$1', $content);
+            $content = preg_replace('/(xdebug.log_level=0)/', ';$1', $content);
+        }
+
+        $this->files->put($zPerformancePath, $content);
+        info('z-performance.ini patched and ready to use with Xdebug ' . $version);
+    }
+
+    /**
+     * @return string|bool
+     */
+    public function getXdebugVersion()
+    {
+        $output = $this->cli->run('php -v | grep "with Xdebug"');
+        // Extract the Xdebug version
+        preg_match('/with Xdebug v(\d\.\d\.\d),/', $output, $matches);
+
+        if (count($matches) === 2) {
+            return $matches[1];
+        }
+
+        return false;
+    }
+
     public function disableAutoStart()
     {
         $iniPath = $this->iniPath();
         if ($this->files->exists($iniPath . 'z-performance.ini')) {
-            $this->cli->passthru('sed -i "" "s/xdebug.remote_autostart=1/xdebug.remote_autostart=0/g" ' . $iniPath . 'z-performance.ini');
+            $this->cli->passthru(
+                'sed -i "" "s/xdebug.remote_autostart=1/xdebug.remote_autostart=0/g" ' . $iniPath . 'z-performance.ini'
+            );
             info('xdebug.remote_autostart is now disabled.');
             return true;
         }
@@ -373,11 +472,12 @@ class PhpFpm
      */
     public function linkedPhp()
     {
-        if (!$this->files->isLink('/usr/local/bin/php')) {
+        $phpPath = $this->architecture->getBrewPath() . '/bin/php';
+        if (!$this->files->isLink($phpPath)) {
             throw new DomainException("Unable to determine linked PHP.");
         }
 
-        $resolvedPath = $this->files->readLink('/usr/local/bin/php');
+        $resolvedPath = $this->files->readLink($phpPath);
 
         $versions = self::SUPPORTED_PHP_FORMULAE;
 
@@ -460,8 +560,11 @@ class PhpFpm
         $systemZoneName = str_replace('/usr/share/zoneinfo/', '', $systemZoneName);
         // macOS High Sierra has a new location for the timezone info
         $systemZoneName = str_replace('/var/db/timezone/zoneinfo/', '', $systemZoneName);
+
         $contents = $this->files->get(__DIR__ . '/../stubs/z-performance.ini');
         $contents = str_replace('TIMEZONE', $systemZoneName, $contents);
+        // Fix brew path in z-performance.ini
+        $contents = str_replace('BREW_PATH', $this->architecture->getBrewPath(), $contents);
 
         $iniPath = $this->iniPath();
         $this->files->ensureDirExists($iniPath, user());
@@ -499,8 +602,10 @@ class PhpFpm
             $this->brew->unTap(self::DEPRECATED_PHP_TAP);
         }
 
-        warning("Please check your linked php version, you might need to restart your terminal!" .
-            "\nLinked PHP should be php 7.3:");
+        warning(
+            "Please check your linked php version, you might need to restart your terminal!" .
+            "\nLinked PHP should be php 7.3:"
+        );
         output($this->cli->runAsUser('php -v'));
     }
 }

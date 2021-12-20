@@ -5,21 +5,44 @@ namespace Valet;
 use DomainException;
 use mysqli;
 use MYSQLI_ASSOC;
+use function str_replace;
 
 class Mysql
 {
-    const MYSQL_CONF_DIR = '/usr/local/etc';
-    const MYSQL_CONF = '/usr/local/etc/my.cnf';
+    const MYSQL_CONF_DIR = 'etc';
+    const MYSQL_CONF = 'etc/my.cnf';
     const MAX_FILES_CONF = '/Library/LaunchDaemons/limit.maxfiles.plist';
-    const MYSQL_DIR = '/usr/local/var/mysql';
+    const MYSQL_DIR = 'var/mysql';
     const MYSQL_ROOT_PASSWORD = 'root';
 
+    /**
+     * @var Brew
+     */
     public $brew;
+    /**
+     * @var CommandLine
+     */
     public $cli;
+    /**
+     * @var Filesystem
+     */
     public $files;
+    /**
+     * @var Configuration
+     */
     public $configuration;
+    /**
+     * @var Site
+     */
     public $site;
-    public $systemDatabase = ['sys', 'performance_schema', 'information_schema', 'mysql@5.7'];
+    /**
+     * @var Architecture
+     */
+    private $architecture;
+    /**
+     * @var string[]
+     */
+    public $systemDatabase = ['sys', 'performance_schema', 'information_schema', 'mysql'];
     /**
      * @var Mysqli
      */
@@ -28,13 +51,15 @@ class Mysql
     /**
      * Create a new instance.
      *
-     * @param Brew          $brew
-     * @param CommandLine   $cli
-     * @param Filesystem    $files
+     * @param Architecture $architecture
+     * @param Brew $brew
+     * @param CommandLine $cli
+     * @param Filesystem $files
      * @param Configuration $configuration
-     * @param Site          $site
+     * @param Site $site
      */
     public function __construct(
+        Architecture $architecture,
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
@@ -46,6 +71,7 @@ class Mysql
         $this->site = $site;
         $this->files = $files;
         $this->configuration = $configuration;
+        $this->architecture = $architecture;
     }
 
     /**
@@ -61,7 +87,7 @@ class Mysql
             $type = $currentlyInstalled;
         }
 
-        $this->removeConfiguration($type);
+        $this->removeConfiguration();
         $this->files->copy(__DIR__ . '/../stubs/limit.maxfiles.plist', static::MAX_FILES_CONF);
         $this->cli->quietly('launchctl load -w ' . static::MAX_FILES_CONF);
 
@@ -91,7 +117,10 @@ class Mysql
     public function verifyType($type)
     {
         if (!\in_array($type, $this->supportedVersions())) {
-            throw new DomainException('Invalid Mysql type given. Available: mysql@5.7/mariadb');
+            $supportedVersionsString = implode(', ', $this->supportedVersions());
+            throw new DomainException(
+                sprintf('Invalid Mysql type given. Available: %s', $supportedVersionsString)
+            );
         }
     }
 
@@ -102,7 +131,7 @@ class Mysql
      */
     public function supportedVersions()
     {
-        return ['mysql@5.7', 'mariadb'];
+        return ['mysql', 'mariadb', 'mysql@5.7'];
     }
 
     /**
@@ -121,13 +150,11 @@ class Mysql
 
     /**
      * Remove current configuration before install new version.
-     *
-     * @param string $type
      */
-    private function removeConfiguration($type = 'mysql@5.7')
+    private function removeConfiguration()
     {
-        $this->files->unlink(static::MYSQL_CONF);
-        $this->files->unlink(static::MYSQL_CONF . '.default');
+        $this->files->unlink($this->architecture->getBrewPath() . "/" . static::MYSQL_CONF);
+        $this->files->unlink($this->architecture->getBrewPath() . "/" . static::MYSQL_CONF . '.default');
     }
 
     /**
@@ -135,7 +162,7 @@ class Mysql
      */
     public function stop()
     {
-        $version = $this->installedVersion('mysql@5.7');
+        $version = $this->installedVersion('mysql');
         info('[' . $version . '] Stopping');
 
         $this->cli->quietly('sudo brew services stop ' . $version);
@@ -151,20 +178,32 @@ class Mysql
     {
         info('[' . $type . '] Configuring');
 
-        $this->files->chmodPath(static::MYSQL_DIR, 0777);
+        $this->files->chmodPath($this->architecture->getBrewPath() . "/" . static::MYSQL_DIR, 0777);
 
-        if (!$this->files->isDir($directory = static::MYSQL_CONF_DIR)) {
+        if (!$this->files->isDir($directory = $this->architecture->getBrewPath() . "/" . static::MYSQL_CONF_DIR)) {
             $this->files->mkdirAsUser($directory);
         }
 
         $contents = $this->files->get(__DIR__ . '/../stubs/my.cnf');
-        if ($type === 'mariadb') {
-            $contents = \str_replace('show_compatibility_56=ON', '', $contents);
+
+        // MariaDB + Mysql 8 specific my.cnf changes
+        if ($type === 'mariadb' || $type === 'mysql') {
+            $contents = str_replace('show_compatibility_56=ON', '', $contents);
         }
 
+        // Mysql 8 specific my.cnf changes. Disable query cache since this feature is removed in mysql 8.
+        if ($type === 'mysql') {
+            $contents = str_replace('query_cache_size=67108864', '', $contents);
+            $contents = str_replace('query_cache_type=1', '', $contents);
+            $contents = str_replace('uery_cache_limit=4194304', '', $contents);
+        }
+
+        // Set Mysql home
+        $contents = str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents);
+
         $this->files->putAsUser(
-            static::MYSQL_CONF,
-            \str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents)
+            $this->architecture->getBrewPath() . "/" . static::MYSQL_CONF,
+            $contents
         );
     }
 
@@ -187,7 +226,7 @@ class Mysql
     {
         $success = true;
         $this->cli->runAsUser("mysqladmin -u root --password='".$oldPwd."' password ".$newPwd, function () use (&$success) {
-            warning('Setting password for root user failed. ');
+            warning('Setting mysql password for root user failed. ');
             $success = false;
         });
 
@@ -470,7 +509,7 @@ class Mysql
 
         $this->files->putAsUser(
             $tmpName,
-            \str_replace(
+            str_replace(
                 ['DB_NAME', 'DB_HOST', 'DB_USER', 'DB_PASS', 'DB_PORT'],
                 [$this->getDatabaseName($name), '127.0.0.1', 'root', $this->getRootPassword(), '3306'],
                 $contents

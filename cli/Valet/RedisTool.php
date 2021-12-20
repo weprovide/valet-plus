@@ -9,18 +9,24 @@ class RedisTool extends AbstractService
     public $files;
     public $site;
 
-    const REDIS_CONF = '/usr/local/etc/redis.conf';
+    const REDIS_CONF = 'etc/redis.conf';
+    /**
+     * @var Architecture
+     */
+    private $architecture;
 
     /**
      * Create a new instance.
      *
-     * @param  Brew          $brew
-     * @param  CommandLine   $cli
-     * @param  Filesystem    $files
-     * @param  Configuration $configuration
-     * @param  Site          $site
+     * @param Architecture $architecture
+     * @param Brew $brew
+     * @param CommandLine $cli
+     * @param Filesystem $files
+     * @param Configuration $configuration
+     * @param Site $site
      */
     public function __construct(
+        Architecture $architecture,
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
@@ -31,7 +37,9 @@ class RedisTool extends AbstractService
         $this->brew  = $brew;
         $this->site  = $site;
         $this->files = $files;
+        $this->architecture = $architecture;
         parent::__construct($configuration);
+        $this->configuration = $configuration;
     }
 
     /**
@@ -70,7 +78,12 @@ class RedisTool extends AbstractService
      */
     public function installConfiguration()
     {
-        $this->files->copy(__DIR__.'/../stubs/redis.conf', static::REDIS_CONF);
+        $contents = $this->files->get(__DIR__.'/../stubs/redis.conf');
+
+        $this->files->put(
+            $this->architecture->getBrewPath() . "/" . static::REDIS_CONF,
+            str_replace('BREW_PATH', $this->architecture->getBrewPath(), $contents)
+        );
     }
 
     /**

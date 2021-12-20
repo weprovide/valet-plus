@@ -11,18 +11,24 @@ class Nginx
     public $files;
     public $configuration;
     public $site;
-    const NGINX_CONF = '/usr/local/etc/nginx/nginx.conf';
+    const NGINX_CONF = 'etc/nginx/nginx.conf';
+    /**
+     * @var Architecture
+     */
+    private $architecture;
 
     /**
      * Create a new Nginx instance.
      *
-     * @param  Brew $brew
-     * @param  CommandLine $cli
-     * @param  Filesystem $files
-     * @param  Configuration $configuration
-     * @param  Site $site
+     * @param Architecture $architecture
+     * @param Brew $brew
+     * @param CommandLine $cli
+     * @param Filesystem $files
+     * @param Configuration $configuration
+     * @param Site $site
      */
     public function __construct(
+        Architecture $architecture,
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
@@ -34,6 +40,7 @@ class Nginx
         $this->site = $site;
         $this->files = $files;
         $this->configuration = $configuration;
+        $this->architecture = $architecture;
     }
 
     /**
@@ -64,7 +71,7 @@ class Nginx
         $contents = $this->files->get(__DIR__.'/../stubs/nginx.conf');
 
         $this->files->putAsUser(
-            static::NGINX_CONF,
+            $this->architecture->getBrewPath() . "/" . static::NGINX_CONF,
             str_replace(['VALET_USER', 'VALET_HOME_PATH'], [user(), VALET_HOME_PATH], $contents)
         );
     }
@@ -78,10 +85,10 @@ class Nginx
     {
         $domain = $this->configuration->read()['domain'];
 
-        $this->files->ensureDirExists('/usr/local/etc/nginx/valet');
+        $this->files->ensureDirExists($this->architecture->getBrewPath() . '/etc/nginx/valet');
 
         $this->files->putAsUser(
-            '/usr/local/etc/nginx/valet/valet.conf',
+            $this->architecture->getBrewPath() . '/etc/nginx/valet/valet.conf',
             str_replace(
                 ['VALET_HOME_PATH', 'VALET_SERVER_PATH', 'VALET_STATIC_PREFIX'],
                 [VALET_HOME_PATH, VALET_SERVER_PATH, VALET_STATIC_PREFIX],
@@ -90,7 +97,7 @@ class Nginx
         );
 
         $this->files->putAsUser(
-            '/usr/local/etc/nginx/fastcgi_params',
+            $this->architecture->getBrewPath() . '/etc/nginx/fastcgi_params',
             $this->files->get(__DIR__.'/../stubs/fastcgi_params')
         );
     }
@@ -119,7 +126,7 @@ class Nginx
     private function lint()
     {
         $this->cli->quietly(
-            'sudo nginx -c '.static::NGINX_CONF.' -t',
+            'sudo nginx -c '.$this->architecture->getBrewPath() ."/".static::NGINX_CONF.' -t',
             function ($exitCode, $outputMessage) {
                 throw new DomainException("Nginx cannot start, please check your nginx.conf [$exitCode: $outputMessage].");
             }

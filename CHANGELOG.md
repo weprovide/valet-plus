@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add libyaml as brew devtool
 - Use PHP 7.2 as default version
 
+### Added
+- [#572] Add support for usage on ARM processors (M1 mac's) 
+- [#563] Add support for Xdebug 3
+- Add support for Mysql 8
+
 ## [2.2.1](https://github.com/weprovide/valet-plus/compare/2.2.0...2.2.1)
 - Fix missing dependencies of sebastian/version
 

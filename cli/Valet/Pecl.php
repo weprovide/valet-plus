@@ -43,9 +43,10 @@ class Pecl extends AbstractPecl
      */
     const EXTENSIONS = [
         self::XDEBUG_EXTENSION => [
-            '7.4' => '2.9.8',
-            '7.3' => '2.9.8',
-            '7.2' => '2.9.8',
+            '8.0' => '3.0.4',
+            '7.4' => '3.0.4',
+            '7.3' => '3.0.4',
+            '7.2' => '3.0.4',
             '7.1' => '2.9.8',
             '7.0' => '2.9.8',
             '5.6' => '2.2.7',
@@ -67,7 +68,8 @@ class Pecl extends AbstractPecl
             '7.2' => '1.1.1',
             '7.1' => '1.1.1',
             '7.0' => '1.1.1',
-            'extension_type' => self::NORMAL_EXTENSION_TYPE
+            'extension_type' => self::NORMAL_EXTENSION_TYPE,
+            'brew_dependency' => 'geoip'
         ],
         self::MEMCACHE_EXTENSION => [
             '7.3' => '3.1.3',
@@ -80,19 +82,28 @@ class Pecl extends AbstractPecl
         self::YAML_EXTENSION => [
             '5.6' => '1.3.1',
             '7.0' => '2.0.4',
-            'extension_type' => self::NORMAL_EXTENSION_TYPE
+            'extension_type' => self::NORMAL_EXTENSION_TYPE,
+            'brew_dependency' => 'libyaml'
         ]
     ];
 
+    /**
+     * @var PeclCustom
+     */
     public $peclCustom;
+    /**
+     * @var Architecture
+     */
+    private $architecture;
 
     /**
      * @inheritdoc
      */
-    public function __construct(CommandLine $cli, Filesystem $files, PeclCustom $peclCustom)
+    public function __construct(Architecture $architecture, CommandLine $cli, Filesystem $files, PeclCustom $peclCustom)
     {
         parent::__construct($cli, $files);
         $this->peclCustom = $peclCustom;
+        $this->architecture = $architecture;
     }
 
     /**
@@ -142,7 +153,11 @@ class Pecl extends AbstractPecl
     protected function install($extension, $version = null)
     {
         if ($version === null) {
-            $result = $this->cli->runAsUser("pecl install $extension");
+            if ($this->hasBrewDependency($extension)) {
+                $result = $this->cli->runAsUser("echo $(brew --prefix " . $this->getBrewDependency($extension) . ") | pecl install $extension");
+            } else {
+                $result = $this->cli->runAsUser("pecl install $extension");
+            }
         } else {
             $result = $this->cli->runAsUser("pecl install $extension-$version");
         }
@@ -329,7 +344,7 @@ class Pecl extends AbstractPecl
         foreach (PhpFpm::SUPPORTED_PHP_FORMULAE as $phpVersion => $brewname) {
             output("Checking php $phpVersion...");
 
-            $pearConfigPath = PhpFpm::LOCAL_PHP_FOLDER . "$phpVersion/pear.conf";
+            $pearConfigPath = $this->architecture->getBrewPath() . PhpFpm::LOCAL_PHP_FOLDER . "$phpVersion/pear.conf";
 
             if (!$this->files->exists($pearConfigPath)) {
                 warning("    Skipping $phpVersion, Pear config path could not be found at: $pearConfigPath");
@@ -359,16 +374,16 @@ class Pecl extends AbstractPecl
             $pearName = $this->replacePhpWithPear($brewname);
 
             $phpIniPath = str_replace('pear.conf', 'php.ini', $pearConfigPath);
-            $phpDirPath = "/usr/local/share/$pearName";
-            $pearDocDirPath = "/usr/local/share/$pearName/doc";
-            $phpExtensionDirPath = '/usr/local/lib/php/pecl/'.basename($pearConfig['ext_dir']);
-            $phpBinPath = "/usr/local/opt/$brewname/bin";
-            $pearDataDirPath = "/usr/local/share/$pearName/data";
-            $pearCfgDirPath = "/usr/local/share/$pearName/cfg";
-            $pearWwwDirPath = "/usr/local/share/$pearName/htdocs";
-            $pearManDirPath = '/usr/local/share/man';
-            $pearTestDirPath = "/usr/local/share/$pearName/test";
-            $phpBinDirPath = "/usr/local/opt/$brewname/bin/php";
+            $phpDirPath = $this->architecture->getBrewPath() . "/share/$pearName";
+            $pearDocDirPath = $this->architecture->getBrewPath() . "/share/$pearName/doc";
+            $phpExtensionDirPath = $this->architecture->getBrewPath() . '/lib/php/pecl/'.basename($pearConfig['ext_dir']);
+            $phpBinPath = $this->architecture->getBrewPath() . "/opt/$brewname/bin";
+            $pearDataDirPath = $this->architecture->getBrewPath() . "/share/$pearName/data";
+            $pearCfgDirPath = $this->architecture->getBrewPath() . "/share/$pearName/cfg";
+            $pearWwwDirPath = $this->architecture->getBrewPath() . "/share/$pearName/htdocs";
+            $pearManDirPath = $this->architecture->getBrewPath() . '/share/man';
+            $pearTestDirPath = $this->architecture->getBrewPath() . "/share/$pearName/test";
+            $phpBinDirPath = $this->architecture->getBrewPath() . "/opt/$brewname/bin/php";
 
             // Check php_ini value of par config.
             if (empty($pearConfig['php_ini']) || $pearConfig['php_ini'] !== $phpIniPath) {
@@ -527,6 +542,29 @@ class Pecl extends AbstractPecl
             return self::EXTENSIONS[$extension][$phpVersion];
         }
         return null;
+    }
+
+    /**
+     * Check if the extension has any brew dependency
+     *
+     * @param mixed $extension
+     * @return bool
+     */
+    private function hasBrewDependency($extension)
+    {
+        return array_key_exists("brew_dependency", self::EXTENSIONS[$extension]);
+    }
+
+
+    /**
+     * Get the brew dependency for the pecl command
+     *
+     * @param mixed $extension
+     * @return mixed
+     */
+    private function getBrewDependency($extension)
+    {
+        return self::EXTENSIONS[$extension]["brew_dependency"];
     }
 
     /**

@@ -4,16 +4,25 @@ namespace Valet;
 
 class Configuration
 {
+    /**
+     * @var Filesystem
+     */
     public $files;
+    /**
+     * @var Architecture
+     */
+    private $architecture;
 
     /**
      * Create a new Valet configuration class instance.
      *
+     * @param Architecture $architecture
      * @param Filesystem $files
      */
-    public function __construct(Filesystem $files)
+    public function __construct(Architecture $architecture, Filesystem $files)
     {
         $this->files = $files;
+        $this->architecture = $architecture;
     }
 
     /**
@@ -111,7 +120,7 @@ class Configuration
     public function writeBaseConfiguration()
     {
         if (! $this->files->exists($this->path())) {
-            $this->write(['domain' => 'test', 'paths' => []]);
+            $this->write(['domain' => 'test', 'paths' => [], 'brewPath' => $this->architecture->getBrewPath()]);
         }
     }
 

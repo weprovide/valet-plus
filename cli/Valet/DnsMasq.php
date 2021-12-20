@@ -4,26 +4,41 @@ namespace Valet;
 
 class DnsMasq
 {
+    /**
+     * @var Brew
+     */
     public $brew;
+    /**
+     * @var CommandLine
+     */
     public $cli;
+    /**
+     * @var Filesystem
+     */
     public $files;
+    /**
+     * @var Architecture
+     */
+    private $architecture;
 
     public $resolverPath = '/etc/resolver';
-    public $configPath = '/usr/local/etc/dnsmasq.conf';
-    public $exampleConfigPath = '/usr/local/opt/dnsmasq/dnsmasq.conf.example';
+    public $configPath = 'etc/dnsmasq.conf';
+    public $exampleConfigPath = 'var/dnsmasq.conf.default';
 
     /**
      * Create a new DnsMasq instance.
      *
-     * @param  Brew $brew
-     * @param  CommandLine $cli
-     * @param  Filesystem $files
+     * @param Architecture $architecture
+     * @param Brew $brew
+     * @param CommandLine $cli
+     * @param Filesystem $files
      */
-    public function __construct(Brew $brew, CommandLine $cli, Filesystem $files)
+    public function __construct(Architecture $architecture, Brew $brew, CommandLine $cli, Filesystem $files)
     {
         $this->cli = $cli;
         $this->brew = $brew;
         $this->files = $files;
+        $this->architecture = $architecture;
     }
 
     /**
@@ -69,10 +84,10 @@ class DnsMasq
      */
     public function copyExampleConfig()
     {
-        if (! $this->files->exists($this->configPath)) {
+        if (! $this->files->exists($this->architecture->getBrewPath() . "/" . $this->configPath)) {
             $this->files->copyAsUser(
-                $this->exampleConfigPath,
-                $this->configPath
+                $this->architecture->getBrewPath() . "/" . $this->exampleConfigPath,
+                $this->architecture->getBrewPath() . "/" . $this->configPath
             );
         }
     }
@@ -87,7 +102,7 @@ class DnsMasq
     {
         if (! $this->customConfigIsBeingImported($customConfigPath)) {
             $this->files->appendAsUser(
-                $this->configPath,
+                $this->architecture->getBrewPath() . "/" . $this->configPath,
                 PHP_EOL.'conf-file='.$customConfigPath.PHP_EOL
             );
         }
@@ -101,7 +116,7 @@ class DnsMasq
      */
     public function customConfigIsBeingImported($customConfigPath)
     {
-        return strpos($this->files->get($this->configPath), $customConfigPath) !== false;
+        return strpos($this->files->get($this->architecture->getBrewPath() . "/" . $this->configPath), $customConfigPath) !== false;
     }
 
     /**
