@@ -4,16 +4,21 @@ All notable changes to valet-plus will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/weprovide/valet-plus/compare/2.2.1...2.x)
+## [Unreleased](https://github.com/weprovide/valet-plus/compare/2.3.0...2.x)
+
+## [2.3.0](https://github.com/weprovide/valet-plus/compare/2.2.1...2.3.0)
+## Fixed
 - [#587] Minimum version of symfony/process causes fatal error
 - [#549] Fix xdebug veriosn 2.9.8 for PHP 7.x
+
+## Changed
 - Start highest installed major of Elasticsearch on valet start
-- Add libyaml as brew devtool
-- Use PHP 7.2 as default version
+- Use PHP 7.4 as default version
 
 ### Added
 - [#572] Add support for usage on ARM processors (M1 mac's) 
 - [#563] Add support for Xdebug 3
+- Add libyaml as brew devtool
 - Add support for Mysql 8
 
 ## [2.2.1](https://github.com/weprovide/valet-plus/compare/2.2.0...2.2.1)
