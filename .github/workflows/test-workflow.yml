@@ -31,6 +31,11 @@ jobs:
       - name: '[INSTALL] Brew uninstall php'
         run: |
           brew uninstall --ignore-dependencies php
+        
+      # For the Valet+ CI/CD unlink the default brew PHP.
+      - name: '[INSTALL] Brew unlink php'
+        run: |
+          brew unlink php
 
       # Install the valet-php brew tap.
       - name: '[INSTALL] Brew tap henkrehost/php'
@@ -39,12 +44,12 @@ jobs:
 
       # Remove 2to3 to ensure python installation: https://github.com/weprovide/valet-plus/issues/558
       # Install the default PHP version (currently: valet-php@7.4).
-      - name: '[INSTALL] Brew install valet-php@7.2'
+      - name: '[INSTALL] Brew install valet-php@7.4'
         run: |
           rm /usr/local/bin/2to3
           brew install valet-php@7.4 --build-from-source
 
-      # Link valet-php@7.2 as default php binary.
+      # Link valet-php@7.4 as default php binary.
       - name: '[INSTALL] Brew link valet-php@7.4'
         run: |
           brew link valet-php@7.4 --force
