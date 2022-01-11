@@ -47,7 +47,7 @@ jobs:
       # Link valet-php@7.4 as default php binary.
       - name: '[INSTALL] Brew link valet-php@7.4'
         run: |
-          brew link --overwrite --dry-run valet-php@7.4
+          brew link --overwrite --force --dry-run valet-php@7.4
           brew link --overwrite --force valet-php@7.4
           php -v | grep 7.4
 
