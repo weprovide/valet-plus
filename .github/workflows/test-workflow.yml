@@ -30,7 +30,7 @@ jobs:
       # On a local installation one might choose to keep his/her default brew PHP installation.
       - name: '[INSTALL] Brew uninstall php'
         run: |
-          brew uninstall php
+          brew uninstall --ignore-dependencies php
 
       # Install the valet-php brew tap.
       - name: '[INSTALL] Brew tap henkrehost/php'
@@ -38,17 +38,17 @@ jobs:
           brew tap henkrehorst/php
 
       # Remove 2to3 to ensure python installation: https://github.com/weprovide/valet-plus/issues/558
-      # Install the default PHP version (currently: valet-php@7.2).
+      # Install the default PHP version (currently: valet-php@7.4).
       - name: '[INSTALL] Brew install valet-php@7.2'
         run: |
           rm /usr/local/bin/2to3
-          brew install valet-php@7.3 --build-from-source
+          brew install valet-php@7.4 --build-from-source
 
       # Link valet-php@7.2 as default php binary.
-      - name: '[INSTALL] Brew link valet-php@7.2'
+      - name: '[INSTALL] Brew link valet-php@7.4'
         run: |
-          brew link valet-php@7.3 --force
-          php -v | grep 7.3
+          brew link valet-php@7.4 --force
+          php -v | grep 7.4
 
       # Since the Github actions CI/CD image comes with composer pre-installed there is no need to install composer.
       # However the image might change in the future. To ensure installation over several images an IF ELSE used.
