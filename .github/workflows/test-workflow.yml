@@ -25,11 +25,6 @@ jobs:
       # Valet install command test cases
       - name: '[INSTALL] Brew update'
         run: brew update
-        
-      # For the Valet+ CI/CD unlink the default brew PHP.
-      - name: '[INSTALL] Brew unlink php'
-        run: |
-          brew unlink php
 
       # For the Valet+ CI/CD remove the default brew PHP. Instead use valet-php.
       # On a local installation one might choose to keep his/her default brew PHP installation.
@@ -52,7 +47,8 @@ jobs:
       # Link valet-php@7.4 as default php binary.
       - name: '[INSTALL] Brew link valet-php@7.4'
         run: |
-          brew link valet-php@7.4 --force
+          brew link --overwrite --dry-run valet-php@7.4
+          brew link --overwrite valet-php@7.4
           php -v | grep 7.4
 
       # Since the Github actions CI/CD image comes with composer pre-installed there is no need to install composer.
