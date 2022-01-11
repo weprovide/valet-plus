@@ -25,17 +25,17 @@ jobs:
       # Valet install command test cases
       - name: '[INSTALL] Brew update'
         run: brew update
+        
+      # For the Valet+ CI/CD unlink the default brew PHP.
+      - name: '[INSTALL] Brew unlink php'
+        run: |
+          brew unlink php
 
       # For the Valet+ CI/CD remove the default brew PHP. Instead use valet-php.
       # On a local installation one might choose to keep his/her default brew PHP installation.
       - name: '[INSTALL] Brew uninstall php'
         run: |
           brew uninstall --ignore-dependencies php
-        
-      # For the Valet+ CI/CD unlink the default brew PHP.
-      - name: '[INSTALL] Brew unlink php'
-        run: |
-          brew unlink php
 
       # Install the valet-php brew tap.
       - name: '[INSTALL] Brew tap henkrehost/php'
