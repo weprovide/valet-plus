@@ -940,13 +940,14 @@ if (is_dir(VALET_HOME_PATH)) {
     })->descriptions('Display all of the registered Valet rewrites');
 
     $app->command('logs [service]', function ($service) {
+        $arquitecture = new \Valet\Architecture(new \Valet\CommandLine());
         $logs = [
             'php' => '$HOME/.valet/Log/php.log',
-            'php-fpm' => \Valet\Architecture::getBrewPath() . '/var/log/php-fpm.log',
+            'php-fpm' => $arquitecture->getBrewPath() . '/var/log/php-fpm.log',
             'nginx' => '$HOME/.valet/Log/nginx-error.log',
             'mysql' => '$HOME/.valet/Log/mysql.log',
-            'mailhog' => \Valet\Architecture::getBrewPath() . '/var/log/mailhog.log',
-            'redis' => \Valet\Architecture::getBrewPath() . '/var/log/redis.log',
+            'mailhog' => $arquitecture->getBrewPath() . '/var/log/mailhog.log',
+            'redis' => $arquitecture->getBrewPath() . '/var/log/redis.log',
         ];
 
         if (!isset($logs[$service])) {
