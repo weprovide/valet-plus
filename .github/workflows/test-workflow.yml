@@ -48,7 +48,7 @@ jobs:
       # Link valet-php@7.4 as default php binary.
       - name: '[INSTALL] Brew link valet-php@7.4'
         run: |
-          brew link valet-php@7.4 --force
+          brew link valet-php@7.4 --overwrite --force
           php -v | grep 7.4
 
       # Since the Github actions CI/CD image comes with composer pre-installed there is no need to install composer.
