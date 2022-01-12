@@ -939,7 +939,7 @@ if (is_dir(VALET_HOME_PATH)) {
         table(['Site', 'URL'], $rewrites->all());
     })->descriptions('Display all of the registered Valet rewrites');
 
-    $app->command('logs [service]', function ($service) {
+    $app->command('logs [service] [--tail]', function ($service, $tail) {
         $logs = [
             'php' => '$HOME/.valet/Log/php.log',
             'php-fpm' => \Valet\Architecture::getBrewPath() . '/var/log/php-fpm.log',
@@ -960,7 +960,12 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        Logs::open($path);
+        if ($tail) {
+            Logs::tail($path);
+        } else {
+            Logs::open($path);
+        }
+
     })->descriptions('Open the logs for the specified service. (php, php-fpm, nginx, mysql, mailhog, redis)');
 }
 
