@@ -30,6 +30,7 @@ jobs:
       # On a local installation one might choose to keep his/her default brew PHP installation.
       - name: '[INSTALL] Brew uninstall php'
         run: |
+          brew unlink php
           brew uninstall --ignore-dependencies php
 
       # Install the valet-php brew tap.
@@ -47,8 +48,7 @@ jobs:
       # Link valet-php@7.4 as default php binary.
       - name: '[INSTALL] Brew link valet-php@7.4'
         run: |
-          brew link --overwrite --force --dry-run valet-php@7.4
-          brew link --overwrite --force valet-php@7.4
+          brew link valet-php@7.4 --force
           php -v | grep 7.4
 
       # Since the Github actions CI/CD image comes with composer pre-installed there is no need to install composer.
