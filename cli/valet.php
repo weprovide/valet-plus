@@ -942,11 +942,11 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('logs [service]', function ($service) {
         $logs = [
             'php' => '$HOME/.valet/Log/php.log',
-            'php-fpm' => \Valet\Architecture::getBrewPath() . '/var/log/php-fpm.log',
+            'php-fpm' => Architecture::getBrewPath() . '/var/log/php-fpm.log',
             'nginx' => '$HOME/.valet/Log/nginx-error.log',
             'mysql' => '$HOME/.valet/Log/mysql.log',
-            'mailhog' => \Valet\Architecture::getBrewPath() . '/var/log/mailhog.log',
-            'redis' => \Valet\Architecture::getBrewPath() . '/var/log/redis.log',
+            'mailhog' => Architecture::getBrewPath() . '/var/log/mailhog.log',
+            'redis' => Architecture::getBrewPath() . '/var/log/redis.log',
         ];
 
         if (!isset($logs[$service])) {
