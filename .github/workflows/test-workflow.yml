@@ -105,6 +105,7 @@ jobs:
         run: |
          sudo brew services list
          brew services list
+         tail /Library/LaunchDaemons/homebrew.mxcl.nginx.plist
          sudo lsof -PiTCP -sTCP:LISTEN
           
       # Check if the Valet+ localhost page is reachable.
