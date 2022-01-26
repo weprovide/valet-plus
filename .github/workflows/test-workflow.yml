@@ -90,6 +90,8 @@ jobs:
       - name: '[NGINX] Sudo nginx -t'
         run: |
           sudo nginx -t
+          brew services start nginx
+          
       # Check if the Valet+ localhost page is reachable.
       - name: '[NGINX] Check local host'
         run: |
