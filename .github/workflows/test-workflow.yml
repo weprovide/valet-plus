@@ -37,13 +37,15 @@ jobs:
           brew unlink php
           brew uninstall --ignore-dependencies php
           
-      # For the Valet+ CI/CD remove the default nginx installation. Instead use valet install to install nginx.
-      - name: '[INSTALL] Brew uninstall nginx'
+      # Test to start nginx
+      - name: '[INSTALL] Brew test nginx'
         run: |
-          brew upgrade
           brew list nginx
-          brew uninstall --ignore-dependencies nginx
-          rm -rf /usr/local/etc/nginx
+          sudo brew services list
+          brew services restart --all
+          sudo brew services restart --all
+          sudo brew services list
+          brew services list
 
       # Install the valet-php brew tap.
       - name: '[INSTALL] Brew tap henkrehost/php'
@@ -107,15 +109,12 @@ jobs:
       - name: '[NGINX] Sudo nginx -t'
         run: |
           sudo nginx -t
-          tail /usr/local/var/log/nginx/error.log
           
-      # Check which brew services and ports are used after running after NGINX start check.
-      - name: '[NGINX] Brew services list'
+       # Check if nginx has any known errors.
+      - name: '[NGINX] Show nginx error log'
         run: |
-         sudo brew services list
-         brew services list
-         tail /Library/LaunchDaemons/homebrew.mxcl.nginx.plist
-         sudo lsof -PiTCP -sTCP:LISTEN
+          tail /usr/local/var/log/nginx/error.log
+          tail /Library/LaunchDaemons/homebrew.mxcl.nginx.plist
           
       # Check if the Valet+ localhost page is reachable.
       - name: '[NGINX] Check local host'
