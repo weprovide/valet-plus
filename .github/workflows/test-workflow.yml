@@ -33,13 +33,6 @@ jobs:
       # Upgrade preinstalled brew packages to latest version
       - name: '[INSTALL] Brew upgrade'
         run: brew upgrade
-
-      # For the Valet+ CI/CD remove the default brew PHP. Instead use valet-php.
-      # On a local installation one might choose to keep his/her default brew PHP installation.
-      - name: '[INSTALL] Brew uninstall php'
-        run: |
-          brew unlink php
-          brew uninstall --ignore-dependencies php
           
         # List running services
       - name: '[INSTALL] Brew services list - before restart'
@@ -111,11 +104,6 @@ jobs:
          brew services list
 
       # Nginx test cases
-      
-      # Start nginx server
-      - name: '[NGINX] brew services start nginx'
-        run: |
-         brew services start nginx
 
       # Check if nginx was able to start correctly.
       - name: '[NGINX] Sudo nginx -t'
