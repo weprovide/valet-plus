@@ -37,11 +37,11 @@ jobs:
           brew unlink php
           brew uninstall --ignore-dependencies php
           
-      # TEST: For the Valet+ CI/CD install nginx from source.
-      - name: '[INSTALL] Brew install nginx'
+      # For the Valet+ CI/CD remove the default nginx installation. Instead use valet install to install nginx.
+      - name: '[INSTALL] Brew uninstall nginx'
         run: |
           brew list nginx
-          brew install nginx --build-from-source
+          brew uninstall --ignore-dependencies nginx
 
       # Install the valet-php brew tap.
       - name: '[INSTALL] Brew tap henkrehost/php'
