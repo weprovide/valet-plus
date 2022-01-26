@@ -92,7 +92,7 @@ jobs:
       
       # Start nginx server
       - name: '[NGINX] brew services start nginx'
-      - run: |
+        run: |
          brew services start nginx
 
       # Check if nginx was able to start correctly.
