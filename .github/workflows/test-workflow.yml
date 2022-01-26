@@ -36,6 +36,12 @@ jobs:
         run: |
           brew unlink php
           brew uninstall --ignore-dependencies php
+          
+      # TEST: For the Valet+ CI/CD install nginx from source.
+      - name: '[INSTALL] Brew install nginx'
+        run: |
+          brew list nginx
+          brew install nginx --build-from-source
 
       # Install the valet-php brew tap.
       - name: '[INSTALL] Brew tap henkrehost/php'
