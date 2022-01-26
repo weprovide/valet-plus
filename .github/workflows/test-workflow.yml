@@ -42,6 +42,7 @@ jobs:
         run: |
           brew list nginx
           brew uninstall --ignore-dependencies nginx
+          rm -rf /usr/local/etc/nginx
 
       # Install the valet-php brew tap.
       - name: '[INSTALL] Brew tap henkrehost/php'
