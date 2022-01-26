@@ -104,6 +104,17 @@ jobs:
          brew services list
 
       # Nginx test cases
+      
+      # Start nginx server
+      - name: '[NGINX] brew services start nginx'
+        run: |
+         sudo brew services start nginx  
+         
+      # Check which brew services which are running after Valet install.
+      - name: '[NGINX] Brew services list'
+        run: |
+         sudo brew services list
+         brew services list
 
       # Check if nginx was able to start correctly.
       - name: '[NGINX] Sudo nginx -t'
