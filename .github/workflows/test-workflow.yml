@@ -23,12 +23,16 @@ jobs:
       - uses: actions/checkout@v2
       
       # Check which services is running on the Mac OS image
-      - name: '[MAC OS Image] Port check'
+      - name: '[Ports] Port check'
         run: sudo lsof -PiTCP -sTCP:LISTEN
 
-      # Valet install command test cases
+      # Update brew formulas to latest version
       - name: '[INSTALL] Brew update'
         run: brew update
+        
+      # Upgrade preinstalled brew packages to latest version
+      - name: '[INSTALL] Brew upgrade'
+        run: brew upgrade
 
       # For the Valet+ CI/CD remove the default brew PHP. Instead use valet-php.
       # On a local installation one might choose to keep his/her default brew PHP installation.
