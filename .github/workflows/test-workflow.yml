@@ -99,6 +99,7 @@ jobs:
       - name: '[NGINX] Sudo nginx -t'
         run: |
           sudo nginx -t
+          tail /usr/local/var/log/nginx/error.log
           
       # Check which brew services and ports are used after running after NGINX start check.
       - name: '[NGINX] Brew services list'
