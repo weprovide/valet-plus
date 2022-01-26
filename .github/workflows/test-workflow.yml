@@ -24,7 +24,7 @@ jobs:
       
       # Check which services is running on the Mac OS image
       - name: '[MAC OS Image] Port check'
-        run: sudo netstat -lpn
+        run: sudo lsof -PiTCP -sTCP:LISTEN
 
       # Valet install command test cases
       - name: '[INSTALL] Brew update'
