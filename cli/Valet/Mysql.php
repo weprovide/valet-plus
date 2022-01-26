@@ -195,7 +195,7 @@ class Mysql
         if ($type === 'mysql') {
             $contents = str_replace('query_cache_size=67108864', '', $contents);
             $contents = str_replace('query_cache_type=1', '', $contents);
-            $contents = str_replace('uery_cache_limit=4194304', '', $contents);
+            $contents = str_replace('query_cache_limit=4194304', '', $contents);
         }
 
         // Set Mysql home
