@@ -81,6 +81,7 @@ jobs:
       # Check which brew services which are running after Valet install.
       - name: '[INSTALL] Brew services list'
         run: |
+         sudo brew services list
          brew services list
 
       # Nginx test cases
