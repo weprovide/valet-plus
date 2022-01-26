@@ -89,12 +89,23 @@ jobs:
          brew services list
 
       # Nginx test cases
+      
+      # Start nginx server
+      - name: '[NGINX] brew services start nginx'
+      - run: |
+         brew services start nginx
 
       # Check if nginx was able to start correctly.
       - name: '[NGINX] Sudo nginx -t'
         run: |
           sudo nginx -t
-          brew services start nginx
+          
+      # Check which brew services and ports are used after running after NGINX start check.
+      - name: '[NGINX] Brew services list'
+        run: |
+         sudo brew services list
+         brew services list
+         sudo lsof -PiTCP -sTCP:LISTEN
           
       # Check if the Valet+ localhost page is reachable.
       - name: '[NGINX] Check local host'
