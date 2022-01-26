@@ -40,6 +40,7 @@ jobs:
       # For the Valet+ CI/CD remove the default nginx installation. Instead use valet install to install nginx.
       - name: '[INSTALL] Brew uninstall nginx'
         run: |
+          brew upgrade
           brew list nginx
           brew uninstall --ignore-dependencies nginx
           rm -rf /usr/local/etc/nginx
