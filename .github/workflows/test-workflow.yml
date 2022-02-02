@@ -25,6 +25,12 @@ jobs:
       # Check which services is running on the Mac OS image
       - name: '[Ports] Port check'
         run: sudo lsof -PiTCP -sTCP:LISTEN
+        
+      # For the Valet+ CI/CD remove the default brew nginx.
+      # On a local installation one might choose to keep his/her default brew nginx installation.
+      - name: '[INSTALL] Brew uninstall nginx'
+        run: |
+          brew uninstall nginx
 
       # Update brew formulas to latest version
       - name: '[INSTALL] Brew update'
@@ -36,18 +42,6 @@ jobs:
           
         # List running services
       - name: '[INSTALL] Brew services list - before restart'
-        run: |
-          brew services list
-          sudo brew services list
-          
-      # Test to start nginx as sudo
-      - name: '[INSTALL] Brew restart nginx'
-        run: |
-          brew list nginx
-          sudo brew services restart nginx
-          
-        # List running services
-      - name: '[INSTALL] Brew services list - after restart'
         run: |
           brew services list
           sudo brew services list
