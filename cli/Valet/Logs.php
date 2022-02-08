@@ -10,8 +10,12 @@ class Logs
 
     public function open($file)
     {
-
         $this->cli->quietly('open ' . $this->resolvePath($file));
+    }
+
+    public function tail($file)
+    {
+        $this->cli->passthru('tail -f ' . $this->resolvePath($file));
     }
 
     public function exists($file)
