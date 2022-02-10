@@ -39,12 +39,6 @@ jobs:
       # Upgrade preinstalled brew packages to latest version
       - name: '[INSTALL] Brew upgrade'
         run: brew upgrade
-          
-        # List running services
-      - name: '[INSTALL] Brew services list - before restart'
-        run: |
-          brew services list
-          sudo brew services list
 
       # Install the valet-php brew tap.
       - name: '[INSTALL] Brew tap henkrehost/php'
@@ -98,14 +92,8 @@ jobs:
          brew services list
 
       # Nginx test cases
-         
-      # Check which brew services which are running after Valet install.
-      - name: '[NGINX] Brew services list'
-        run: |
-         sudo brew services list
-         brew services list
 
-      # Check if nginx was able to start correctly.
+      # Check if nginx syntax is correct.
       - name: '[NGINX] Sudo nginx -t'
         run: |
           sudo nginx -t
@@ -117,7 +105,7 @@ jobs:
           tail /Library/LaunchDaemons/homebrew.mxcl.nginx.plist
           
       # Check if the Valet+ localhost page is reachable.
-      - name: '[NGINX] Check local host'
+      - name: '[NGINX] Check localhost'
         run: |
           curl 127.0.0.1 | grep "Valet - Not Found"
 
