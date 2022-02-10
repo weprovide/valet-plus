@@ -32,18 +32,16 @@ class Binaries
      */
     const SUPPORTED_CUSTOM_BINARIES = [
         self::N98_MAGERUN => [
-            'url' => 'https://files.magerun.net/n98-magerun-1.103.1.phar',
-            'shasum' => 'f4de50f5e7f9db70ee82148339ca865f14b7cdf7713d1f7c9357b84067235ce6',
+            'url' => 'https://files.magerun.net/n98-magerun-latest.phar',
             'bin_location' => '/bin/'
         ],
         self::N98_MAGERUN_2 => [
-            'url' => 'https://files.magerun.net/n98-magerun2-3.2.0.phar',
-            'shasum' => '5b5b4f7a857f7716950b6ef090c005c455d5e607f800a50b7b7aefa86d1c4e36',
+            'url' => 'https://files.magerun.net/n98-magerun2-latest.phar',
             'bin_location' => '/bin/'
         ],
         self::DRUSH_LAUNCHER => [
-            'url' => 'https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar',
-            'shasum' => 'c3f32a800a2f18470b0010cd71c49e49ef5c087f8131eecfe9b686dc1f3f3d4e',
+            'url' => 'https://github.com/drush-ops/drush-launcher/releases/download/0.10.1/drush.phar',
+            'shasum' => 'c6e3e520a33ac7790ab37e5af0fd91fc1108f0830a3a5ebe5b7c36e8782bea30',
             'bin_location' => '/bin/'
         ]
     ];
@@ -121,7 +119,7 @@ class Binaries
         if (!$this->checkShasum($binary, $fileName)) {
             $this->cli->runAsUser("rm /tmp/$fileName");
             warning("$binary could not be installed, $fileName checksum does not match: " .
-                $this->getShasum($binary));
+                $this->getShasum($binary, $fileName));
             return;
         }
 
@@ -179,7 +177,7 @@ class Binaries
         $checksum = str_replace("/tmp/$fileName", '', $checksum);
         $checksum = str_replace("\n", '', $checksum);
         $checksum = str_replace(' ', '', $checksum);
-        return $checksum === $this->getShasum($binary);
+        return $checksum === $this->getShasum($binary, $fileName);
     }
 
     /**
@@ -203,11 +201,21 @@ class Binaries
      *
      * @param $binary
      *    The binary key name.
+     * @param $fileName
+     *    The binary filename.
      * @return string
      *    The shasum as string defined within the binary key.
      */
-    private function getShasum($binary)
+    private function getShasum($binary,  $fileName)
     {
+        //Check Shashum of Magerun to get the last version of it
+        if (strpos($binary, self::N98_MAGERUN)!== false) {
+            $shashum = $this->cli->runAsUser("curl -sS https://files.magerun.net/sha256.php\?file\=$fileName");
+            $shashum = str_replace("$fileName", '', $shashum);
+            $shashum = str_replace("\n", '', $shashum);
+            $shashum = str_replace(' ', '', $shashum);
+            return $shashum;
+        }
         if (array_key_exists('shasum', self::SUPPORTED_CUSTOM_BINARIES[$binary])) {
             return self::SUPPORTED_CUSTOM_BINARIES[$binary]['shasum'];
         }
