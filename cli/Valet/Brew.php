@@ -30,8 +30,16 @@ class Brew
      */
     public function installed($formula)
     {
+//        var_dump('brew list --formula | grep ' . $formula);
         $formulae = $this->cli->runAsUser('brew list --formula | grep ' . $formula);
-        return in_array($formula, explode(PHP_EOL, $formulae));
+        if (in_array($formula, explode(PHP_EOL, $formulae))) {
+            $installed = trim($this->cli->runAsUser('brew info ' . $formula . ' | grep "Not installed"'));
+            if ($installed === "") {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
