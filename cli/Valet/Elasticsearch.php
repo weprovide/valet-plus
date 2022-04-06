@@ -99,8 +99,7 @@ class Elasticsearch
         }
 
         // Install dependencies
-        $this->cli->quietlyAsUser('brew cask install java');
-        $this->cli->quietlyAsUser('brew cask install homebrew/cask-versions/adoptopenjdk8');
+        $this->cli->quietlyAsUser('brew install openjdk@17');
         $this->brew->installOrFail('libyaml');
         // Install elasticsearch
         $this->brew->installOrFail($versions[$version]['formula']);
