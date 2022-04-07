@@ -13,7 +13,7 @@
 > Sometimes you need to restart your terminal for the link to have effect.
 
 5. Install Composer using anyway you like, suggested is using `brew install composer`.
-6. Install Valet+ with Composer using `composer global require weprovde/valet-plus:2.4.0-beta2`.
+6. Install Valet+ with Composer using `composer global require weprovide/valet-plus:2.4.0-beta2`.
 7. Add `export PATH="$PATH:$HOME/.composer/vendor/bin"` to `.bash_profile` (for bash) or `.zshrc` (for zsh) depending on
 your shell (`echo $SHELL`).
 8. Run the `valet install` command. Optionally add `--with-mariadb` to use MariaDB instead of MySQL This will configure and install Valet+ and DnsMasq, and register Valet's daemon to launch when your system starts.
