@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
       
       # Check which services is running on the Mac OS image
-      - name: '[Ports] Port check'
+      - name: '[Port] Port check'
         run: sudo lsof -PiTCP -sTCP:LISTEN
         
       # For the Valet+ CI/CD remove the default brew nginx.
