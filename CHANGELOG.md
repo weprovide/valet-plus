@@ -4,14 +4,22 @@ All notable changes to valet-plus will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/weprovide/valet-plus/compare/2.3.0...2.x)
+## [Unreleased](https://github.com/weprovide/valet-plus/compare/2.3.1...2.x)
+
+## [2.3.1](https://github.com/weprovide/valet-plus/compare/2.3.0...2.3.1)
+### Fixed
+- [#596] Fix mysql 8 installation
+- [#595] Fix opening log with dynamic Brew path
+
+### Added
+- [#594] Add tailing logs
 
 ## [2.3.0](https://github.com/weprovide/valet-plus/compare/2.2.1...2.3.0)
-## Fixed
+### Fixed
 - [#587] Minimum version of symfony/process causes fatal error
 - [#549] Fix xdebug veriosn 2.9.8 for PHP 7.x
 
-## Changed
+### Changed
 - Start highest installed major of Elasticsearch on valet start
 - Use PHP 7.4 as default version
 
@@ -19,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#572] Add support for usage on ARM processors (M1 mac's) 
 - [#563] Add support for Xdebug 3
 - Add libyaml as brew devtool
-- Add support for Mysql 8
+- [#567] Add support for Mysql 8
 
 ## [2.2.1](https://github.com/weprovide/valet-plus/compare/2.2.0...2.2.1)
 - Fix missing dependencies of sebastian/version
@@ -34,25 +42,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use PHP 7.2 as default version
 
 ## [2.1.0](https://github.com/weprovide/valet-plus/compare/2.0.0...2.1.0)
-## Removed
+### Removed
 - [#524] Removed support for Elasticsearch 2.4
 - [#524] Removed support for Elasticsearch 5.6
 - [#524] Removed support for Elasticsearch 7.6
 - [#516] Removed setting the query parameter for Drupal.
 - [#535] Removed old PHP fixes within valet fix for old brew formulae now replaced by henkrehost/php
 
-## Added
+### Added
 - [#524] Added support for Elasticsearch 7.8
 - [#502] Added to PHP xdebug config xdebug.max_nesting_level to -1
 - [#530] Added Composer.lock file
 - [#487] Added brew update and uninstall brew php pipeline step
 - [#470] Added macOS catalina image for testing on macos catalina
 
-## Changed
+### Changed
 - [#501] Changed PHP memory limit to 4 GB
 - [#454] Changed the valet unlink command to improve feedback and help description.
 
-## Fixed
+### Fixed
 - [#541] Fixed PECL YML package no longer supporting PHP 7.0 beyond version 2.0.4.
 - [#539] Fixed the CI/CD not failing when switch to (php) step fails 
 - [#537] Fixed valet fix forcefully trying to reinstall and relink the default PHP version. 
@@ -64,8 +72,7 @@ Even when not on the default version. Causing a faulty link process (overwriting
 - [#455] Fixed bug where switching PHP version to a flawed installation would result in an unusable valet-plus installation.
 
 ## [2.0.0](https://github.com/weprovide/valet-plus/compare/1.0.29...2.0.0)
-
-## Removed
+### Removed
 - [#393] Major part of the readme, now available in the [WIKI](https://github.com/weprovide/valet-plus/wiki)
 - [#437] Dependency on mysql-utilities because brew has deprecated the use of the formula.
 

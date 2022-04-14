@@ -22,7 +22,7 @@ use Symfony\Component\Console\Question\Question;
 Container::setInstance(new Container);
 
 // get current version based on git describe and tags
-$version = new Version('2.3.0', __DIR__ . '/../');
+$version = new Version('2.3.1', __DIR__ . '/../');
 
 $app = new Application('Valet+', $version->getVersion());
 
@@ -939,14 +939,16 @@ if (is_dir(VALET_HOME_PATH)) {
         table(['Site', 'URL'], $rewrites->all());
     })->descriptions('Display all of the registered Valet rewrites');
 
-    $app->command('logs [service]', function ($service) {
+    $app->command('logs [service] [--tail]', function ($service, $tail) {
+        $brewPath = Architecture::getBrewPath();
+
         $logs = [
             'php' => '$HOME/.valet/Log/php.log',
-            'php-fpm' => \Valet\Architecture::getBrewPath() . '/var/log/php-fpm.log',
+            'php-fpm' => $brewPath . '/var/log/php-fpm.log',
             'nginx' => '$HOME/.valet/Log/nginx-error.log',
             'mysql' => '$HOME/.valet/Log/mysql.log',
-            'mailhog' => \Valet\Architecture::getBrewPath() . '/var/log/mailhog.log',
-            'redis' => \Valet\Architecture::getBrewPath() . '/var/log/redis.log',
+            'mailhog' => $brewPath . '/var/log/mailhog.log',
+            'redis' => $brewPath . '/var/log/redis.log',
         ];
 
         if (!isset($logs[$service])) {
@@ -960,7 +962,12 @@ if (is_dir(VALET_HOME_PATH)) {
             return;
         }
 
-        Logs::open($path);
+        if ($tail) {
+            Logs::tail($path);
+        } else {
+            Logs::open($path);
+        }
+
     })->descriptions('Open the logs for the specified service. (php, php-fpm, nginx, mysql, mailhog, redis)');
 }
 
