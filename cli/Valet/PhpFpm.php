@@ -179,21 +179,15 @@ class PhpFpm
      */
     public function switchTo($version)
     {
-        $currentVersion = $this->linkedPhp();
-//var_dump($currentVersion);
-        if (!array_key_exists($version, self::SUPPORTED_PHP_FORMULAE)) {
-            throw new DomainException(
-                "This version of PHP not available. The following versions are available: " . implode(
-                    ' ',
-                    array_keys(self::SUPPORTED_PHP_FORMULAE)
-                )
-            );
-        }
+        $version = $this->validateRequestedVersion($version);
 
         // If the current version equals that of the current PHP version, do not switch.
-        if ($version === $currentVersion) {
-            info('Already on this version');
-            return;
+        try {
+            if ($this->linkedPhp() === $version) {
+                info('Already on this version');
+                return;
+            }
+        } catch (DomainException $e) { /* ignore error when linked php isn't found */
         }
 
         if (in_array($version, self::EOL_PHP_VERSIONS)) {
@@ -203,13 +197,14 @@ class PhpFpm
 
         $installed = $this->brew->installed(self::PHP_FORMULA_PREFIX. self::SUPPORTED_PHP_FORMULAE[$version]);
 //var_dump($installed);
+
         if (!$installed) {
             $this->brew->ensureInstalled(self::PHP_FORMULA_PREFIX.self::SUPPORTED_PHP_FORMULAE[$version]);
         }
 
-        // Unlink the current PHP version.
-        if (!$this->unlinkPhp($currentVersion)) {
-            return;
+        // Unlink the current PHP version if one is linked
+        if ($this->hasLinkedPhp()) {
+            $this->unlinkPhp($this->linkedPhp());
         }
 
         // Relink libjpeg
@@ -218,12 +213,13 @@ class PhpFpm
             'sudo ln -fs /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib'
         );
 //var_dump($version, $currentVersion);
-        if (!$this->linkPhp($version, $currentVersion)) {
+        if (!$this->linkPhp($version)) {
             return;
         }
 
         $this->stop();
         $this->install();
+
         info("Valet is now using " . self::SUPPORTED_PHP_FORMULAE[$version]);
     }
 
@@ -293,6 +289,16 @@ class PhpFpm
         }
 
         return $isUnlinked;
+    }
+
+    /**
+     * Whether PHP is linked or not
+     *
+     * @return bool
+     */
+    public function hasLinkedPhp()
+    {
+        return $this->files->isLink($this->architecture->getBrewPath() . '/bin/php');
     }
 
     /**
@@ -494,11 +500,15 @@ class PhpFpm
 //var_dump($phpPath);
         $resolvedPath = $this->files->readLink($phpPath);
 //var_dump($resolvedPath);
+
+        preg_match('~\w{3,}/(php)(@?\d\.?\d)?/(\d\.\d)?([_\d\.]*)?/?\w{3,}~', $resolvedPath, $matches);
+        $resolvedPhpVersion = $matches[3] ?: $matches[2];
+
         $versions = self::SUPPORTED_PHP_FORMULAE;
 //var_dump($versions);
         foreach ($versions as $version => $brewname) {
-            if (strpos($resolvedPath, '/php@' . $version . '/') !== false) {
-                return $version;
+            if ($resolvedPhpVersion === $version) {
+                return $resolvedPhpVersion;
             }
         }
 
@@ -623,5 +633,36 @@ class PhpFpm
             "\nLinked PHP should be php 7.4:"
         );
         output($this->cli->runAsUser('php -v'));
+    }
+
+    /**
+     * If passed php7.4, or php74, 7.4, or 74 formats, normalize to php@7.4 format.
+     */
+    public function normalizePhpVersion($version)
+    {
+        return preg_replace('/(?:php@?)?([0-9+])(?:.)?([0-9+])/i', 'php@$1.$2', $version);
+    }
+
+    /**
+     * Validate the requested version to be sure we can support it.
+     *
+     * @param string $version
+     * @return string
+     */
+    public function validateRequestedVersion($version)
+    {
+        $version = $this->normalizePhpVersion($version);
+        $version = preg_replace('~[^\d\.]~', '', $version);
+
+        if (!array_key_exists($version, self::SUPPORTED_PHP_FORMULAE)) {
+            throw new DomainException(
+                "This version of PHP not available. The following versions are available: " . implode(
+                    ' ',
+                    array_keys(self::SUPPORTED_PHP_FORMULAE)
+                )
+            );
+        }
+
+        return $version;
     }
 }

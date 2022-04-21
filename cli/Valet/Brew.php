@@ -26,12 +26,18 @@ class Brew
      * Determine if the given formula is installed.
      *
      * @param  string $formula
+     * @param  bool $fullName whether full formula name is given or not
      * @return bool
      */
-    public function installed($formula)
+    public function installed($formula, $fullName = true)
     {
 //        var_dump('brew list --formula | grep ' . $formula);
-        $formulae = $this->cli->runAsUser('brew list --formula | grep ' . $formula);
+        if ($fullName) {
+            $formulae = $this->cli->runAsUser('brew list --formula --full-name | grep ' . $formula);
+        } else {
+            $formulae = $this->cli->runAsUser('brew list --formula | grep ' . $formula);
+        }
+
         if (in_array($formula, explode(PHP_EOL, $formulae))) {
             $installed = trim($this->cli->runAsUser('brew info ' . $formula . ' | grep "Not installed"'));
             if ($installed === "") {
@@ -196,7 +202,7 @@ class Brew
         $services = is_array($services) ? $services : func_get_args();
 
         foreach ($services as $service) {
-            if ($this->installed($service)) {
+            if ($this->installed($service, false)) {
                 info('[' . $service . '] Restarting');
 
                 $this->cli->quietly('sudo brew services stop ' . $service);
@@ -215,9 +221,8 @@ class Brew
         $services = is_array($services) ? $services : func_get_args();
 
         foreach ($services as $service) {
-            if ($this->installed($service)) {
+            if ($this->installed($service, false)) {
                 info('[' . $service . '] Stopping');
-
                 $this->cli->quietly('sudo brew services stop ' . $service);
             }
         }
