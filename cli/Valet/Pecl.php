@@ -43,6 +43,7 @@ class Pecl extends AbstractPecl
      */
     const EXTENSIONS = [
         self::XDEBUG_EXTENSION => [
+            '8.1' => '3.0.4',
             '8.0' => '3.0.4',
             '7.4' => '3.0.4',
             '7.3' => '3.0.4',
@@ -54,6 +55,7 @@ class Pecl extends AbstractPecl
             'extension_type' => self::ZEND_EXTENSION_TYPE
         ],
         self::APCU_EXTENSION => [
+            '8.1' => '5.1.21',
             '7.3' => '5.1.17',
             '7.2' => '5.1.17',
             '7.1' => '5.1.17',
@@ -62,6 +64,7 @@ class Pecl extends AbstractPecl
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
         self::GEOIP_EXTENSION => [
+            '8.1' => false, //todo; will probably be 1.1.2
             '8.0' => false, //todo; will probably be 1.1.2
             '7.4' => '1.1.1',
             '7.3' => '1.1.1',
