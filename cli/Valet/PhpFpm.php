@@ -220,7 +220,9 @@ class PhpFpm
         $this->stop();
         $this->install();
 
-        info("Valet is now using " . self::SUPPORTED_PHP_FORMULAE[$version]);
+        $version = self::SUPPORTED_PHP_FORMULAE[$version];
+        $newVersion = $version === 'php' ? $this->brew->determineAliasedVersion($version) : $version;
+        info("Valet is now using " . $newVersion);
     }
 
     /**

@@ -49,6 +49,20 @@ class Brew
     }
 
     /**
+     * Get the aliased formula version from Homebrew.
+     */
+    public function determineAliasedVersion($formula)
+    {
+        $details = json_decode($this->cli->runAsUser("brew info $formula --json"));
+
+        if (!empty($details[0]->aliases[0])) {
+            return $details[0]->aliases[0];
+        }
+
+        return 'ERROR - NO BREW ALIAS FOUND';
+    }
+
+    /**
      * Determine if a compatible nginx version is Homebrewed.
      *
      * @return bool
