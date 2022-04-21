@@ -513,7 +513,7 @@ class PhpFpm
     public function hasInstalledPhp()
     {
         foreach (self::SUPPORTED_PHP_FORMULAE as $version => $brewName) {
-            if ($this->brew->installed(self::PHP_FORMULA_PREFIX.self::PHP_FORMULA_PREFIX.$brewName)) {
+            if ($this->brew->installed(self::PHP_FORMULA_PREFIX . $brewName)) {
                 return true;
             }
         }
