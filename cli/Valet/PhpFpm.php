@@ -10,7 +10,7 @@ class PhpFpm
     const PHP_FORMULA_NAME = 'php';
 //    const PHP_V56_VERSION = '5.6';
 //    const PHP_V70_VERSION = '7.0';
-//    const PHP_V71_VERSION = '7.1';
+    const PHP_V71_VERSION = '7.1';
     const PHP_V72_VERSION = '7.2';
     const PHP_V73_VERSION = '7.3';
     const PHP_V74_VERSION = '7.4';
@@ -19,8 +19,8 @@ class PhpFpm
 
     const SUPPORTED_PHP_FORMULAE = [
 //        self::PHP_V56_VERSION => self::PHP_FORMULA_NAME . self::PHP_V56_VERSION,
-//        self::PHP_V70_VERSION => self::PHP_FORMULA_NAME . self::PHP_V70_VERSION,
-//        self::PHP_V71_VERSION => self::PHP_FORMULA_NAME . self::PHP_V71_VERSION,
+//        self::PHP_V70_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V70_VERSION,
+        self::PHP_V71_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V71_VERSION,
         self::PHP_V72_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V72_VERSION,
         self::PHP_V73_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V73_VERSION,
         self::PHP_V74_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V74_VERSION,
@@ -31,7 +31,7 @@ class PhpFpm
     const EOL_PHP_VERSIONS = [
 //        self::PHP_V56_VERSION,
 //        self::PHP_V70_VERSION,
-//        self::PHP_V71_VERSION,
+        self::PHP_V71_VERSION,
         self::PHP_V72_VERSION,
         self::PHP_V73_VERSION
     ];
@@ -152,7 +152,7 @@ class PhpFpm
             self::PHP_V74_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
             self::PHP_V73_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
             self::PHP_V72_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
-//            self::PHP_V71_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
+            self::PHP_V71_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
 //            self::PHP_V70_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.0/php-fpm.d/www.conf',
 //            self::PHP_V56_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '5.6/php-fpm.conf',
         ];

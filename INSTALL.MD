@@ -4,6 +4,7 @@
 
 > If you're upgrading van Valet+ 2.3 or lower use the extra following steps.
 > - Remove all `valet-php@` versions with `brew remove valet-php@...`.
+> - You might end up with some broken links, you can use `brew doctor` to find and remove/resolve them.
 > - Untap henkrehorst/php with `brew untap henkrehorst/php`.
 
 2. Add the Homebrew PHP tap with `brew tap shivammathur/php`.
