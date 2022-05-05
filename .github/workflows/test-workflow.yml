@@ -30,7 +30,7 @@ jobs:
       # On a local installation one might choose to keep his/her default brew PHP installation.
       - name: '[INSTALL] Brew uninstall php'
         run: |
-          brew uninstall php
+          brew uninstall php --force
 
       # Install the valet-php brew tap.
       - name: '[INSTALL] Brew tap henkrehost/php'
@@ -47,8 +47,8 @@ jobs:
       # Link valet-php@7.2 as default php binary.
       - name: '[INSTALL] Brew link valet-php@7.2'
         run: |
-          brew link valet-php@7.3 --force
-          php -v | grep 7.3
+          brew link valet-php@7.4 --force
+          php -v | grep 7.4
 
       # Since the Github actions CI/CD image comes with composer pre-installed there is no need to install composer.
       # However the image might change in the future. To ensure installation over several images an IF ELSE used.
@@ -221,6 +221,26 @@ jobs:
           ./valet ioncube on
           ./valet ioncube off
 
+
+      # PHP 8.0 Command test cases
+      - name: '[PHP 8.1] Switch to'
+        run: |
+          ./valet use 8.1
+
+      - name: '[PHP 8.0] Check version'
+        run: |
+          php -v | grep 8.1
+
+      - name: '[PHP 8.0] xdebug on and off'
+        run: |
+          ./valet xdebug on
+          ./valet xdebug off
+
+      - name: '[PHP 8.0] ioncube on and off'
+        run: |
+          ./valet ioncube on
+          ./valet ioncube off
+
       # Test Memcached
       - name: '[MEMCACHED] install'
         run: |
@@ -239,6 +259,6 @@ jobs:
       # to manually remove the Cellar files.
       - name: '[INSTALL] Valet fix --reinstall'
         run: |
-          sudo chmod -R 777 /usr/local/Cellar/valet-php@7.3
+          sudo chmod -R 777 /usr/local/Cellar/valet-php@7.4
           ./valet fix --reinstall
 
