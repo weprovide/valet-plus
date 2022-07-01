@@ -15,7 +15,7 @@ class PhpFpm
     const PHP_V73_VERSION = '7.3';
     const PHP_V74_VERSION = '7.4';
     const PHP_V80_VERSION = '8.0';
-//    const PHP_V81_VERSION = '8.1';
+    const PHP_V81_VERSION = '8.1';
 
     const SUPPORTED_PHP_FORMULAE = [
 //        self::PHP_V56_VERSION => self::PHP_FORMULA_NAME . self::PHP_V56_VERSION,
@@ -25,7 +25,7 @@ class PhpFpm
         self::PHP_V73_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V73_VERSION,
         self::PHP_V74_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V74_VERSION,
         self::PHP_V80_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V80_VERSION,
-//        self::PHP_V81_VERSION => self::PHP_FORMULA_NAME
+        self::PHP_V81_VERSION => self::PHP_FORMULA_NAME
     ];
 
     const EOL_PHP_VERSIONS = [
@@ -147,7 +147,7 @@ class PhpFpm
     {
         $brewPath = $this->architecture->getBrewPath();
         $confLookup = [
-//            self::PHP_V81_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '8.1/php-fpm.d/www.conf',
+            self::PHP_V81_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '8.1/php-fpm.d/www.conf',
             self::PHP_V80_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '8.0/php-fpm.d/www.conf',
             self::PHP_V74_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
             self::PHP_V73_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
@@ -491,13 +491,12 @@ class PhpFpm
         if (!$this->files->isLink($phpPath)) {
             throw new DomainException("Unable to determine linked PHP.");
         }
-//var_dump($phpPath);
+
         $resolvedPath = $this->files->readLink($phpPath);
-//var_dump($resolvedPath);
         $versions = self::SUPPORTED_PHP_FORMULAE;
-//var_dump($versions);
         foreach ($versions as $version => $brewname) {
-            if (strpos($resolvedPath, '/php@' . $version . '/') !== false) {
+            if (strpos($resolvedPath, '/php@' . $version . '/') !== false ||
+                strpos($resolvedPath, '/php/' . $version . '') !== false) {
                 return $version;
             }
         }

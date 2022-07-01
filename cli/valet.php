@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
+
 /**
  * Load correct autoloader depending on install location.
  */
@@ -22,7 +24,7 @@ use Symfony\Component\Console\Question\Question;
 Container::setInstance(new Container);
 
 // get current version based on git describe and tags
-$version = new Version('2.4.0-beta3', __DIR__ . '/../');
+$version = new Version('2.4.0-beta4', __DIR__ . '/../');
 
 $app = new Application('Valet+', $version->getVersion());
 
