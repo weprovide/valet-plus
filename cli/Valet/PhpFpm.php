@@ -8,8 +8,6 @@ class PhpFpm
 {
     const PHP_FORMULA_PREFIX = 'shivammathur/php/';
     const PHP_FORMULA_NAME = 'php';
-//    const PHP_V56_VERSION = '5.6';
-//    const PHP_V70_VERSION = '7.0';
     const PHP_V71_VERSION = '7.1';
     const PHP_V72_VERSION = '7.2';
     const PHP_V73_VERSION = '7.3';
@@ -18,8 +16,6 @@ class PhpFpm
     const PHP_V81_VERSION = '8.1';
 
     const SUPPORTED_PHP_FORMULAE = [
-//        self::PHP_V56_VERSION => self::PHP_FORMULA_NAME . self::PHP_V56_VERSION,
-//        self::PHP_V70_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V70_VERSION,
         self::PHP_V71_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V71_VERSION,
         self::PHP_V72_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V72_VERSION,
         self::PHP_V73_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V73_VERSION,
@@ -29,8 +25,6 @@ class PhpFpm
     ];
 
     const EOL_PHP_VERSIONS = [
-//        self::PHP_V56_VERSION,
-//        self::PHP_V70_VERSION,
         self::PHP_V71_VERSION,
         self::PHP_V72_VERSION,
         self::PHP_V73_VERSION
@@ -45,8 +39,8 @@ class PhpFpm
     public $peclCustom;
     public $brewDir;
 
-//    const DEPRECATED_PHP_TAP = 'homebrew/php';
-//    const VALET_PHP_BREW_TAP = 'henkrehorst/php';
+    const DEPRECATED_PHP_TAP = 'homebrew/php';
+    const DEPRECATED_VALET_PHP_BREW_TAP = 'henkrehorst/php';
     const SHIVAMMATHUR_PHP_BREW_TAP = 'shivammathur/php';
 
     /**
@@ -84,13 +78,17 @@ class PhpFpm
             $this->brew->ensureInstalled($this->getFormulaName(self::PHP_V74_VERSION));
         }
 
-//        if (!$this->brew->hasTap(self::VALET_PHP_BREW_TAP)) {
-//            info("[BREW TAP] Installing " . self::VALET_PHP_BREW_TAP);
-//            $this->brew->tap(self::VALET_PHP_BREW_TAP);
-//        } else {
-//            info("[BREW TAP] " . self::VALET_PHP_BREW_TAP . " already installed");
-//        }
+        // Untap the deprecated brew taps.
+        if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {
+            info('[brew] untapping formulae ' . self::DEPRECATED_PHP_TAP);
+            $this->brew->unTap(self::DEPRECATED_PHP_TAP);
+        }
+        if ($this->brew->hasTap(self::DEPRECATED_VALET_PHP_BREW_TAP)) {
+            info('[brew] untapping formulae ' . self::DEPRECATED_VALET_PHP_BREW_TAP);
+            $this->brew->unTap(self::DEPRECATED_VALET_PHP_BREW_TAP);
+        }
 
+        // Tap
         if (!$this->brew->hasTap(self::SHIVAMMATHUR_PHP_BREW_TAP)) {
             info("[BREW TAP] Installing " . self::SHIVAMMATHUR_PHP_BREW_TAP);
             $this->brew->tap(self::SHIVAMMATHUR_PHP_BREW_TAP);
@@ -99,7 +97,7 @@ class PhpFpm
         }
 
         $version = $this->linkedPhp();
-//var_dump($version);
+
         $this->files->ensureDirExists($this->architecture->getBrewPath() . '/var/log', user());
         $this->updateConfiguration();
         $this->pecl->updatePeclChannel();
@@ -124,7 +122,6 @@ class PhpFpm
      */
     public function restart()
     {
-//var_dump('restarting '.self::SUPPORTED_PHP_FORMULAE[$this->linkedPhp()], $this->linkedPhp());
         $this->brew->restartService(self::SUPPORTED_PHP_FORMULAE[$this->linkedPhp()]);
     }
 
@@ -152,12 +149,9 @@ class PhpFpm
             self::PHP_V74_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',
             self::PHP_V73_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.3/php-fpm.d/www.conf',
             self::PHP_V72_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.2/php-fpm.d/www.conf',
-            self::PHP_V71_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf',
-//            self::PHP_V70_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.0/php-fpm.d/www.conf',
-//            self::PHP_V56_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '5.6/php-fpm.conf',
+            self::PHP_V71_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.1/php-fpm.d/www.conf'
         ];
 
-//        var_dump($confLookup[$this->linkedPhp()]);
         return $confLookup[$this->linkedPhp()];
     }
 
@@ -180,7 +174,7 @@ class PhpFpm
     public function switchTo($version)
     {
         $currentVersion = $this->linkedPhp();
-//var_dump($currentVersion);
+
         if (!array_key_exists($version, self::SUPPORTED_PHP_FORMULAE)) {
             throw new DomainException(
                 "This version of PHP not available. The following versions are available: " . implode(
@@ -202,7 +196,6 @@ class PhpFpm
         }
 
         $installed = $this->brew->installed(self::PHP_FORMULA_PREFIX. self::SUPPORTED_PHP_FORMULAE[$version]);
-//var_dump($installed);
         if (!$installed) {
             $this->brew->ensureInstalled(self::PHP_FORMULA_PREFIX.self::SUPPORTED_PHP_FORMULAE[$version]);
         }
@@ -217,7 +210,7 @@ class PhpFpm
         $this->cli->passthru(
             'sudo ln -fs /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib'
         );
-//var_dump($version, $currentVersion);
+
         if (!$this->linkPhp($version, $currentVersion)) {
             return;
         }
@@ -360,7 +353,6 @@ class PhpFpm
      */
     public function isExtensionEnabled($extension)
     {
-
         $currentPhpVersion = $this->brew->linkedPhp();
 
         if (!$this->brew->installed($currentPhpVersion . '-' . $extension)) {
@@ -547,7 +539,6 @@ class PhpFpm
         // Get php.ini file.
         $extensionDirectory = $this->pecl->getExtensionDirectory();
         $phpIniPath = $this->pecl->getPhpIniPath();
-//var_dump($phpIniPath);
         $contents = $this->files->get($phpIniPath);
 
         // Replace all extension_dir directives with nothing. And place extension_dir directive for valet+
@@ -611,11 +602,15 @@ class PhpFpm
             $this->linkPhp(self::PHP_V74_VERSION);
         }
 
-//        // Untap the deprecated brew tap.
-//        if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {
-//            info('[brew] untapping formulae ' . self::DEPRECATED_PHP_TAP);
-//            $this->brew->unTap(self::DEPRECATED_PHP_TAP);
-//        }
+        // Untap the deprecated brew taps.
+        if ($this->brew->hasTap(self::DEPRECATED_PHP_TAP)) {
+            info('[brew] untapping formulae ' . self::DEPRECATED_PHP_TAP);
+            $this->brew->unTap(self::DEPRECATED_PHP_TAP);
+        }
+        if ($this->brew->hasTap(self::DEPRECATED_VALET_PHP_BREW_TAP)) {
+            info('[brew] untapping formulae ' . self::DEPRECATED_VALET_PHP_BREW_TAP);
+            $this->brew->unTap(self::DEPRECATED_VALET_PHP_BREW_TAP);
+        }
 
         warning(
             "Please check your linked php version, you might need to restart your terminal!" .
