@@ -245,7 +245,7 @@ class Elasticsearch
         } else {
             // Install PHP dependencies through installation of PHP.
             $this->phpFpm->install();
-            warning("Switching Elasticsearch requires PECL extension yaml. Try switching again.");
+            warning("Switching Elasticsearch requires YAML extension. Try switching again.");
 
             return;
         }

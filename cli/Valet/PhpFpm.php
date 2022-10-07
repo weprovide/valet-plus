@@ -32,12 +32,13 @@ class PhpFpm
 
     const LOCAL_PHP_FOLDER = '/etc/php/';
 
-    public $brew;
-    public $cli;
-    public $files;
-    public $pecl;
-    public $peclCustom;
-    public $brewDir;
+    protected $architecture;
+    protected $brew;
+    protected $cli;
+    protected $files;
+    protected $phpExtension;
+    protected $pecl;
+    protected $peclCustom;
 
     const DEPRECATED_PHP_TAP = 'homebrew/php';
     const DEPRECATED_VALET_PHP_BREW_TAP = 'henkrehorst/php';
@@ -48,6 +49,7 @@ class PhpFpm
      * @param Brew $brew
      * @param CommandLine $cli
      * @param Filesystem $files
+     * @param PhpExtension $phpExtension
      * @param Pecl $pecl
      * @param PeclCustom $peclCustom
      */
@@ -56,12 +58,14 @@ class PhpFpm
         Brew $brew,
         CommandLine $cli,
         Filesystem $files,
+        PhpExtension $phpExtension,
         Pecl $pecl,
         PeclCustom $peclCustom
     ) {
         $this->cli = $cli;
         $this->brew = $brew;
         $this->files = $files;
+        $this->phpExtension = $phpExtension;
         $this->pecl = $pecl;
         $this->peclCustom = $peclCustom;
         $this->architecture = $architecture;
@@ -100,12 +104,14 @@ class PhpFpm
 
         $this->files->ensureDirExists($this->architecture->getBrewPath() . '/var/log', user());
         $this->updateConfiguration();
-        $this->pecl->updatePeclChannel();
-        $this->pecl->installExtensions($version);
-        $this->peclCustom->installExtensions($version);
+        $this->pecl->uninstallExtensions();
+        $this->phpExtension->installExtensions($version);
         $this->restart();
     }
 
+    /**
+     * @return string
+     */
     public function iniPath()
     {
         $destFile = dirname($this->fpmConfigPath());
@@ -289,87 +295,8 @@ class PhpFpm
     }
 
     /**
-     * @deprecated Deprecated in favor of Pecl#installExtension();
-     *
-     * @param $extension
      * @return bool
      */
-    public function enableExtension($extension)
-    {
-        $currentPhpVersion = $this->linkedPhp();
-
-        if (!$this->brew->installed($currentPhpVersion . '-' . $extension)) {
-            $this->brew->ensureInstalled($currentPhpVersion . '-' . $extension);
-        }
-
-        $iniPath = $this->iniPath();
-
-        if ($this->files->exists($iniPath . 'ext-' . $extension . '.ini')) {
-            info($extension . ' was already enabled.');
-            return false;
-        }
-
-        if ($this->files->exists($iniPath . 'ext-' . $extension . '.ini.disabled')) {
-            $this->files->move(
-                $iniPath . 'ext-' . $extension . '.ini.disabled',
-                $iniPath . 'ext-' . $extension . '.ini'
-            );
-        }
-
-        info('Enabled ' . $extension);
-        return true;
-    }
-
-    /**
-     * @deprecated Deprecated in favor of Pecl#uninstallExtesnion();
-     *
-     * @param $extension
-     * @return bool
-     */
-    public function disableExtension($extension)
-    {
-        $iniPath = $this->iniPath();
-        if ($this->files->exists($iniPath . 'ext-' . $extension . '.ini.disabled')) {
-            info($extension . ' was already disabled.');
-            return false;
-        }
-
-        if ($this->files->exists($iniPath . 'ext-' . $extension . '.ini')) {
-            $this->files->move(
-                $iniPath . 'ext-' . $extension . '.ini',
-                $iniPath . 'ext-' . $extension . '.ini.disabled'
-            );
-        }
-
-        info('Disabled ' . $extension);
-        return true;
-    }
-
-    /**
-     * @deprecated Deprecated in favor of Pecl#installed();
-     *
-     * @param $extension
-     * @return bool
-     */
-    public function isExtensionEnabled($extension)
-    {
-        $currentPhpVersion = $this->brew->linkedPhp();
-
-        if (!$this->brew->installed($currentPhpVersion . '-' . $extension)) {
-            $this->brew->ensureInstalled($currentPhpVersion . '-' . $extension);
-        }
-
-        $iniPath = $this->iniPath();
-
-        if ($this->files->exists($iniPath . 'ext-' . $extension . '.ini')) {
-            info($extension . ' is enabled.');
-        } else {
-            info($extension . ' is disabled.');
-        }
-
-        return true;
-    }
-
     public function enableAutoStart()
     {
         $iniPath = $this->iniPath();
@@ -537,18 +464,14 @@ class PhpFpm
         $this->writePerformanceConfiguration();
 
         // Get php.ini file.
-        $extensionDirectory = $this->pecl->getExtensionDirectory();
-        $phpIniPath = $this->pecl->getPhpIniPath();
+        $phpIniPath = $this->pecl->getPhpIniPath(); //todo: check this
         $contents = $this->files->get($phpIniPath);
-
-        // Replace all extension_dir directives with nothing. And place extension_dir directive for valet+
+        // Replace all extension_dir directives with nothing.
         $contents = preg_replace(
             "/ *extension_dir = \"(.*)\"\n/",
             '',
             $contents
         );
-        $contents = "extension_dir = \"$extensionDirectory\"\n" . $contents;
-
         // Save php.ini file.
         $this->files->putAsUser($phpIniPath, $contents);
     }

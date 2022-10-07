@@ -79,7 +79,6 @@ $app->command('fix [--reinstall]', function ($reinstall) {
     }
 
     PhpFpm::fix($reinstall);
-    Pecl::fix();
 })->descriptions('Fixes common installation problems that prevent Valet+ from working');
 
 /**
@@ -466,6 +465,7 @@ if (is_dir(VALET_HOME_PATH)) {
         Binaries::uninstallBinaries();
         Pecl::uninstallExtensions();
         PeclCustom::uninstallExtensions();
+        PhpExtension::uninstallExtensions();
         DevTools::uninstall();
         Nginx::uninstall();
         Mysql::uninstall();
@@ -661,13 +661,6 @@ if (is_dir(VALET_HOME_PATH)) {
 
         $restart = false;
 
-        if (Pecl::isInstalled('xdebug') === false) {
-            info('[PECL] Xdebug not found, installing...');
-            Pecl::installExtension('xdebug');
-            PhpFpm::installXdebugConfiguration();
-            $restart = true;
-        }
-
         $defaults = $input->getOptions();
         if (isset($defaults['remote_autostart'])) {
             if ($defaults['remote_autostart']) {
@@ -678,20 +671,22 @@ if (is_dir(VALET_HOME_PATH)) {
             $restart = true;
         }
 
-        if (Pecl::isEnabled('xdebug') === false && ($mode === 'on' || $mode === 'enable')) {
-            info("[PECL] Enabling xdebug extension");
-            $restart = true;
-            Pecl::enable('xdebug');
-        } elseif ($mode === 'on' || $mode === 'enable') {
-            info("[PECL] Xdebug extension is already enabled!");
+        if ($mode === 'on' || $mode === 'enable') {
+            if (!PhpExtension::isInstalled('xdebug', PhpFpm::linkedPhp())) {
+                PhpExtension::installExtension('xdebug', PhpFpm::linkedPhp());
+                PhpFpm::installXdebugConfiguration();
+                $restart = true;
+            } else {
+                info("[EXTENSION] Xdebug extension is already enabled!");
+            }
         }
-
-        if (Pecl::isEnabled('xdebug') === true && ($mode === 'off' || $mode === 'disable')) {
-            info("[PECL] Disabling xdebug extension");
-            $restart = true;
-            Pecl::disable('xdebug');
-        } elseif ($mode === 'off' || $mode === 'disable') {
-            info("[PECL] Xdebug extension is already uninstalled!");
+        if ($mode === 'off' || $mode === 'disable') {
+            if (PhpExtension::isInstalled('xdebug', PhpFpm::linkedPhp())) {
+                PhpExtension::uninstallExtension('xdebug', PhpFpm::linkedPhp(), PhpFpm::iniPath());
+                $restart = true;
+            } else {
+                info("[EXTENSION] Xdebug extension is already uninstalled!");
+            }
         }
 
         if ($restart) {
@@ -826,23 +821,21 @@ if (is_dir(VALET_HOME_PATH)) {
     })->descriptions('Enable / disable Redis');
 
     $app->command('memcache [mode]', function ($mode) {
-        $modes = ['install', 'uninstall'];
+        $modes = ['on', 'install', 'off', 'uninstall'];
 
         if (!in_array($mode, $modes)) {
             throw new Exception('Mode not found. Available modes: '.implode(', ', $modes));
         }
 
-        if (PhpFpm::linkedPhp() == '5.6') {
-            throw new Exception('Memcache needs php 7.0 or higher, current php version: 5.6');
-        }
-
         $restart = false;
         switch ($mode) {
+            case 'on':
             case 'install':
-                $restart = Memcache::install();
+                $restart = Memcache::install(PhpFpm::linkedPhp());
                 break;
+            case 'off':
             case 'uninstall':
-                $restart = Memcache::uninstall();
+                $restart = Memcache::uninstall(PhpFpm::linkedPhp(), PhpFpm::iniPath());
                 break;
         }
         if ($restart) {
