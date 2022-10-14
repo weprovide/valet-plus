@@ -179,6 +179,7 @@ class PhpFpm
      */
     public function switchTo($version)
     {
+        $this->pecl->uninstallExtensions();
         $currentVersion = $this->linkedPhp();
 
         if (!array_key_exists($version, self::SUPPORTED_PHP_FORMULAE)) {
