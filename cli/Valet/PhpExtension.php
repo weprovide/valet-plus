@@ -15,7 +15,10 @@ class PhpExtension
 
     const PHP_EXTENSIONS = [
         self::XDEBUG_EXTENSION => [
-            'default' => false
+            'default' => false,
+            'ini_files' => [
+                '20-xdebug'
+            ]
         ],
         self::APCU_EXTENSION => [
             'default' => true
