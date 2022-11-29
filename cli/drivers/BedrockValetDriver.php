@@ -50,14 +50,14 @@ class BedrockValetDriver extends BasicValetDriver
         $this->loadServerEnvironmentVariables($sitePath, $siteName);
 
         $_SERVER['PHP_SELF'] = $uri;
+        $_SERVER['SERVER_ADDR'] = '127.0.0.1';
+        $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_HOST'];
 
-        if (strpos($uri, '/wp/') === 0) {
-            return is_dir($sitePath.'/web'.$uri)
-                            ? $sitePath.'/web'.$this->forceTrailingSlash($uri).'/index.php'
-                            : $sitePath.'/web'.$uri;
-        }
-
-        return $sitePath.'/web/index.php';
+        return parent::frontControllerPath(
+            $sitePath . '/web',
+            $siteName,
+            $this->forceTrailingSlash($uri)
+        );
     }
 
     /**
