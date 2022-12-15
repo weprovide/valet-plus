@@ -14,6 +14,7 @@ class PhpFpm
     const PHP_V74_VERSION = '7.4';
     const PHP_V80_VERSION = '8.0';
     const PHP_V81_VERSION = '8.1';
+    const PHP_V82_VERSION = '8.2';
 
     const SUPPORTED_PHP_FORMULAE = [
         self::PHP_V71_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V71_VERSION,
@@ -21,7 +22,8 @@ class PhpFpm
         self::PHP_V73_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V73_VERSION,
         self::PHP_V74_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V74_VERSION,
         self::PHP_V80_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V80_VERSION,
-        self::PHP_V81_VERSION => self::PHP_FORMULA_NAME
+        self::PHP_V81_VERSION => self::PHP_FORMULA_NAME .'@'. self::PHP_V81_VERSION,
+        self::PHP_V82_VERSION => self::PHP_FORMULA_NAME
     ];
 
     const EOL_PHP_VERSIONS = [
@@ -150,6 +152,7 @@ class PhpFpm
     {
         $brewPath = $this->architecture->getBrewPath();
         $confLookup = [
+            self::PHP_V82_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '8.2/php-fpm.d/www.conf',
             self::PHP_V81_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '8.1/php-fpm.d/www.conf',
             self::PHP_V80_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '8.0/php-fpm.d/www.conf',
             self::PHP_V74_VERSION => $brewPath . self::LOCAL_PHP_FOLDER . '7.4/php-fpm.d/www.conf',

@@ -24,7 +24,7 @@ use Symfony\Component\Console\Question\Question;
 Container::setInstance(new Container);
 
 // get current version based on git describe and tags
-$version = new Version('2.4.0-beta5', __DIR__ . '/../');
+$version = new Version('2.4.0-beta6', __DIR__ . '/../');
 
 $app = new Application('Valet+', $version->getVersion());
 
