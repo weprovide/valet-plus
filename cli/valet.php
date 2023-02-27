@@ -944,6 +944,7 @@ if (is_dir(VALET_HOME_PATH)) {
             'mysql' => '$HOME/.valet/Log/mysql.log',
             'mailhog' => $brewPath . '/var/log/mailhog.log',
             'redis' => $brewPath . '/var/log/redis.log',
+            'elasticsearch' => $brewPath . '/var/log/elasticsearch.log',
         ];
 
         if (!isset($logs[$service])) {
