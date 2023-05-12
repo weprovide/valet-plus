@@ -83,6 +83,9 @@ class Ngrok extends Facade
 class PhpFpm extends Facade
 {
 }
+class PhpExtension extends Facade
+{
+}
 class DevTools extends Facade
 {
 }

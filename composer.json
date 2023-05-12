@@ -38,19 +38,20 @@
         "platform-check": false
     },
     "require": {
-        "php": ">=5.6",
+        "php": ">=7.1",
         "illuminate/container": "~5.1|^6.0|^7.0|^8.0",
         "mnapoli/silly": "~1.5.0",
-        "symfony/process": "~2.7|~3.0|~4.0|~5.0",
+        "symfony/process": "^4.2",
         "nategood/httpful": "~0.2",
-        "tightenco/collect": "~5.4.0|^6.0|^7.0|^8.0",
-        "sebastian/version": "^3.0",
+        "tightenco/collect": "8.78.0",
+        "sebastian/version": "^2.0",
         "squizlabs/php_codesniffer": "^3.6",
-        "symfony/debug": "^4.4"
+        "symfony/debug": "^4.4",
+        "psr/container": "1.0.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.2.3",
-        "phpunit/phpunit": "^9"
+        "phpunit/phpunit": "^8"
     },
     "bin": [
         "valet"

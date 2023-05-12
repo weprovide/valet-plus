@@ -5,6 +5,9 @@ namespace Valet;
 use Exception;
 use DomainException;
 
+/**
+ * @deprecated
+ */
 class Pecl extends AbstractPecl
 {
 
@@ -43,10 +46,12 @@ class Pecl extends AbstractPecl
      */
     const EXTENSIONS = [
         self::XDEBUG_EXTENSION => [
-            '8.0' => '3.0.4',
-            '7.4' => '3.0.4',
-            '7.3' => '3.0.4',
-            '7.2' => '3.0.4',
+            '8.2' => '3.1.5',
+            '8.1' => '3.1.5',
+            '8.0' => '3.1.5',
+            '7.4' => '3.1.5',
+            '7.3' => '3.1.5',
+            '7.2' => '2.9.8',
             '7.1' => '2.9.8',
             '7.0' => '2.9.8',
             '5.6' => '2.2.7',
@@ -62,6 +67,8 @@ class Pecl extends AbstractPecl
             'extension_type' => self::NORMAL_EXTENSION_TYPE
         ],
         self::GEOIP_EXTENSION => [
+            '8.2' => false, //todo; will probably be 1.1.2
+            '8.1' => false, //todo; will probably be 1.1.2
             '8.0' => false, //todo; will probably be 1.1.2
             '7.4' => '1.1.1',
             '7.3' => '1.1.1',
