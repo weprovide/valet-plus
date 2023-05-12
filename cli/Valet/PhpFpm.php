@@ -215,12 +215,6 @@ class PhpFpm
             return;
         }
 
-        // Relink libjpeg
-        info('[libjpeg] Relinking');
-        $this->cli->passthru(
-            'sudo ln -fs /usr/local/Cellar/jpeg/8d/lib/libjpeg.8.dylib /usr/local/opt/jpeg/lib/libjpeg.8.dylib'
-        );
-
         if (!$this->linkPhp($version, $currentVersion)) {
             return;
         }
