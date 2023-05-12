@@ -182,7 +182,6 @@ class PhpFpm
      */
     public function switchTo($version)
     {
-        $this->pecl->uninstallExtensions();
         $currentVersion = $this->linkedPhp();
 
         if (!array_key_exists($version, self::SUPPORTED_PHP_FORMULAE)) {
@@ -205,6 +204,7 @@ class PhpFpm
             warning('Please check http://php.net/supported-versions.php for more information.');
         }
 
+        $this->pecl->uninstallExtensions();
         $installed = $this->brew->installed(self::PHP_FORMULA_PREFIX. self::SUPPORTED_PHP_FORMULAE[$version]);
         if (!$installed) {
             $this->brew->ensureInstalled(self::PHP_FORMULA_PREFIX.self::SUPPORTED_PHP_FORMULAE[$version]);
