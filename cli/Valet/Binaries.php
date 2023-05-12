@@ -32,18 +32,18 @@ class Binaries
      */
     const SUPPORTED_CUSTOM_BINARIES = [
         self::N98_MAGERUN => [
-            'url' => 'https://files.magerun.net/n98-magerun-2.2.0.phar',
-            'shasum' => '7dd1db19859ad7b05bbaa7fe58295fceb39c3378daeadda17bdc9ae796ba59f3',
+            'url' => 'https://files.magerun.net/n98-magerun-2.3.0.phar',
+            'shasum' => 'b3e09dafccd4dd505a073c4e8789d78ea3def893cfc475a214e1154bff3aa8e4',
             'bin_location' => '/bin/'
         ],
         self::N98_MAGERUN_2 => [
-            'url' => 'https://files.magerun.net/n98-magerun2-4.9.1.phar',
-            'shasum' => '49a00a71723da079b90352fc506c1583799c5e33a2af4ac4a3dd2ac29b11ef9f',
+            'url' => 'https://files.magerun.net/n98-magerun2-7.0.3.phar',
+            'shasum' => '4aa39aa33d9cd5f2d5e22850df76543791cf4f31c7dbdb7f9de698500f74307b',
             'bin_location' => '/bin/'
         ],
         self::DRUSH_LAUNCHER => [
-            'url' => 'https://github.com/drush-ops/drush-launcher/releases/download/0.10.1/drush.phar',
-            'shasum' => 'c6e3e520a33ac7790ab37e5af0fd91fc1108f0830a3a5ebe5b7c36e8782bea30',
+            'url' => 'https://github.com/drush-ops/drush-launcher/releases/download/0.10.2/drush.phar',
+            'shasum' => '0ae18cd3f8745fdd58ab852481b89428b57be6523edf4d841ebef198c40271be',
             'bin_location' => '/bin/'
         ]
     ];
