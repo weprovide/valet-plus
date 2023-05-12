@@ -6,9 +6,9 @@ Valet+ is a development environment for macOS. No Vagrant, no Docker, no `/etc/h
 
 Go here for the [valet+ documentation](https://github.com/weprovide/valet-plus/wiki).
 
-### Installing 2.4.0-beta+
+### Installing
 
-For installing Valet+ 2.4.0-beta versions follow the install notes as describe in [INSTALL.MD](INSTALL.MD).
+For installing Valet+ follow the installation notes as describe in [INSTALL.MD](INSTALL.MD).
 
 ## Credits
 
