@@ -29,6 +29,9 @@ class ValetPlusFacade
 class PhpExtension extends ValetPlusFacade
 {
 }
+class Mysql extends ValetPlusFacade
+{
+}
 class Mailhog extends ValetPlusFacade
 {
 }
