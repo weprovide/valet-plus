@@ -1,0 +1,196 @@
+#!/usr/bin/env bash
+
+SOURCE="${BASH_SOURCE[0]}"
+
+# If the current source is a symbolic link, we need to resolve it to an
+# actual directory name. We'll use PHP to do this easier than we can
+# do it in pure Bash. So, we'll call into PHP CLI here to resolve.
+if [[ -L "$SOURCE" ]]
+then
+    DIR=$(php -r "echo dirname(realpath('$SOURCE'));")
+else
+    DIR="$( cd "$( dirname "$SOURCE" )" && pwd )"
+fi
+#echo $DIR
+
+# If we are in the global Composer "bin" directory, we need to bump our
+# current directory up two, so that we will correctly proxy into the
+# Valet CLI script which is written in PHP. Will use PHP to do it.
+if [ ! -f "$DIR/cli/valet.php" ]
+then
+    DIR=$(php -r "echo realpath('$DIR/../weprovide/valet-plus');")
+fi
+#echo $DIR
+
+# Valet is a dependency of Valet+, so it's always in the vendor directory.
+LARAVEL_DIR="$DIR/vendor/laravel/valet"
+#echo $LARAVEL_DIR
+
+# Get a command-line executable we can use for php that's 8+; if this
+# is the inside loop (Valet runs itself 2x in some settings), skip
+# checking and pulling again by reading the exported env var
+if [[ $PHP_EXECUTABLE = "" ]]
+then
+    PHP=$(php $LARAVEL_DIR/find-usable-php.php)
+
+    # Validate output before running it on the CLI
+    if [[ ! -f $PHP ]]; then
+        echo "Error finding executable PHP. Quitting for safety."
+        echo "Provided output from find-usable-php.php:"
+        echo $PHP
+        exit
+    fi
+
+    export PHP_EXECUTABLE=$PHP
+else
+    PHP=$PHP_EXECUTABLE
+fi
+#echo $PHP
+
+#TODO: check
+# If the command is the "share" command we will need to resolve out any
+# symbolic links for the site. Before starting Ngrok, we will fire a
+# process to retrieve the live Ngrok tunnel URL in the background.
+if [[ "$1" = "share" ]]
+then
+    SHARETOOL="$($PHP "$DIR/cli/valet.php" share-tool)"
+
+    if [[ $SHARETOOL = "ngrok" ]]
+    then
+    # ngrok
+        # Check to make sure ngrok is configured correctly
+        BREW_PREFIX=$(brew --prefix)
+        $($BREW_PREFIX/bin/ngrok config check >/dev/null 2>&1)
+
+        if [[ $? -ne 0 ]]; then
+            echo "Please sign up for a free ngrok account and then run valet set-ngrok-token {yourTokenHere}."
+            exit
+        fi
+
+        # Check for parameters to pass through to ngrok (these will start with '-' or '--')
+        PARAMS=(${@:2})
+        for PARAM in ${PARAMS[@]}
+        do
+            if [[ ${PARAM:0:1} != '-' ]]; then
+                PARAMS=("${PARAMS[@]/$PARAM}") # Quotes when working with strings
+            fi
+        done
+
+        PARAMS=${PARAMS[@]}
+
+        HOST="${PWD##*/}"
+
+        # Find the first linked site for the current dir, if one exists
+        for linkname in ~/.config/valet/Sites/*; do
+            if [[ "$(readlink $linkname)" = "$PWD" ]]
+            then
+                HOST="${linkname##*/}"
+                break
+            fi
+        done
+
+        TLD=$($PHP "$DIR/cli/valet.php" tld)
+
+        # Decide the correct PORT: uses 60 for secure, else 80
+        if grep --quiet --no-messages 443 ~/.config/valet/Nginx/$HOST*
+        then
+            PORT=60
+        else
+            PORT=80
+        fi
+
+        # Lowercase the host to match how the rest of our domains are looked up
+        HOST=$(echo "$HOST" | tr '[:upper:]' '[:lower:]')
+
+        sudo -u "$USER" "$BREW_PREFIX/bin/ngrok" http "$HOST.$TLD:$PORT" --host-header=rewrite $PARAMS
+
+        exit
+
+    elif [[ $SHARETOOL = "expose" ]]
+    then
+
+    # expose
+        # Check for parameters to pass through to Expose (these will start with '-' or '--')
+        PARAMS=(${@:2})
+        for PARAM in ${PARAMS[@]}
+        do
+            if [[ ${PARAM:0:1} != '-' ]]; then
+                PARAMS=("${PARAMS[@]/$PARAM}") #Quotes when working with strings
+            fi
+        done
+
+        PARAMS=${PARAMS[@]}
+
+        HOST="${PWD##*/}"
+
+        # Find the first linked site for the current dir, if one exists
+        for linkname in ~/.config/valet/Sites/*; do
+            if [[ "$(readlink $linkname)" = "$PWD" ]]
+            then
+                HOST="${linkname##*/}"
+                break
+            fi
+        done
+
+        TLD=$($PHP "$DIR/cli/valet.php" tld)
+
+        # Decide the correct PORT: uses 443 for secure, else 80
+        if grep --quiet --no-messages 443 ~/.config/valet/Nginx/$HOST*
+        then
+            PORT=443
+        else
+            PORT=80
+        fi
+
+        # Lowercase the host to match how the rest of our domains are looked up
+        HOST=$(echo "$HOST" | tr '[:upper:]' '[:lower:]')
+
+        sudo -u "$USER" expose share "$HOST.$TLD:$PORT" $PARAMS
+
+        exit
+
+    else
+        echo ''
+        echo "Please use 'valet share-tool ngrok' or 'valet share-tool expose'"
+        echo "to set your preferred share tool."
+        exit
+    fi
+
+#TODO: check
+# Proxy PHP commands to the "php" executable on the isolated site
+elif [[ "$1" = "php" ]]
+then
+    if [[ $2 == *"--site="* ]]; then
+        SITE=${2#*=}
+        $(php "$DIR/cli/valet.php" which-php $SITE) "${@:3}"
+    else
+        $(php "$DIR/cli/valet.php" which-php) "${@:2}"
+    fi
+
+    exit
+
+#TODO: check
+# Proxy Composer commands with the "php" executable on the isolated site
+elif [[ "$1" = "composer" ]]
+then
+    if [[ $2 == *"--site="* ]]; then
+        SITE=${2#*=}
+        $(php "$DIR/cli/valet.php" which-php $SITE) $(which composer) "${@:3}"
+    else
+        $(php "$DIR/cli/valet.php" which-php) $(which composer) "${@:2}"
+    fi
+
+    exit
+
+# Finally, for every other command we will just proxy into the PHP tool
+# and let it handle the request. These are commands which can be run
+# without sudo and don't require taking over terminals like Ngrok.
+else
+    if [[ "$EUID" -ne 0 ]]
+    then
+        sudo USER="$USER" --preserve-env "$SOURCE" "$@"
+        exit
+    fi
+
+    $PHP "$DIR/cli/valet.php" "$@"
+fi

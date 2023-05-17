@@ -1,0 +1,26 @@
+{
+    "name": "weprovide/valet-plus",
+    "description": "Blazing fast macOS PHP development environment",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mischa Braam",
+            "email": "mischa.braam@iodigital.com"
+        }
+    ],
+    "autoload": {
+        "files": [
+            "cli/includes/facades.php"
+        ],
+        "psr-4": {
+            "WeProvide\\ValetPlus\\": "cli/ValetPlus/"
+        }
+    },
+    "require": {
+        "php": ">=7.1",
+        "laravel/valet": "*"
+    },
+    "bin": [
+        "valet"
+    ]
+}
