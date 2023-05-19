@@ -196,6 +196,36 @@ if (is_dir(VALET_HOME_PATH)) {
         ->descriptions('Enable/disable Redis')
         ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable']));
 
+    /**
+     * Varnish services.
+     */
+    $app
+        ->command('varnish', function (OutputInterface $output, string $mode = null) {
+            $modes = ['install', 'on', 'enable', 'off', 'disable'];
+
+            if (!in_array($mode, $modes)) {
+                throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+            }
+
+            switch ($mode) {
+                case 'install':
+                    Varnish::install();
+
+                    return;
+                case 'enable':
+                case 'on':
+                    Varnish::enable();
+
+                    return;
+                case 'disable':
+                case 'off':
+                    Varnish::disable();
+
+                    return;
+            }
+        })
+        ->descriptions('Enable/disable Varnish')
+        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable']));
 
     /**
      * Database services and commands.

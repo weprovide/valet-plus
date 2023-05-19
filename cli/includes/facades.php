@@ -38,3 +38,6 @@ class Mailhog extends ValetPlusFacade
 class Redis extends ValetPlusFacade
 {
 }
+class Varnish extends ValetPlusFacade
+{
+}
