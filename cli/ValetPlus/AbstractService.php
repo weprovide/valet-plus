@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace WeProvide\ValetPlus;
 
 use JsonException;
+use Valet\Brew;
 use Valet\Configuration;
+use Valet\Filesystem;
 
 abstract class AbstractService
 {
@@ -18,15 +20,24 @@ abstract class AbstractService
     protected $configuration;
     /** @var string */
     protected $configClassName;
+    /** @var Brew */
+    protected $brew;
+    /** @var Filesystem */
+    protected $files;
 
     /**
-     * AbstractService constructor.
-     *
      * @param Configuration $configuration
+     * @param Brew $brew
+     * @param Filesystem $files
      */
-    public function __construct(Configuration $configuration)
-    {
+    public function __construct(
+        Configuration $configuration,
+        Brew          $brew,
+        Filesystem    $files
+    ) {
         $this->configuration = $configuration;
+        $this->brew          = $brew;
+        $this->files         = $files;
     }
 
     /**

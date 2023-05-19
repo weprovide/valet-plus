@@ -35,3 +35,6 @@ class Mysql extends ValetPlusFacade
 class Mailhog extends ValetPlusFacade
 {
 }
+class Redis extends ValetPlusFacade
+{
+}

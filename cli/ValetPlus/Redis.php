@@ -4,52 +4,26 @@ declare(strict_types=1);
 
 namespace WeProvide\ValetPlus;
 
-use Valet\Brew;
-use Valet\CommandLine;
-use Valet\Configuration;
-use Valet\Filesystem;
 use function Valet\info;
+use function Valet\user;
 
-class Mailhog extends AbstractService
+class Redis extends AbstractService
 {
     /** @var string */
-    const SERVICE_NAME = 'mailhog';
+    const SERVICE_NAME = 'redis';
 
     /** @var string */
-    const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/mailhog.conf';
+    const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/redis.conf';
     /** @var string */
-    const NGINX_CONFIGURATION_PATH = VALET_HOME_PATH . '/Nginx/mailhog.conf';
-
-    /** @var CommandLine */
-    protected $cli;
+    const NGINX_CONFIGURATION_PATH = VALET_HOME_PATH . '/Nginx/redis.conf';
 
     /**
-     * @param Configuration $configuration
-     * @param Brew $brew
-     * @param Filesystem $files
-     * @param CommandLine $cli
+     * @inheritdoc
      */
-    public function __construct(
-        Configuration $configuration,
-        Brew          $brew,
-        Filesystem    $files,
-        CommandLine   $cli
-    ) {
-        parent::__construct($configuration, $brew, $files);
-
-        $this->cli = $cli;
-    }
-
-    /**
-     * Install mailhog and configuration the TLD to listen to.
-     *
-     * @param string $tld
-     * @throws \JsonException
-     */
-    public function install(string $tld = 'test'): void
+    public function install(): void
     {
         $this->brew->ensureInstalled(static::SERVICE_NAME);
-        $this->updateDomain($tld);
+        $this->installConfiguration();
         $this->setEnabled(static::STATE_ENABLED);
         $this->restart();
     }
@@ -72,7 +46,6 @@ class Mailhog extends AbstractService
         }
 
         $this->brew->stopService(static::SERVICE_NAME);
-        $this->cli->quietlyAsUser('brew services stop ' . static::SERVICE_NAME);
     }
 
     /**
@@ -81,7 +54,7 @@ class Mailhog extends AbstractService
     public function restart(): void
     {
         if (!$this->installed() || !$this->isEnabled()) {
-            info("Mailhog not installed or not enabled");
+            info("Redis not installed or not enabled");
 
             return;
         }
@@ -99,19 +72,17 @@ class Mailhog extends AbstractService
     }
 
     /**
-     * Set the domain (TLD) to use.
-     *
-     * @param $domain
+     * Install configuration
      */
-    public function updateDomain($domain)
+    public function installConfiguration()
     {
         if ($this->installed()) {
-            info('Updating mailhog domain...');
+            info('Installing nginx configuration...');
             $this->files->putAsUser(
                 static::NGINX_CONFIGURATION_PATH,
                 str_replace(
-                    ['VALET_DOMAIN'],
-                    [$domain],
+                    ['VALET_USER', 'VALET_HOME_PATH', 'BREW_PATH'],
+                    [user(), VALET_HOME_PATH, BREW_PREFIX],
                     $this->files->get(static::NGINX_CONFIGURATION_STUB)
                 )
             );

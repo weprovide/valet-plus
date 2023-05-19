@@ -166,6 +166,38 @@ if (is_dir(VALET_HOME_PATH)) {
         ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable']));
 
     /**
+     * Redis services.
+     */
+    $app
+        ->command('redis', function (OutputInterface $output, string $mode = null) {
+            $modes = ['install', 'on', 'enable', 'off', 'disable'];
+
+            if (!in_array($mode, $modes)) {
+                throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+            }
+
+            switch ($mode) {
+                case 'install':
+                    Redis::install();
+
+                    return;
+                case 'enable':
+                case 'on':
+                    Redis::enable();
+
+                    return;
+                case 'disable':
+                case 'off':
+                    Redis::disable();
+
+                    return;
+            }
+        })
+        ->descriptions('Enable/disable Redis')
+        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable']));
+
+
+    /**
      * Database services and commands.
      */
     $app
