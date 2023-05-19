@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace WeProvide\ValetPlus;
 
 use Valet\Brew;
+use Valet\CommandLine;
 use Valet\Filesystem;
 use function Valet\info;
 use function Valet\output;
+use function Valet\warning;
 
 class PhpExtension
 {
@@ -53,18 +55,23 @@ class PhpExtension
 
     /** @var Brew */
     protected $brew;
+    /** @var CommandLine */
+    protected $cli;
     /** @var Filesystem */
     protected $files;
 
     /**
      * @param Brew $brew
+     * @param CommandLine $cli
      * @param Filesystem $files
      */
     public function __construct(
-        Brew       $brew,
-        Filesystem $files
+        Brew        $brew,
+        CommandLine $cli,
+        Filesystem  $files
     ) {
         $this->brew  = $brew;
+        $this->cli   = $cli;
         $this->files = $files;
     }
 
@@ -196,15 +203,11 @@ class PhpExtension
 
         if ($this->brew->installed($this->getExtensionFormula($extension, $phpVersion))) {
             $this->removeIniDefinition($extension, $phpIniConfigPath);
-            $this->brew->ensureUninstalled(
-                $this->getExtensionFormula($extension, $phpVersion),
-                [],
-                [static::PHP_EXTENSIONS_BREW_TAP]
+            $this->brew->uninstallFormula(
+                $this->getExtensionFormula($extension, $phpVersion)
             );
-            $this->brew->ensureUninstalled(
-                $this->getExtensionFormula($extension, $phpVersion, true),
-                [],
-                [static::PHP_EXTENSIONS_BREW_TAP]
+            $this->brew->uninstallFormula(
+                $this->getExtensionFormula($extension, $phpVersion, true)
             );
             $uninstalled = true;
         }
@@ -212,10 +215,8 @@ class PhpExtension
         if ($this->hasBrewDependency($extension)) {
             $dependency = $this->getBrewDependency($extension);
             if ($this->brew->installed($dependency)) {
-                $this->brew->ensureUninstalled(
-                    $dependency,
-                    [],
-                    [static::PHP_EXTENSIONS_BREW_TAP]
+                $this->brew->uninstallFormula(
+                    $dependency
                 );
                 $uninstalled = true;
             }
@@ -290,9 +291,10 @@ class PhpExtension
      */
     protected function removeIniDefinition($extension, $phpIniConfigPath)
     {
+        $destDir  = dirname(dirname($phpIniConfigPath)) . '/conf.d/';
         $iniFiles = $this->getIniFiles($extension);
         foreach ($iniFiles as $iniFile) {
-            $this->files->unlink($phpIniConfigPath . $iniFile . '.ini');
+            $this->files->unlink($destDir . $iniFile . '.ini');
         }
     }
 
@@ -309,5 +311,57 @@ class PhpExtension
         return [
             $extension
         ];
+    }
+
+    /**
+     * Remove xdebug configuration.
+     *
+     * @param $phpIniConfigPath
+     */
+    public function uninstallXdebugConfiguration($phpIniConfigPath)
+    {
+        $version = $this->getXdebugVersion();
+        $destDir = dirname(dirname($phpIniConfigPath)) . '/conf.d/';
+        $this->files->unlink($destDir . 'xdebug-v' . $version . '.ini');
+    }
+
+    /**
+     * Install xdebug configuration.
+     *
+     * @param $phpIniConfigPath
+     */
+    public function installXdebugConfiguration($phpIniConfigPath)
+    {
+        $version = $this->getXdebugVersion();
+        if (!$version) {
+            warning('Xdebug not found.');
+
+            return;
+        }
+
+        $contents = $this->files->get(__DIR__ . '/../stubs/xdebug/v' . $version . '.ini');
+        $destDir  = dirname(dirname($phpIniConfigPath)) . '/conf.d/';
+        $this->files->putAsUser(
+            $destDir . 'xdebug-v' . $version . '.ini',
+            $contents
+        );
+    }
+
+    /**
+     * Get version of xdebug.
+     *
+     * @return string|bool
+     */
+    public function getXdebugVersion()
+    {
+        $output = $this->cli->run('php -v | grep "with Xdebug"');
+        // Extract the Xdebug version
+        preg_match('/with Xdebug v(\d\.\d\.\d),/', $output, $matches);
+
+        if (count($matches) === 2) {
+            return (int)substr($matches[1], 0, 1);
+        }
+
+        return false;
     }
 }

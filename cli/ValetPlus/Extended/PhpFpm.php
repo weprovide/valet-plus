@@ -63,5 +63,8 @@ class PhpFpm extends ValetPhpFpm
         $this->phpExtension->installExtensions(
             $this->parsePhpVersion($phpVersion)
         );
+
+
+        // todo; add performance configuration
     }
 }

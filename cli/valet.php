@@ -298,6 +298,57 @@ if (is_dir(VALET_HOME_PATH)) {
             throw new Exception('Command not found');
         })
         ->descriptions('Database commands (list/ls, create, drop, reset, import, reimport, export/dump, pwd/password)');
+
+    /**
+     * Xdebug
+     */
+    $app
+        ->command('xdebug', function (InputInterface $input, OutputInterface $output, string $mode = null) {
+            $modes = ['on', 'enable', 'off', 'disable'];
+
+            if (!in_array($mode, $modes)) {
+                throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+            }
+
+            $restart    = false;
+            $phpVersion = PhpFpm::parsePhpVersion(Brew::linkedPhp());
+            $phpIniPath = PhpFpm::fpmConfigPath($phpVersion);
+            $options    = $input->getOptions();
+            if (isset($options['remote_autostart'])) {
+//                if ($options['remote_autostart']) {
+//                    PhpFpm::enableAutoStart();
+//                } else {
+//                    PhpFpm::disableAutoStart();
+//                }
+//                $restart = true;
+            }
+
+            if ($mode === 'on' || $mode === 'enable') {
+                if (!PhpExtension::isInstalled('xdebug', $phpVersion)) {
+                    PhpExtension::installExtension('xdebug', $phpVersion);
+                    PhpExtension::installXdebugConfiguration($phpIniPath);
+                    $restart = true;
+                } else {
+                    info("Xdebug extension is already enabled!");
+                }
+            }
+            if ($mode === 'off' || $mode === 'disable') {
+                if (PhpExtension::isInstalled('xdebug', $phpVersion)) {
+                    PhpExtension::uninstallXdebugConfiguration($phpIniPath);
+                    PhpExtension::uninstallExtension('xdebug', $phpVersion, $phpIniPath);
+                    $restart = true;
+                } else {
+                    info("Xdebug extension is already disabled!");
+                }
+            }
+
+            if ($restart) {
+                PhpFpm::restart();
+            }
+        })
+        ->descriptions('Enable/disable Xdebug')
+        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['on', 'enable', 'off', 'disable']));
+//        ->addOption('remote_autostart', 'r', \Symfony\Component\Console\Input\InputOption::VALUE_OPTIONAL);
 }
 
 /**
