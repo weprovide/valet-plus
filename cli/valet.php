@@ -393,55 +393,56 @@ if (is_dir(VALET_HOME_PATH)) {
         ->descriptions('Database commands (list/ls, create, drop, reset, import, reimport, export/dump, pwd/password)');
 
     /**
-     * Xdebug
+     * Xdebug php extension
      */
-    $app
-        ->command('xdebug', function (InputInterface $input, OutputInterface $output, string $mode = null) {
-            $modes = ['on', 'enable', 'off', 'disable'];
+    $app->command('xdebug [mode]', function ($mode) {
+        $modes = ['on', 'enable', 'off', 'disable'];
 
-            if (!in_array($mode, $modes)) {
-                throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
-            }
+        if (!in_array($mode, $modes)) {
+            throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+        }
 
-            $restart    = false;
-            $phpVersion = PhpFpm::parsePhpVersion(Brew::linkedPhp());
-            $phpIniPath = PhpFpm::fpmConfigPath($phpVersion);
-            $options    = $input->getOptions();
-            if (isset($options['remote_autostart'])) {
-//                if ($options['remote_autostart']) {
-//                    PhpFpm::enableAutoStart();
-//                } else {
-//                    PhpFpm::disableAutoStart();
-//                }
-//                $restart = true;
-            }
+        $restart = false;
+        switch ($mode) {
+            case 'on':
+            case 'install':
+                $restart = Xdebug::install();
+                break;
+            case 'off':
+            case 'uninstall':
+                $restart = Xdebug::uninstall();
+                break;
+        }
+        if ($restart) {
+            PhpFpm::restart();
+        }
+    })->descriptions('Enable/disable Xdebug');
 
-            if ($mode === 'on' || $mode === 'enable') {
-                if (!PhpExtension::isInstalled('xdebug', $phpVersion)) {
-                    PhpExtension::installExtension('xdebug', $phpVersion);
-                    PhpExtension::installXdebugConfiguration($phpIniPath);
-                    $restart = true;
-                } else {
-                    info("Xdebug extension is already enabled!");
-                }
-            }
-            if ($mode === 'off' || $mode === 'disable') {
-                if (PhpExtension::isInstalled('xdebug', $phpVersion)) {
-                    PhpExtension::uninstallXdebugConfiguration($phpIniPath);
-                    PhpExtension::uninstallExtension('xdebug', $phpVersion, $phpIniPath);
-                    $restart = true;
-                } else {
-                    info("Xdebug extension is already disabled!");
-                }
-            }
+    /**
+     * Memcache php extension
+     */
+    $app->command('memcache [mode]', function ($mode) {
+        $modes = ['on', 'enable', 'off', 'disable'];
 
-            if ($restart) {
-                PhpFpm::restart();
-            }
-        })
-        ->descriptions('Enable/disable Xdebug')
-        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['on', 'enable', 'off', 'disable']));
-//        ->addOption('remote_autostart', 'r', \Symfony\Component\Console\Input\InputOption::VALUE_OPTIONAL);
+        if (!in_array($mode, $modes)) {
+            throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+        }
+
+        $restart = false;
+        switch ($mode) {
+            case 'on':
+            case 'install':
+                $restart = Memcache::install();
+                break;
+            case 'off':
+            case 'uninstall':
+                $restart = Memcache::uninstall();
+                break;
+        }
+        if ($restart) {
+            PhpFpm::restart();
+        }
+    })->descriptions('Enable/disable Memcache');
 }
 
 /**

@@ -19,14 +19,14 @@ Here are a few key differences compared to the original Valet:
 - MySQL (mysql@5.7, mysql@8, mariadb)
   - DB commands (list, create, drop, reset, (re)import, export, ~~open~~)
 - Mailhog (on/off mode)
-- Xdebug (on/off mode)
-- ~~Memcache (on/off mode)~~
 - Redis (on/off mode)
+- Rabbitmq (on/off mode)
+- Varnish (on/off mode)
+- Xdebug (on/off mode)
+- Memcache (on/off mode)
 - ~~Elasticsearch (on/off mode)~~
 - ~~Opensearch (on/off mode)~~
 - ~~Ioncube~~
-- Rabbitmq (on/off mode)
-- Varnish (on/off mode)
 - ~~Rewrite/unrewrite public domain to local environment~~
 
 

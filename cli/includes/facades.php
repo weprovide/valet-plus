@@ -44,3 +44,10 @@ class Varnish extends ValetPlusFacade
 class Rabbitmq extends ValetPlusFacade
 {
 }
+
+class Memcache extends ValetPlusFacade
+{
+}
+class Xdebug extends ValetPlusFacade
+{
+}

@@ -9,7 +9,6 @@ use Valet\CommandLine;
 use Valet\Filesystem;
 use function Valet\info;
 use function Valet\output;
-use function Valet\warning;
 
 class PhpExtension
 {
@@ -311,57 +310,5 @@ class PhpExtension
         return [
             $extension
         ];
-    }
-
-    /**
-     * Remove xdebug configuration.
-     *
-     * @param $phpIniConfigPath
-     */
-    public function uninstallXdebugConfiguration($phpIniConfigPath)
-    {
-        $version = $this->getXdebugVersion();
-        $destDir = dirname(dirname($phpIniConfigPath)) . '/conf.d/';
-        $this->files->unlink($destDir . 'xdebug-v' . $version . '.ini');
-    }
-
-    /**
-     * Install xdebug configuration.
-     *
-     * @param $phpIniConfigPath
-     */
-    public function installXdebugConfiguration($phpIniConfigPath)
-    {
-        $version = $this->getXdebugVersion();
-        if (!$version) {
-            warning('Xdebug not found.');
-
-            return;
-        }
-
-        $contents = $this->files->get(__DIR__ . '/../stubs/xdebug/v' . $version . '.ini');
-        $destDir  = dirname(dirname($phpIniConfigPath)) . '/conf.d/';
-        $this->files->putAsUser(
-            $destDir . 'xdebug-v' . $version . '.ini',
-            $contents
-        );
-    }
-
-    /**
-     * Get version of xdebug.
-     *
-     * @return string|bool
-     */
-    public function getXdebugVersion()
-    {
-        $output = $this->cli->run('php -v | grep "with Xdebug"');
-        // Extract the Xdebug version
-        preg_match('/with Xdebug v(\d\.\d\.\d),/', $output, $matches);
-
-        if (count($matches) === 2) {
-            return (int)substr($matches[1], 0, 1);
-        }
-
-        return false;
     }
 }
