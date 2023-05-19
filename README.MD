@@ -21,12 +21,12 @@ Here are a few key differences compared to the original Valet:
 - Mailhog (on/off mode)
 - Xdebug (on/off mode)
 - ~~Memcache (on/off mode)~~
-- ~~Redis (on/off mode)~~
+- Redis (on/off mode)
 - ~~Elasticsearch (on/off mode)~~
 - ~~Opensearch (on/off mode)~~
 - ~~Ioncube~~
-- ~~Rabbitmq~~
-- ~~Varnish~~
+- Rabbitmq (on/off mode)
+- Varnish (on/off mode)
 - ~~Rewrite/unrewrite public domain to local environment~~
 
 

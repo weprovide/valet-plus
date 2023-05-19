@@ -41,3 +41,6 @@ class Redis extends ValetPlusFacade
 class Varnish extends ValetPlusFacade
 {
 }
+class Rabbitmq extends ValetPlusFacade
+{
+}
