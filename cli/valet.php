@@ -24,31 +24,116 @@ $app->setVersion('3.0.0');
  * Extend the 'install' command.
  */
 $cmd = $app->get('install');
-$app
-    ->command('install', function (InputInterface $input, OutputInterface $output) use ($cmd) {
-        $cmd->run($input, $output);
+$app->command('install', function (InputInterface $input, OutputInterface $output) use ($cmd) {
+    $cmd->run($input, $output);
 
-        info("\nInstalling Valet+ services");
+    info("\nInstalling Valet+ services");
 
-        $mySqlVersion = $this->getHelperSet()->get('question')->ask(
-            $input,
-            $output,
-            new ChoiceQuestion('Which database would you like to install?', Mysql::getSupportedVersions())
-        );
+    $mySqlVersion = $this->getHelperSet()->get('question')->ask(
+        $input,
+        $output,
+        new ChoiceQuestion('Which database would you like to install?', Mysql::getSupportedVersions())
+    );
 
-        Mysql::install($mySqlVersion);
-        Mailhog::install(Configuration::read()['tld']);
-        Nginx::restart();
+    Mysql::install($mySqlVersion);
+    Mailhog::install(Configuration::read()['tld']);
+    Nginx::restart();
 
-        info("\nValet+ installed successfully!");
-    })
-    ->descriptions('Install the Valet services');
+    info("\nValet+ installed successfully!");
+})->descriptions('Install the Valet services');
 
 
 /**
  * Most commands are available only if valet+ is installed.
  */
 if (is_dir(VALET_HOME_PATH)) {
+
+    /**
+     * Extend the 'tld' command.
+     */
+    $cmd = $app->get('tld');
+    $app->command('tld [tld]', function (InputInterface $input, OutputInterface $output, $tld = null) use ($cmd) {
+        $cmd->run($input, $output);
+
+        Mailhog::updateDomain(Configuration::read()['tld']);
+        Mailhog::restart();
+
+        PhpFpm::restart();
+        Nginx::restart();
+
+        info('Your Valet+ TLD has been updated to [' . $tld . '].');
+    }, ['domain'])->descriptions('Get or set the TLD used for Valet sites.');
+
+    /**
+     * Extend the 'start' command.
+     */
+    $cmd = $app->get('start');
+    $app->command('start [service]', function (InputInterface $input, OutputInterface $output, $service) use ($cmd) {
+        switch ($service) {
+            case '':
+                Mysql::restart();
+                Mailhog::restart();
+                break;
+            case 'mysql':
+                Mysql::restart();
+
+                return info('Mysql has been started.');
+            case 'mailhog':
+                Mailhog::restart();
+
+                return info('Mailhog has been started.');
+        }
+
+        $cmd->run($input, $output);
+    })->descriptions('Start the Valet services');
+
+    /**
+     * Extend the 'restart' command.
+     */
+    $cmd = $app->get('restart');
+    $app->command('restart [service]', function (InputInterface $input, OutputInterface $output, $service) use ($cmd) {
+        switch ($service) {
+            case '':
+                Mysql::restart();
+                Mailhog::restart();
+                break;
+            case 'mysql':
+                Mysql::restart();
+
+                return info('Mysql has been restarted.');
+            case 'mailhog':
+                Mailhog::restart();
+
+                return info('Mailhog has been restarted.');
+        }
+
+        $cmd->run($input, $output);
+    })->descriptions('Restart the Valet services');
+
+    /**
+     * Extend the 'stop' command.
+     */
+    $cmd = $app->get('stop');
+    $app->command('stop [service]', function (InputInterface $input, OutputInterface $output, $service) use ($cmd) {
+        switch ($service) {
+            case '':
+                Mysql::stop();
+                Mailhog::stop();
+                break;
+            case 'mysql':
+                Mysql::stop();
+
+                return info('Mysql has been stopped.');
+            case 'mailhog':
+                Mailhog::stop();
+
+                return info('Mailhog has been stopped.');
+        }
+
+        $cmd->run($input, $output);
+    })->descriptions('Stop the Valet services');
+
+
     /**
      * Mailhog services.
      */
@@ -80,9 +165,8 @@ if (is_dir(VALET_HOME_PATH)) {
         ->descriptions('Enable/disable Mailhog')
         ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable']));
 
-
     /**
-     * Database commands.
+     * Database services and commands.
      */
     $app
         ->command('db [run] [name] [optional] [-y|--yes]', function ($input, $output, $run, $name, $optional) {

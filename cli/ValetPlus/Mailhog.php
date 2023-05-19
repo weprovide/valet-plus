@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WeProvide\ValetPlus;
 
 use Valet\Brew;
+use Valet\CommandLine;
 use Valet\Configuration;
 use Valet\Filesystem;
 use function Valet\info;
@@ -21,22 +22,27 @@ class Mailhog extends AbstractService
 
     /** @var Brew */
     protected $brew;
+    /** @var CommandLine */
+    protected $cli;
     /** @var Filesystem */
     protected $files;
 
     /**
      * @param Configuration $configuration
      * @param Brew $brew
+     * @param CommandLine $cli
      * @param Filesystem $files
      */
     public function __construct(
         Configuration $configuration,
         Brew          $brew,
+        CommandLine   $cli,
         Filesystem    $files
     ) {
         parent::__construct($configuration);
 
         $this->brew  = $brew;
+        $this->cli   = $cli;
         $this->files = $files;
     }
 
@@ -72,6 +78,7 @@ class Mailhog extends AbstractService
         }
 
         $this->brew->stopService(static::SERVICE_NAME);
+        $this->cli->quietlyAsUser('brew services stop ' . static::SERVICE_NAME);
     }
 
     /**
