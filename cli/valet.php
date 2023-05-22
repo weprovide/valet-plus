@@ -3,8 +3,8 @@
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use function Valet\info;
 use function Valet\warning;
@@ -24,30 +24,35 @@ $app->setVersion('3.0.0');
  * Extend the 'install' command.
  */
 $cmd = $app->get('install');
-$app->command('install', function (InputInterface $input, OutputInterface $output) use ($cmd) {
-    $cmd->run($input, $output);
+$app
+    ->command('install', function (InputInterface $input, OutputInterface $output, $withMariadb, $withMysql8) use ($cmd) {
+        if ($withMariadb && $withMysql8) {
+            throw new Exception('Cannot install Valet+ with both MariaDB and Mysql8, please pick one.');
+        }
+        $mySqlVersion = $withMariadb ? 'mariadb' : 'mysql@5.7';
+        $mySqlVersion = $withMysql8 ? 'mysql' : $mySqlVersion;
 
-    info("\nInstalling Valet+ services");
+        // Add custom options to original command to fake 'm.
+        $cmd->addOption('with-mysql-8', null, InputOption::VALUE_NONE)
+            ->addOption('with-mariadb', null, InputOption::VALUE_NONE);
+        $cmd->run($input, $output);
 
-    $mySqlVersion = $this->getHelperSet()->get('question')->ask(
-        $input,
-        $output,
-        new ChoiceQuestion('Which database would you like to install?', Mysql::getSupportedVersions())
-    );
+        info("\nInstalling Valet+ services");
+        Mysql::install($mySqlVersion);
+        Mailhog::install(Configuration::read()['tld']);
+        Nginx::restart();
 
-    Mysql::install($mySqlVersion);
-    Mailhog::install(Configuration::read()['tld']);
-    Nginx::restart();
-
-    info("\nValet+ installed successfully!");
-})->descriptions('Install the Valet services');
+        info("\nValet+ installed successfully!");
+    })
+    ->descriptions('Install the Valet services')
+    ->addOption('with-mysql-8', null, InputOption::VALUE_NONE, "Install with MySQL 8")
+    ->addOption('with-mariadb', null, InputOption::VALUE_NONE, "Install with MariaDB");
 
 
 /**
  * Most commands are available only if valet+ is installed.
  */
 if (is_dir(VALET_HOME_PATH)) {
-
     /**
      * Extend the 'tld' command.
      */

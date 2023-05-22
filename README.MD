@@ -5,10 +5,12 @@
 Valet+ is a development environment for macOS. No Vagrant, no Docker, no `/etc/hosts` file.
 
 
+## Installation
 
-## Dependency
+This project uses [laravel/valet](https://github.com/laravel/valet) as a dependency. You can follow the installation 
+instructions of Laravel's Valet.
 
-This project has a dependency of [laravel/valet](https://github.com/laravel/valet). 
+> Note: install php@8.0 first before installing valet+
 
 
 ## Valet+ features
