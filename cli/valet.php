@@ -366,6 +366,33 @@ if (is_dir(VALET_HOME_PATH)) {
         })
         ->descriptions('Database commands (list/ls, create, drop, reset, import, reimport, export/dump, pwd/password)');
 
+    $app
+        ->command('elasticsearch', function (InputInterface $input, OutputInterface $output, $mode, $targetVersion = null) {
+            $modes         = ['install', 'on', 'enable', 'off', 'disable', 'use'];
+            $targetVersion = $targetVersion ?? 'opensearch';
+
+            if (!in_array($mode, $modes)) {
+                throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+            }
+
+            switch ($mode) {
+                case 'on':
+                case 'install':
+                case 'use':
+                    Elasticsearch::useVersion($targetVersion);
+                    break;
+                case 'off':
+                case 'uninstall':
+                    Elasticsearch::uninstall();
+                    break;
+            }
+
+        })
+        ->descriptions('Enable/disable/switch Elasticsearch')
+        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable', 'use']))
+        ->addArgument('targetVersion', InputArgument::OPTIONAL, "Version to use", null);
+
+
     /**
      * Xdebug php extension
      */

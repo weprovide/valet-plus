@@ -27,7 +27,7 @@ Here are a few key differences compared to the original Valet:
 - Xdebug (on/off mode)
 - Memcache (on/off mode)
 - ~~Elasticsearch (on/off mode)~~
-- ~~Opensearch (on/off mode)~~
+- Opensearch (on/off mode)
 - ~~Ioncube~~
 - ~~Rewrite/unrewrite public domain to local environment~~
 

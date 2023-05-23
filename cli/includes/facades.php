@@ -35,6 +35,9 @@ class Mysql extends ValetPlusFacade
 class Mailhog extends ValetPlusFacade
 {
 }
+class Elasticsearch extends ValetPlusFacade
+{
+}
 class Varnish extends ValetPlusFacade
 {
 }

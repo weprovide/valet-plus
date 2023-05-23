@@ -24,6 +24,7 @@ class Mysql
     const MYSQL_DIR = 'var/mysql';
     const MYSQL_ROOT_PASSWORD = 'root';
     const MYSQL_DEFAULT_VERSION = 'mysql@5.7';
+    const MYSQL_SUPPORTED_VERSIONS = ['mysql@5.7', 'mysql', 'mariadb'];
 
     /** @var Brew */
     protected $brew;
@@ -124,10 +125,7 @@ class Mysql
      */
     public function getSupportedVersions()
     {
-        $versions = ['mysql@5.7', 'mysql', 'mariadb'];
-        sort($versions);
-
-        return $versions;
+        return static::MYSQL_SUPPORTED_VERSIONS;
     }
 
     /**
