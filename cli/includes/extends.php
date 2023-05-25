@@ -16,6 +16,10 @@ Container::getInstance()->singleton(
     \WeProvide\ValetPlus\Extended\PhpFpm::class
 );
 Container::getInstance()->singleton(
+    \Valet\Site::class,
+    \WeProvide\ValetPlus\Extended\Site::class
+);
+Container::getInstance()->singleton(
     \Valet\Status::class,
     \WeProvide\ValetPlus\Extended\Status::class
 );

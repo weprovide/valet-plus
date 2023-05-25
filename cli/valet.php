@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use function Valet\info;
+use function Valet\table;
 use function Valet\warning;
 
 
@@ -445,6 +446,51 @@ if (is_dir(VALET_HOME_PATH)) {
             PhpFpm::restart();
         }
     })->descriptions('Enable/disable Memcache');
+
+
+    /**
+     * Rewrite commands
+     */
+    $app->command('rewrite [url]', function ($url = null) {
+        if (!$url) {
+            warning('Aborting, url is required');
+
+            return;
+        }
+
+        $host = Site::host(getcwd());
+        $url  = Site::rewrite($url, $host);
+        if ($url === false) {
+            warning('Aborting, url rewrite failed, might already exist');
+
+            return;
+        }
+
+        info("The [$url] will now rewrite traffic to [$host].");
+    })->descriptions('Rewrite any public URL to your local site instance.');
+
+    $app->command('unrewrite [url]', function ($url = null) {
+        if (!$url) {
+            warning('Aborting, url is required');
+
+            return;
+        }
+
+        $url = Site::unrewrite($url);
+        if ($url === false) {
+            warning('Aborting, url unrewrite failed, might not exist');
+
+            return;
+        }
+
+        info("The [$url] will no longer rewrite traffic.");
+    })->descriptions('Remove a rewrite of an URL to your local site instance.');
+
+    $app->command('rewrites', function () {
+        $rewrites = Site::rewrites();
+
+        table(['Site', 'URL'], $rewrites->all());
+    })->descriptions('Display all of the registered Valet rewrites');
 }
 
 /**
