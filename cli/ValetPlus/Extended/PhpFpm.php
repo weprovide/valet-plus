@@ -63,8 +63,33 @@ class PhpFpm extends ValetPhpFpm
         $this->phpExtension->installExtensions(
             $this->parsePhpVersion($phpVersion)
         );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createConfigurationFiles(string $phpVersion): void
+    {
+        parent::createConfigurationFiles($phpVersion);
+
+        // Get local timezone
+        $systemZoneName = readlink('/etc/localtime');
+        // All versions below High Sierra
+        $systemZoneName = str_replace('/usr/share/zoneinfo/', '', $systemZoneName);
+        // macOS High Sierra has a new location for the timezone info
+        $systemZoneName = str_replace('/var/db/timezone/zoneinfo/', '', $systemZoneName);
 
 
-        // todo; add performance configuration
+        // Add performance ini settings.
+        $contents = $this->files->get(__DIR__ . '/../../stubs/z-performance.ini');
+        $contents = str_replace('TIMEZONE', $systemZoneName, $contents);
+
+
+        $fpmConfigFile = $this->fpmConfigPath($phpVersion);
+        $destDir       = dirname(dirname($fpmConfigFile)) . '/conf.d/';
+        $this->files->putAsUser(
+            $destDir . 'z-performance.ini',
+            $contents
+        );
     }
 }

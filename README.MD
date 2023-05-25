@@ -26,10 +26,15 @@ Here are a few key differences compared to the original Valet:
 - Varnish (on/off mode)
 - Xdebug (on/off mode)
 - Memcache (on/off mode)
-- ~~Elasticsearch (on/off mode)~~
+- Elasticsearch v6, ~~v7~~, ~~v8~~ (on/off mode) 
 - Opensearch (on/off mode)
 - ~~Ioncube~~
-- ~~Rewrite/unrewrite public domain to local environment~~
+- Rewrite/unrewrite public domain to local environment
+
+### Changes vs Valet+ 2
+
+- `.env.valet` should be renamed to `.valet-env.php`
+
 
 
 ## Valet+ Authors
