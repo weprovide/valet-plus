@@ -389,6 +389,7 @@ if (is_dir(VALET_HOME_PATH)) {
 
         })
         ->descriptions('Enable/disable/switch Elasticsearch')
+        ->setAliases(['es'])
         ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable', 'use']))
         ->addArgument('targetVersion', InputArgument::OPTIONAL, "Version to use", null);
 

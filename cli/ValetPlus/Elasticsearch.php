@@ -14,7 +14,7 @@ class Elasticsearch
     /** @var string */
     protected const ES_DEFAULT_VERSION = 'opensearch';
     /** @var string[] */
-    protected const ES_SUPPORTED_VERSIONS = ['opensearch'];
+    protected const ES_SUPPORTED_VERSIONS = ['opensearch', 'elasticsearch@6'];
 
 
     /** @var Brew */
@@ -150,14 +150,25 @@ class Elasticsearch
             );
         }
 
+        // todo; install java dependency? and remove other java deps? seems like there can be only one running.
+        // opensearch requires openjdk (installed automatically)
+        // elasticsearch@6 requires openjdk@17 (installed automatically)
+        //      seems like there can be only one openjdk when installing. after installing it doesn't matter.
+        //      if this dependency is installed we need to launch es with this java version, see https://github.com/Homebrew/homebrew-core/issues/100260
+
         $this->brew->ensureInstalled($version);
 
-        // todo: switch config still needed?
+        // todo: switch config still needed? > not between opensearch and elasticsearch@6
         // ==> opensearch
         //Data:    /usr/local/var/lib/opensearch/
-        //Logs:    /usr/local/var/log/opensearch/opensearch_homebrew.log
+        //Logs:    /usr/local/var/log/opensearch/*.log
         //Plugins: /usr/local/var/opensearch/plugins/
         //Config:  /usr/local/etc/opensearch/
+        // ==> elasticsearch@6
+        //Data:    /usr/local/var/lib/elasticsearch/
+        //Logs:    /usr/local/var/log/elasticsearch/*.log
+        //Plugins: /usr/local/var/elasticsearch/plugins/
+        //Config:  /usr/local/etc/elasticsearch/
 
         // todo; add support for adding plugins like 'analysis-icu' and 'analysis-phonetic'?
 
