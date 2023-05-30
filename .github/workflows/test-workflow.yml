@@ -1,4 +1,4 @@
-name: Valet Plus test pipeline
+name: Valet+ tests
 
 on:
   push:
@@ -11,40 +11,41 @@ jobs:
     # Build on Monterey and later Ventura (Not public released yet: https://github.com/actions/runner-images)
     strategy:
       matrix:
-          os: [macos-12]
+        os: [macos-12]
+#        php: ['8.2', '8.1', '8.0', '7.4', '7.3', '7.2', '7.1']
+        php: ['8.2', '8.1', '7.4', '7.2']
     runs-on: ${{matrix.os}}
-    name: ${{matrix.os}}
+    name: ${{matrix.os}} with ${{matrix.php}}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: '[INSTALL] Install PHP 8.0'
-        uses: shivammathur/setup-php@v2  # This is preferred but I can't add this action to the 'allowlist', see https://github.com/orgs/community/discussions/56122
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '8.0'
           extensions: dom, curl, libxml, mbstring, zip, fileinfo
-          ini-values: error_reporting=E_ALL
+          ini-values: error_reporting=E_ALL, max_execution_time=-1, memory_limit=512M
           tools: composer:v2
           coverage: none
-
       - name: '[INSTALL] Composer install'
         run: composer install --no-interaction --prefer-dist
-
       - name: '[INSTALL] Valet install'
         run: ./valet install
 
 # @todo; add test mailhog.test (should return 200 status code)
 # @todo; add test mysql@5.7 (maybe using `valet db create somedb`, `valet db list`)
 
-      - name: '[TEST] PHP switch, extensions on/off'
+      - name: '[TEST] PHP switch'
         run: |
-          for version in php@8.2 php@8.1 php@8.0 php@7.4 php@7.3 php@7.2 php@7.1; do
-            echo "$version"
-            ./valet use $version
-            ./valet xdebug on
-            ./valet xdebug off
-            ./valet memcache on
-            ./valet memcache off
-          done
-
+          ./valet use ${{matrix.php}}
+          php -v | grep ${{matrix.php}}
+      - name: '[TEST] xdebug on and off'
+        run: |
+          ./valet xdebug on
+          ./valet xdebug off
+      - name: '[TEST] memcache on and off'
+        run: |
+          ./valet memcache on
+          ./valet memcache off
