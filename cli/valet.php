@@ -26,7 +26,7 @@ $app->setVersion('3.0.0');
  */
 $cmd = $app->get('install');
 $app
-    ->command('install', function (InputInterface $input, OutputInterface $output, $withMariadb, $withMysql8) use ($cmd) {
+    ->command('install', function (InputInterface $input, OutputInterface $output, $withMariadb, $withMysql8, $withBinary) use ($cmd) {
         if ($withMariadb && $withMysql8) {
             throw new Exception('Cannot install Valet+ with both MariaDB and Mysql8, please pick one.');
         }
@@ -35,23 +35,44 @@ $app
 
         // Add custom options to original command to fake 'm.
         $cmd->addOption('with-mysql-8', null, InputOption::VALUE_NONE)
-            ->addOption('with-mariadb', null, InputOption::VALUE_NONE);
+            ->addOption('with-mariadb', null, InputOption::VALUE_NONE)
+            ->addOption('with-binary', 'b', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL);
+        // Run original command.
         $cmd->run($input, $output);
 
         info("\nInstalling Valet+ services");
+
         Mysql::install($mySqlVersion);
         Mailhog::install(Configuration::read()['tld']);
         Nginx::restart();
+
+        // If 'with-binary' option is omitted, $withBinary is an empty array, we install none.
+        // If 'with-binary' option is provided without values, $withBinary is an array with only NULL as value, we install all.
+        // Otherwise, we install the provided binaries.
+        if ($withBinary === [null]) {
+            Binary::install();
+        } elseif (!empty($withBinary)) {
+            foreach ($withBinary as $binary) {
+                Binary::installBinary($binary);
+            }
+        }
 
         info("\nValet+ installed successfully!");
     })
     ->descriptions('Install the Valet services')
     ->addOption('with-mysql-8', null, InputOption::VALUE_NONE, "Install with MySQL 8")
-    ->addOption('with-mariadb', null, InputOption::VALUE_NONE, "Install with MariaDB");
+    ->addOption('with-mariadb', null, InputOption::VALUE_NONE, "Install with MariaDB")
+    ->addOption(
+        'with-binary',
+        'b',
+        InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
+        "Install with binary, default no binaries are installed\n" .
+        "Supported binaries: " . implode(', ', Binary::getSupported()) . "\n"
+    );
 
 
 /**
- * Most commands are available only if valet+ is installed.
+ * Most commands are available only if Valet+ is installed.
  */
 if (is_dir(VALET_HOME_PATH)) {
     /**
@@ -138,6 +159,35 @@ if (is_dir(VALET_HOME_PATH)) {
 
         $cmd->run($input, $output);
     })->descriptions('Stop the Valet services');
+
+    /**
+     * Extend the 'uninstall' command.
+     */
+    $cmd = $app->get('uninstall');
+    $app->command('uninstall [--force]', function (InputInterface $input, OutputInterface $output, $force) use ($cmd) {
+        if ($force) {
+            warning('YOU ARE ABOUT TO UNINSTALL Valet+ services, configs and logs.');
+            $helper   = $this->getHelperSet()->get('question');
+            $question = new ConfirmationQuestion('Are you sure you want to proceed? [y/N]', false);
+
+            if (false === $helper->ask($input, $output, $question)) {
+                return warning('Uninstall aborted.');
+            }
+
+            Binary::uninstall();
+//            Mysql::uninstall();
+//            Mailhog::uninstall();
+//            Varnish::uninstall();
+//            Rabbitmq::uninstall();
+//            Elasticsearch::uninstall();
+        }
+
+        $cmd->run($input, $output);
+    })->descriptions('Uninstall the Valet services', ['--force' => 'Do a forceful uninstall of Valet and related Homebrew pkgs']);
+
+    /**
+     * @todo: Extend the 'log' command to log 'elasticsearch', 'mysql'.
+     */
 
 
     /**
@@ -396,7 +446,7 @@ if (is_dir(VALET_HOME_PATH)) {
 
 
     /**
-     * Xdebug php extension
+     * Xdebug php extension.
      */
     $app->command('xdebug [mode]', function ($mode) {
         $modes = ['on', 'enable', 'off', 'disable'];
@@ -422,7 +472,7 @@ if (is_dir(VALET_HOME_PATH)) {
     })->descriptions('Enable/disable Xdebug');
 
     /**
-     * Memcache php extension
+     * Memcache php extension.
      */
     $app->command('memcache [mode]', function ($mode) {
         $modes = ['on', 'enable', 'off', 'disable'];
@@ -449,7 +499,7 @@ if (is_dir(VALET_HOME_PATH)) {
 
 
     /**
-     * Rewrite commands
+     * Rewrite commands.
      */
     $app->command('rewrite [url]', function ($url = null) {
         if (!$url) {

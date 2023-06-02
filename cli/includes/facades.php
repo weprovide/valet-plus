@@ -51,3 +51,7 @@ class Memcache extends ValetPlusFacade
 class Xdebug extends ValetPlusFacade
 {
 }
+
+class Binary extends ValetPlusFacade
+{
+}

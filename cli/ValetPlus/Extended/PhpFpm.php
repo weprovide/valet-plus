@@ -67,6 +67,21 @@ class PhpFpm extends ValetPhpFpm
 
     /**
      * @inheritdoc
+     * @todo; should be tested
+     */
+    public function uninstall(): void
+    {
+        $this->brew->supportedPhpVersions()->each(function ($formula) {
+            $phpVersion = $this->parsePhpVersion($formula);
+            $phpIniPath = $this->fpmConfigPath($phpVersion);
+            $this->phpExtension->uninstallExtensions($phpVersion, $phpIniPath);
+        });
+
+        parent::uninstall();
+    }
+
+    /**
+     * @inheritdoc
      */
     public function createConfigurationFiles(string $phpVersion): void
     {

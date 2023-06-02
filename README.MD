@@ -10,7 +10,7 @@ Valet+ is a development environment for macOS. No Vagrant, no Docker, no `/etc/h
 This project uses [laravel/valet](https://github.com/laravel/valet) as a dependency. You can follow the installation 
 instructions of Laravel's Valet.
 
-> Note: install php@8.0 first before installing valet+
+> Note: install php@8.0 first before installing Valet+.
 
 
 ## Valet+ features
@@ -30,10 +30,14 @@ Here are a few key differences compared to the original Valet:
 - Opensearch (on/off mode)
 - ~~Ioncube~~
 - Rewrite/unrewrite public domain to local environment
+- ~~DevTools~~
+- Binaries (magerun, magerun2, drush)
 
 ### Changes vs Valet+ 2
 
-- `.env.valet` should be renamed to `.valet-env.php`
+- Rename `.env.valet` to `.valet-env.php`.
+- Use command `valet elasticsearch|es use <version>` instead of `valet use elasticsearch|es <version>`.
+- Binaries only installed on-demand.
 
 
 
@@ -47,8 +51,6 @@ Here are a few key differences compared to the original Valet:
 
 - Lou van der Laarse ([@Neodork](https://github.com/Neodork))
 - Sander Pott (@Sander Valet+ slack channel)
-
-
 
 
 

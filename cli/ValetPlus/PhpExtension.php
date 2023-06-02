@@ -112,16 +112,16 @@ class PhpExtension
     }
 
     /**
-     * Uninstall all installed extensions
+     * @param $phpVersion
+     * @param $phpIniConfigPath
      */
-    public function uninstallExtensions()
+    public function uninstallExtensions($phpVersion, $phpIniConfigPath)
     {
-        info("Installing extensions for PHP");
+        info("Uninstalling extensions for PHP " . $phpVersion);
         foreach (static::PHP_EXTENSIONS as $extension => $settings) {
-            //todo: remove all extensions for all php versions
-//            if ($this->uninstallExtension($extension, $phpVersion)) {
-//
-//            }
+            if ($this->uninstallExtension($extension, $phpVersion, $phpIniConfigPath)) {
+
+            }
         }
     }
 

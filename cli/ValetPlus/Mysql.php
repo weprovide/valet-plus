@@ -235,7 +235,11 @@ class Mysql
      */
     public function uninstall()
     {
+        $version = $this->installedVersion();
         $this->stop();
+        $this->brew->uninstallFormula($version);
+        // @todo; rm -rf /usr/local/var/mysql*
+        // @todo: rm -rf /usr/local/etc/my.cnf
     }
 
     /**
