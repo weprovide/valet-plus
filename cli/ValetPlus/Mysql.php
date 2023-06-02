@@ -21,7 +21,7 @@ class Mysql
     const MYSQL_CONF_DIR = 'etc';
     const MYSQL_CONF = 'etc/my.cnf';
     const MAX_FILES_CONF = '/Library/LaunchDaemons/limit.maxfiles.plist';
-    const MYSQL_DIR = 'var/mysql';
+    const MYSQL_DATA_DIR = 'var/mysql';
     const MYSQL_ROOT_PASSWORD = 'root';
     const MYSQL_DEFAULT_VERSION = 'mysql@5.7';
     const MYSQL_SUPPORTED_VERSIONS = ['mysql@5.7', 'mysql', 'mariadb'];
@@ -163,7 +163,7 @@ class Mysql
     {
         info('Updating ' . $type . ' configuration...');
 
-        if (!$this->files->isDir($directory = BREW_PREFIX . "/" . static::MYSQL_CONF_DIR)) {
+        if (!$this->files->isDir($directory = BREW_PREFIX . '/' . static::MYSQL_CONF_DIR)) {
             $this->files->mkdirAsUser($directory);
         }
 
@@ -171,7 +171,7 @@ class Mysql
         $contents = str_replace('VALET_HOME_PATH', VALET_HOME_PATH, $contents);
 
         $this->files->putAsUser(
-            BREW_PREFIX . "/" . static::MYSQL_CONF,
+            BREW_PREFIX . '/' . static::MYSQL_CONF,
             $contents
         );
     }
@@ -231,15 +231,20 @@ class Mysql
     }
 
     /**
-     * Prepare Mysql for uninstallation.
+     * Uninstall Mysql.
      */
     public function uninstall()
     {
         $version = $this->installedVersion();
-        $this->stop();
-        $this->brew->uninstallFormula($version);
-        // @todo; rm -rf /usr/local/var/mysql*
-        // @todo: rm -rf /usr/local/etc/my.cnf
+        if ($version) {
+            $this->stop();
+            $this->brew->uninstallFormula($version);
+        }
+
+        $this->removeConfiguration();
+        if (file_exists(BREW_PREFIX . '/' . static::MYSQL_DATA_DIR)) {
+            $this->files->rmDirAndContents(BREW_PREFIX . '/' . static::MYSQL_DATA_DIR);
+        }
     }
 
     /**
@@ -484,8 +489,8 @@ class Mysql
      */
     protected function removeConfiguration()
     {
-        $this->files->unlink(BREW_PREFIX . "/" . static::MYSQL_CONF);
-        $this->files->unlink(BREW_PREFIX . "/" . static::MYSQL_CONF . '.default');
+        $this->files->unlink(BREW_PREFIX . '/' . static::MYSQL_CONF);
+        $this->files->unlink(BREW_PREFIX . '/' . static::MYSQL_CONF . '.default');
     }
 
     /**

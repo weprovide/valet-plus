@@ -174,12 +174,18 @@ if (is_dir(VALET_HOME_PATH)) {
                 return warning('Uninstall aborted.');
             }
 
+            info('Removing mysql...');
+            Mysql::uninstall();
+            info('Removing mailhog...');
+            Mailhog::uninstall();
+            info('Removing binaries...');
             Binary::uninstall();
-//            Mysql::uninstall();
-//            Mailhog::uninstall();
-//            Varnish::uninstall();
-//            Rabbitmq::uninstall();
-//            Elasticsearch::uninstall();
+            info('Removing varnish...');
+            Varnish::uninstall();
+            info('Removing rabbitmq...');
+            Rabbitmq::uninstall();
+            info('Removing elasticsearch...');
+            Elasticsearch::uninstall();
         }
 
         $cmd->run($input, $output);

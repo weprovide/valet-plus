@@ -7,6 +7,7 @@ namespace WeProvide\ValetPlus;
 use DomainException;
 use Valet\Brew;
 use Valet\CommandLine;
+use Valet\Filesystem;
 use function Valet\info;
 
 class Elasticsearch
@@ -16,24 +17,27 @@ class Elasticsearch
     /** @var string[] */
     protected const ES_SUPPORTED_VERSIONS = ['opensearch', 'elasticsearch@6'];
 
-
     /** @var Brew */
     protected $brew;
-    /** @var CommandLine  */
+    /** @var CommandLine */
     protected $cli;
+    /** @var Filesystem */
+    protected $files;
 
     /**
      * @param Brew $brew
      * @param CommandLine $cli
+     * @param Filesystem $files
      */
     public function __construct(
-        Brew $brew,
-        CommandLine $cli
+        Brew        $brew,
+        CommandLine $cli,
+        Filesystem  $files
     ) {
-        $this->brew = $brew;
-        $this->cli = $cli;
+        $this->brew  = $brew;
+        $this->cli   = $cli;
+        $this->files = $files;
     }
-
 
     /**
      * Returns supported elasticsearch versions.
@@ -176,11 +180,41 @@ class Elasticsearch
     }
 
     /**
-     * Prepare for uninstallation.
+     * Uninstall all supported versions.
      */
     public function uninstall()
     {
-        $this->stop();
-        // todo; should do a 'brew remove <formula>' and 'rm -rf <stuff>'?
+        foreach ($this->getSupportedVersions() as $version) {
+            $this->stop($version);
+            $this->brew->uninstallFormula($version);
+        }
+
+        if (file_exists(BREW_PREFIX . '/var/elasticsearch')) {
+            $this->files->rmDirAndContents(BREW_PREFIX . '/var/elasticsearch');
+        }
+        $this->files->unlink(BREW_PREFIX . '/var/log/elasticsearch.log');
+        if (file_exists(BREW_PREFIX . '/var/log/elasticsearch')) {
+            $this->files->rmDirAndContents(BREW_PREFIX . '/var/log/elasticsearch');
+        }
+        if (file_exists(BREW_PREFIX . '/var/lib/elasticsearch')) {
+            $this->files->rmDirAndContents(BREW_PREFIX . '/var/lib/elasticsearch');
+        }
+        if (file_exists(BREW_PREFIX . '/etc/elasticsearch')) {
+            $this->files->rmDirAndContents(BREW_PREFIX . '/etc/elasticsearch');
+        }
+
+        if (file_exists(BREW_PREFIX . '/var/opensearch')) {
+            $this->files->rmDirAndContents(BREW_PREFIX . '/var/opensearch');
+        }
+        $this->files->unlink(BREW_PREFIX . '/var/log/opensearch.log');
+        if (file_exists(BREW_PREFIX . '/var/log/opensearch')) {
+            $this->files->rmDirAndContents(BREW_PREFIX . '/var/log/opensearch');
+        }
+        if (file_exists(BREW_PREFIX . '/var/lib/opensearch')) {
+            $this->files->rmDirAndContents(BREW_PREFIX . '/var/lib/opensearch');
+        }
+        if (file_exists(BREW_PREFIX . '/etc/opensearch')) {
+            $this->files->rmDirAndContents(BREW_PREFIX . '/etc/opensearch');
+        }
     }
 }

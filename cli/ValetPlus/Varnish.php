@@ -61,6 +61,10 @@ class Varnish extends AbstractService
     public function uninstall(): void
     {
         $this->stop();
-        // @todo: actually remove application and config files
+        $this->brew->uninstallFormula(static::SERVICE_NAME);
+
+        if (file_exists(BREW_PREFIX . '/var/varnish')) {
+            $this->files->rmDirAndContents(BREW_PREFIX . '/var/varnish');
+        }
     }
 }
