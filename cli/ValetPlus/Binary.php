@@ -115,6 +115,8 @@ class Binary
             );
         }
         if ($this->installed($binary)) {
+            $this->update($binary);
+
             return;
         }
 
@@ -129,7 +131,7 @@ class Binary
         // Check the checksum of downloaded file.
         if (!$this->checkShasum($binary, $fileName)) {
             $this->cli->runAsUser("rm /tmp/$fileName");
-            warning("Binary $binary could not be installed, $fileName checksum does not match: " .  $this->getShasum($binary));
+            warning("Binary $binary could not be installed, $fileName checksum does not match: " . $this->getShasum($binary));
 
             return;
         }
@@ -168,6 +170,15 @@ class Binary
             throw new DomainException('Could not remove binary! Please remove manually using: rm ' . $binaryLocation);
         }
         info("Binary $binary successfully uninstalled!");
+    }
+
+    /**
+     * @param string $binary
+     */
+    protected function update($binary)
+    {
+        $binLocation = $this->getBinLocation($binary);
+        $this->cli->run("sudo $binLocation self-update");
     }
 
     /**
