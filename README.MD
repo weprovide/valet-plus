@@ -37,15 +37,15 @@ Here are a few key differences compared to the original Valet:
 
 - Rename `.env.valet` to `.valet-env.php`.
 - Use command `valet elasticsearch|es use <version>` instead of `valet use elasticsearch|es <version>`.
-- Binaries only installed on-demand and self-update on `valet install` command.
+- Choose which binaries to install (default all) and self-update on `valet install` command.
 
 
 
 ## Valet+ Authors
 
-- Mischa Braam ([@mischabraam](https://github.com/mischabraam))
 - Tim Neutkens ([@timneutkens](https://github.com/timneutkens))
 - Sam Granger ([@samgranger](https://github.com/samgranger))
+- Mischa Braam ([@mischabraam](https://github.com/mischabraam))
 
 ## Valet+ Contributors
 

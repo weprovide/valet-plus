@@ -46,12 +46,12 @@ $app
         Mailhog::install(Configuration::read()['tld']);
         Nginx::restart();
 
-        // If 'with-binary' option is omitted, $withBinary is an empty array, we install none.
-        // If 'with-binary' option is provided without values, $withBinary is an array with only NULL as value, we install all.
+        // If 'with-binary' option is omitted, $withBinary is an empty array, we install all.
+        // If 'with-binary' option is provided without values, $withBinary is an array with only NULL as value, we install none.
         // Otherwise, we install the provided binaries.
-        if ($withBinary === [null]) {
+        if (empty($withBinary)) {
             Binary::install();
-        } elseif (!empty($withBinary)) {
+        } else {
             foreach ($withBinary as $binary) {
                 Binary::installBinary($binary);
             }

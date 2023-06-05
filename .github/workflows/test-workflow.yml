@@ -13,7 +13,7 @@ jobs:
       matrix:
         os: [macos-12]
 #        php: ['8.2', '8.1', '8.0', '7.4', '7.3', '7.2', '7.1']
-        php: ['8.2', '8.1', '7.4', '7.2']
+        php: ['8.2', '8.1', '7.4']
     runs-on: ${{matrix.os}}
     name: ${{matrix.os}} with ${{matrix.php}}
 
@@ -35,7 +35,12 @@ jobs:
         run: ./valet install
 
 # @todo; add test mailhog.test (should return 200 status code)
-# @todo; add test mysql@5.7 (maybe using `valet db create somedb`, `valet db list`)
+
+      - name: '[TEST] DB commands'
+        run: |
+          ./valet db create testci | grep "\"testci\" created successfully"
+          ./valet db list | grep "testci"
+          ./valet db drop testci -y | grep "\"testci\" dropped successfully"
 
       - name: '[TEST] PHP switch'
         run: |
