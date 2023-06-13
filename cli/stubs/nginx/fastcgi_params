@@ -1,0 +1,2 @@
+fastcgi_read_timeout 30000;
+proxy_read_timeout 30000;
