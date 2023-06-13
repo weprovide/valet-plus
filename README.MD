@@ -17,6 +17,9 @@ instructions of Laravel's Valet.
 
 Here are a few key differences compared to the original Valet:
 
+- ~~Nginx config optimization~~
+  - see https://confluence.hosted-tools.com/display/PB/504+gateway+timeout
+  - see https://github.com/weprovide/valet-plus/issues/410
 - PHP extensions (~~mcrypt~~, ~~intl~~, ~~opcache~~, yaml, apcu)
 - MySQL (mysql@5.7, mysql@8, mariadb)
   - DB commands (list, create, drop, reset, (re)import, export, ~~open~~)

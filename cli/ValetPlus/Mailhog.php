@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace WeProvide\ValetPlus;
 
+use Illuminate\Container\Container;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Valet\Brew;
 use Valet\CommandLine;
 use Valet\Configuration;
 use Valet\Filesystem;
+use WeProvide\ValetPlus\Event\DataEvent;
 use function Valet\info;
 
 class Mailhog extends AbstractService
@@ -16,12 +19,16 @@ class Mailhog extends AbstractService
     const SERVICE_NAME = 'mailhog';
 
     /** @var string */
+    const PHP_CONFIGURATION_STUB = __DIR__ . '/../stubs/mailhog.ini';
+    /** @var string */
     const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/mailhog.conf';
     /** @var string */
     const NGINX_CONFIGURATION_PATH = VALET_HOME_PATH . '/Nginx/mailhog.conf';
 
     /** @var CommandLine */
     protected $cli;
+    /** @var EventDispatcher */
+    protected $eventDispatcher;
 
     /**
      * @param Configuration $configuration
@@ -37,7 +44,17 @@ class Mailhog extends AbstractService
     ) {
         parent::__construct($configuration, $brew, $files);
 
-        $this->cli = $cli;
+        $container             = Container::getInstance();
+        $this->eventDispatcher = $container->get('event_dispatcher');
+        $this->cli             = $cli;
+    }
+
+    /**
+     * Register events to listen to.
+     */
+    public function register()
+    {
+        $this->eventDispatcher->addListener('after_create_php_config', [$this, 'createPhpConfiguration']);
     }
 
     /**
@@ -117,5 +134,22 @@ class Mailhog extends AbstractService
                 )
             );
         }
+    }
+
+    /**
+     * Create php ini files.
+     *
+     * @param DataEvent $event
+     */
+    public function createPhpConfiguration(DataEvent $event)
+    {
+        $this->files->putAsUser(
+            $event->get('php_dir') . 'mailhog.ini',
+            str_replace(
+                ['BREW_PATH'],
+                [BREW_PREFIX],
+                $this->files->get(static::PHP_CONFIGURATION_STUB)
+            )
+        );
     }
 }

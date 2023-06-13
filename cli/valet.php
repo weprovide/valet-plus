@@ -14,6 +14,7 @@ use function Valet\warning;
 // Require Laravel's Valet.
 require_once __DIR__ . '/../vendor/laravel/valet/cli' . '/app.php';
 require_once __DIR__ . '/includes/extends.php';
+require_once __DIR__ . '/includes/events.php';
 
 
 // Change name and version.

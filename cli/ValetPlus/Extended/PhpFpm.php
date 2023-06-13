@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace WeProvide\ValetPlus\Extended;
 
+use Illuminate\Container\Container;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Valet\Brew;
 use Valet\CommandLine;
 use Valet\Configuration;
@@ -11,12 +13,15 @@ use Valet\Filesystem;
 use Valet\Nginx;
 use Valet\PhpFpm as ValetPhpFpm;
 use Valet\Site;
+use WeProvide\ValetPlus\Event\DataEvent;
 use WeProvide\ValetPlus\PhpExtension;
 
 class PhpFpm extends ValetPhpFpm
 {
     /** @var PhpExtension */
     protected $phpExtension;
+    /** @var EventDispatcher */
+    protected $eventDispatcher;
 
     /**
      * @param Brew $brew
@@ -38,7 +43,9 @@ class PhpFpm extends ValetPhpFpm
     ) {
         parent::__construct($brew, $cli, $files, $config, $site, $nginx);
 
-        $this->phpExtension = $phpExtension;
+        $container             = Container::getInstance();
+        $this->eventDispatcher = $container->get('event_dispatcher');
+        $this->phpExtension    = $phpExtension;
     }
 
     /**
@@ -94,17 +101,23 @@ class PhpFpm extends ValetPhpFpm
         // macOS High Sierra has a new location for the timezone info
         $systemZoneName = str_replace('/var/db/timezone/zoneinfo/', '', $systemZoneName);
 
-
-        // Add performance ini settings.
-        $contents = $this->files->get(__DIR__ . '/../../stubs/z-performance.ini');
-        $contents = str_replace('TIMEZONE', $systemZoneName, $contents);
-
-
+        // Get php directory.
         $fpmConfigFile = $this->fpmConfigPath($phpVersion);
         $destDir       = dirname(dirname($fpmConfigFile)) . '/conf.d/';
+
+        // Add performance ini settings.
+        $contents = $this->files->get(__DIR__ . '/../../stubs/z-performance.ini'); //@todo; remove file on uninstall?
+        $contents = str_replace('TIMEZONE', $systemZoneName, $contents);
         $this->files->putAsUser(
             $destDir . 'z-performance.ini',
             $contents
         );
+
+        // Dispatch event.
+        $event = new DataEvent();
+        $event->set('php_version', $phpVersion);
+        $event->set('php_dir', $destDir);
+
+        $this->eventDispatcher->dispatch($event, 'after_create_php_config'); //@todo; dispatch event when config should be removed?
     }
 }
