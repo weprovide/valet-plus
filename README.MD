@@ -22,9 +22,9 @@ Here are a few key differences compared to the original Valet:
 - MySQL (mysql@5.7, mysql@8, mariadb)
   - DB commands (list, create, drop, reset, (re)import, export, ~~open~~)
 - Mailhog (on/off mode)
-- ~~Redis (on/off mode)~~
-- Rabbitmq (on/off mode)
 - Varnish (on/off mode)
+- Redis (on/off mode)
+- Rabbitmq (on/off mode)
 - Xdebug (on/off mode)
 - Memcache (on/off mode)
 - Elasticsearch v6, ~~v7~~, ~~v8~~ (on/off mode) 
@@ -38,6 +38,7 @@ Here are a few key differences compared to the original Valet:
 
 - Rename `.env.valet` to `.valet-env.php`.
 - Use command `valet elasticsearch|es use <version>` instead of `valet use elasticsearch|es <version>`.
+- Use `127.0.0.1` as Redis host instead of `/tmp/redis.sock`.
 - Choose which binaries to install (default all) and self-update on `valet install` command.
 
 

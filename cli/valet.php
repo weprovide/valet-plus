@@ -107,6 +107,9 @@ if (is_dir(VALET_HOME_PATH)) {
             case '':
                 Mysql::restart();
                 Mailhog::restart();
+                Varnish::restart();
+                Redis::restart();
+                Rabbitmq::restart();
                 break;
             case 'mysql':
                 Mysql::restart();
@@ -116,6 +119,18 @@ if (is_dir(VALET_HOME_PATH)) {
                 Mailhog::restart();
 
                 return info('Mailhog has been started.');
+            case 'varnish':
+                Varnish::restart();
+
+                return info('Varnish has been started.');
+            case 'redis':
+                Redis::restart();
+
+                return info('Redis has been started.');
+            case 'rabbitmq':
+                Rabbitmq::restart();
+
+                return info('Rabbitmq has been started.');
         }
 
         $cmd->run($input, $output);
@@ -130,6 +145,9 @@ if (is_dir(VALET_HOME_PATH)) {
             case '':
                 Mysql::restart();
                 Mailhog::restart();
+                Varnish::restart();
+                Redis::restart();
+                Rabbitmq::restart();
                 break;
             case 'mysql':
                 Mysql::restart();
@@ -139,6 +157,18 @@ if (is_dir(VALET_HOME_PATH)) {
                 Mailhog::restart();
 
                 return info('Mailhog has been restarted.');
+            case 'varnish':
+                Varnish::restart();
+
+                return info('Varnish has been restarted.');
+            case 'redis':
+                Redis::restart();
+
+                return info('Redis has been restarted.');
+            case 'rabbitmq':
+                Rabbitmq::restart();
+
+                return info('Rabbitmq has been restarted.');
         }
 
         $cmd->run($input, $output);
@@ -153,6 +183,9 @@ if (is_dir(VALET_HOME_PATH)) {
             case '':
                 Mysql::stop();
                 Mailhog::stop();
+                Varnish::stop();
+                Redis::stop();
+                Rabbitmq::stop();
                 break;
             case 'mysql':
                 Mysql::stop();
@@ -162,6 +195,18 @@ if (is_dir(VALET_HOME_PATH)) {
                 Mailhog::stop();
 
                 return info('Mailhog has been stopped.');
+            case 'varnish':
+                Varnish::stop();
+
+                return info('Varnish has been stopped.');
+            case 'redis':
+                Redis::stop();
+
+                return info('Redis has been stopped.');
+            case 'rabbitmq':
+                Rabbitmq::stop();
+
+                return info('Rabbitmq has been stopped.');
         }
 
         $cmd->run($input, $output);
@@ -189,6 +234,8 @@ if (is_dir(VALET_HOME_PATH)) {
             Binary::uninstall();
             info('Removing varnish...');
             Varnish::uninstall();
+            info('Removing redis...');
+            Redis::uninstall();
             info('Removing rabbitmq...');
             Rabbitmq::uninstall();
             info('Removing elasticsearch...');
@@ -263,6 +310,37 @@ if (is_dir(VALET_HOME_PATH)) {
             }
         })
         ->descriptions('Enable/disable Varnish')
+        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable']));
+
+    /**
+     * Redis services.
+     */
+    $app
+        ->command('redis', function (OutputInterface $output, string $mode = null) {
+            $modes = ['install', 'on', 'enable', 'off', 'disable'];
+
+            if (!in_array($mode, $modes)) {
+                throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+            }
+
+            switch ($mode) {
+                case 'install':
+                    Redis::install();
+
+                    return;
+                case 'enable':
+                case 'on':
+                    Redis::enable();
+
+                    return;
+                case 'disable':
+                case 'off':
+                    Redis::disable();
+
+                    return;
+            }
+        })
+        ->descriptions('Enable/disable Redis')
         ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable']));
 
     /**
