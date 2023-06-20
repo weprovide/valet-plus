@@ -29,6 +29,8 @@ jobs:
           ini-values: error_reporting=E_ALL, max_execution_time=-1, memory_limit=512M
           tools: composer:v2
           coverage: none
+      - name: '[INSTALL] Brew'
+        run: brew cleanup
       - name: '[INSTALL] Composer install'
         run: composer install --no-interaction --prefer-dist
       - name: '[INSTALL] Valet install'

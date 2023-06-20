@@ -81,15 +81,21 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $cmd = $app->get('tld');
     $app->command('tld [tld]', function (InputInterface $input, OutputInterface $output, $tld = null) use ($cmd) {
+        $oldTld = Configuration::read()['tld'];
         $cmd->run($input, $output);
+        $newTld = Configuration::read()['tld'];
 
-        Mailhog::updateDomain(Configuration::read()['tld']);
-        Mailhog::restart();
+        if ($newTld != $oldTld) {
+            Mailhog::updateDomain(Configuration::read()['tld']);
+            Mailhog::restart();
 
-        PhpFpm::restart();
-        Nginx::restart();
+            Elasticsearch::updateDomain(Configuration::read()['tld']);
 
-        info('Your Valet+ TLD has been updated to [' . $tld . '].');
+            PhpFpm::restart();
+            Nginx::restart();
+
+            info('Your Valet+ TLD has been updated to [' . $tld . '].');
+        }
     }, ['domain'])->descriptions('Get or set the TLD used for Valet sites.');
 
     /**
@@ -210,7 +216,7 @@ if (is_dir(VALET_HOME_PATH)) {
 
             switch ($mode) {
                 case 'install':
-                    Mailhog::install();
+                    Mailhog::install(Configuration::read()['tld']);
 
                     return;
                 case 'enable':
@@ -437,7 +443,7 @@ if (is_dir(VALET_HOME_PATH)) {
                 case 'on':
                 case 'install':
                 case 'use':
-                    Elasticsearch::useVersion($targetVersion);
+                    Elasticsearch::useVersion($targetVersion, Configuration::read()['tld']);
                     break;
                 case 'off':
                 case 'uninstall':
@@ -445,6 +451,8 @@ if (is_dir(VALET_HOME_PATH)) {
                     break;
             }
 
+            PhpFpm::restart();
+            Nginx::restart();
         })
         ->descriptions('Enable/disable/switch Elasticsearch')
         ->setAliases(['es'])

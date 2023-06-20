@@ -13,6 +13,11 @@ use function Valet\info;
 class Elasticsearch
 {
     /** @var string */
+    const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/elasticsearch.conf';
+    /** @var string */
+    const NGINX_CONFIGURATION_PATH = VALET_HOME_PATH . '/Nginx/elasticsearch.conf';
+
+    /** @var string */
     protected const ES_DEFAULT_VERSION = 'opensearch';
     /** @var string[] */
     protected const ES_SUPPORTED_VERSIONS = ['opensearch', 'elasticsearch@6'];
@@ -77,9 +82,10 @@ class Elasticsearch
     /**
      * Installs the requested version and switches to it.
      *
-     * @param $version
+     * @param string $version
+     * @param string $tld
      */
-    public function useVersion($version = self::ES_DEFAULT_VERSION)
+    public function useVersion($version = self::ES_DEFAULT_VERSION, $tld = 'test')
     {
         if (!$this->isSupportedVersion($version)) {
             throw new DomainException(
@@ -99,7 +105,7 @@ class Elasticsearch
             $this->stop($currentVersion);
         }
 
-        $this->install($version);
+        $this->install($version, $tld);
     }
 
 
@@ -145,8 +151,9 @@ class Elasticsearch
      * Install the requested version of elasticsearch.
      *
      * @param string $version
+     * @param string $tld
      */
-    public function install($version = self::ES_DEFAULT_VERSION)
+    public function install($version = self::ES_DEFAULT_VERSION, $tld = 'test')
     {
         if (!$this->isSupportedVersion($version)) {
             throw new DomainException(
@@ -177,6 +184,7 @@ class Elasticsearch
         // todo; add support for adding plugins like 'analysis-icu' and 'analysis-phonetic'?
 
         $this->restart($version);
+        $this->updateDomain($tld);
     }
 
     /**
@@ -189,6 +197,7 @@ class Elasticsearch
             $this->brew->uninstallFormula($version);
         }
 
+        // Elasticsearch files
         if (file_exists(BREW_PREFIX . '/var/elasticsearch')) {
             $this->files->rmDirAndContents(BREW_PREFIX . '/var/elasticsearch');
         }
@@ -203,6 +212,7 @@ class Elasticsearch
             $this->files->rmDirAndContents(BREW_PREFIX . '/etc/elasticsearch');
         }
 
+        // Opensearch files
         if (file_exists(BREW_PREFIX . '/var/opensearch')) {
             $this->files->rmDirAndContents(BREW_PREFIX . '/var/opensearch');
         }
@@ -215,6 +225,27 @@ class Elasticsearch
         }
         if (file_exists(BREW_PREFIX . '/etc/opensearch')) {
             $this->files->rmDirAndContents(BREW_PREFIX . '/etc/opensearch');
+        }
+    }
+
+    /**
+     * Set the domain (TLD) to use.
+     *
+     * @param $domain
+     */
+    public function updateDomain($domain)
+    {
+        $currentVersion = $this->getCurrentVersion();
+        if ($currentVersion) {
+            info('Updating elasticsearch domain...');
+            $this->files->putAsUser(
+                static::NGINX_CONFIGURATION_PATH,
+                str_replace(
+                    ['VALET_DOMAIN'],
+                    [$domain],
+                    $this->files->get(static::NGINX_CONFIGURATION_STUB)
+                )
+            );
         }
     }
 }
