@@ -21,6 +21,6 @@
         "laravel/valet": "*"
     },
     "bin": [
-        "valet"
+        "valet-plus"
     ]
 }

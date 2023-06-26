@@ -10,9 +10,14 @@ use function Valet\info;
 use function Valet\table;
 use function Valet\warning;
 
+// Determine directory where Laravel's Valet runs in.
+$laravelDir = __DIR__ . '/../vendor/laravel/valet';
+if (!file_exists($laravelDir)) {
+    $laravelDir = __DIR__ . '/../../../laravel/valet';
+}
 
 // Require Laravel's Valet.
-require_once __DIR__ . '/../vendor/laravel/valet/cli' . '/app.php';
+require_once $laravelDir . '/cli' . '/app.php';
 require_once __DIR__ . '/includes/extends.php';
 require_once __DIR__ . '/includes/events.php';
 

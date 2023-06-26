@@ -20,11 +20,17 @@ if [ ! -f "$DIR/cli/valet.php" ]
 then
     DIR=$(php -r "echo realpath('$DIR/../weprovide/valet-plus');")
 fi
-#echo $DIR
 
-# Valet is a dependency of Valet+, so it's always in the vendor directory.
+# Valet is a dependency of Valet+. So, when we're developing on it, it's always in the vendor directory.
+# When we are a user (composer global require weprovide/valet-plus) the following directories are used.
+#   laravel/valet is installed in /Users/<user>/.composer/vendor/laravel/valet/valet
+#   weprovide/valet-plus is installed in /Users/<user>/.composer/vendor/weprovide/valet-plus/valet
 LARAVEL_DIR="$DIR/vendor/laravel/valet"
+if [ ! -d "$LARAVEL_DIR" ]; then
+    LARAVEL_DIR=$(php -r "echo realpath('$DIR/../../laravel/valet');")
+fi
 #echo $LARAVEL_DIR
+
 
 # Get a command-line executable we can use for php that's 8+; if this
 # is the inside loop (Valet runs itself 2x in some settings), skip

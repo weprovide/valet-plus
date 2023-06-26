@@ -33,13 +33,16 @@ Here are a few key differences compared to the original Valet:
 - Rewrite/unrewrite public domain to local environment
 - ~~DevTools~~
 - Binaries (magerun, magerun2, drush)
+- ~~ngrok~~
+- ~~composer commands~~
 
 ### Changes vs Valet+ 2
 
+- Use command `valet-plus` instead of `valet`. (for now)
 - Rename `.env.valet` to `.valet-env.php`.
-- Use command `valet elasticsearch|es use <version>` instead of `valet use elasticsearch|es <version>`.
+- Use command `valet-plus elasticsearch|es use <version>` instead of `valet-plus use elasticsearch|es <version>`.
 - Use `127.0.0.1` as Redis host instead of `/tmp/redis.sock`.
-- Choose which binaries to install (default all) and self-update on `valet install` command.
+- Choose which binaries to install (default all) and self-update on `valet-plus install` command.
 
 
 
