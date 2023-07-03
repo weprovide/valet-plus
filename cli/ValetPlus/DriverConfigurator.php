@@ -10,7 +10,7 @@ use Valet\Filesystem;
 use Valet\Site;
 use function Valet\info;
 
-class Driver
+class DriverConfigurator
 {
     /** @var CommandLine */
     protected $cli;
@@ -49,7 +49,7 @@ class Driver
         $valetDriver  = ValetDriver::assign(getcwd(), basename(getcwd()), '/');
         $classNameArr = explode('\\', get_class($valetDriver));
         $className    = end($classNameArr);
-        $className    = "WeProvide\ValetPlus\Drivers\\{$className}";
+        $className    = "WeProvide\ValetPlus\DriverConfigs\\{$className}";
 
         try {
             $driver = new $className(

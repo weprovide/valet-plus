@@ -658,7 +658,7 @@ if (is_dir(VALET_HOME_PATH)) {
      * Configuring framework command.
      */
     $app->command('configure', function () {
-        Driver::configure();
+        DriverConfigurator::configure();
     })->descriptions('Configure application with know framework settings');
 }
 

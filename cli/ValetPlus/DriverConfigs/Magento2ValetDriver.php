@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace WeProvide\ValetPlus\Drivers;
+namespace WeProvide\ValetPlus\DriverConfigs;
 
-use WeProvide\ValetPlus\Driver;
+use WeProvide\ValetPlus\DriverConfigurator;
 use function Valet\info;
 use function Valet\output;
 
-class Magento2ValetDriver extends Driver
+class Magento2ValetDriver extends DriverConfigurator
 {
     /** @var string */
     protected const MAGENTO2_ENV_STUB = __DIR__ . '/../../stubs/drivers/magento2/env.php';

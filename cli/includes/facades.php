@@ -59,6 +59,6 @@ class Binary extends ValetPlusFacade
 {
 }
 
-class Driver extends ValetPlusFacade
+class DriverConfigurator extends ValetPlusFacade
 {
 }
