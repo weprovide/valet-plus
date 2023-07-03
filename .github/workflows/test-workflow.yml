@@ -34,25 +34,25 @@ jobs:
       - name: '[INSTALL] Composer install'
         run: composer install --no-interaction --prefer-dist
       - name: '[INSTALL] Valet install'
-        run: ./valet install
+        run: ./valet-plus install
 
 # @todo; add test mailhog.test (should return 200 status code)
 
       - name: '[TEST] DB commands'
         run: |
-          ./valet db create testci | grep "\"testci\" created successfully"
-          ./valet db list | grep "testci"
-          ./valet db drop testci -y | grep "\"testci\" dropped successfully"
+          ./valet-plus db create testci | grep "\"testci\" created successfully"
+          ./valet-plus db list | grep "testci"
+          ./valet-plus db drop testci -y | grep "\"testci\" dropped successfully"
 
       - name: '[TEST] PHP switch'
         run: |
-          ./valet use ${{matrix.php}}
+          ./valet-plus use ${{matrix.php}}
           php -v | grep ${{matrix.php}}
       - name: '[TEST] xdebug on and off'
         run: |
-          ./valet xdebug on
-          ./valet xdebug off
+          ./valet-plus xdebug on
+          ./valet-plus xdebug off
       - name: '[TEST] memcache on and off'
         run: |
-          ./valet memcache on
-          ./valet memcache off
+          ./valet-plus memcache on
+          ./valet-plus memcache off
