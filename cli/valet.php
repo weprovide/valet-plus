@@ -513,9 +513,13 @@ if (is_dir(VALET_HOME_PATH)) {
         })
         ->descriptions('Database commands (list/ls, create, drop, reset, import, reimport, export/dump, pwd/password)');
 
+    /**
+     * Elasticsearch/opensearch services.
+     */
+    $esVersions = Elasticsearch::getSupportedVersions();
     $app
         ->command('elasticsearch', function (InputInterface $input, OutputInterface $output, $mode, $targetVersion = null) {
-            $modes         = ['install', 'on', 'enable', 'off', 'disable', 'use'];
+            $modes         = ['install', 'use', 'on', 'enable', 'off', 'disable', 'uninstall'];
             $targetVersion = $targetVersion ?? 'opensearch';
 
             if (!in_array($mode, $modes)) {
@@ -523,14 +527,24 @@ if (is_dir(VALET_HOME_PATH)) {
             }
 
             switch ($mode) {
-                case 'on':
                 case 'install':
                 case 'use':
                     Elasticsearch::useVersion($targetVersion, Configuration::read()['tld']);
+
+                    break;
+                case 'on':
+                case 'enable':
+                    Elasticsearch::restart();
+
                     break;
                 case 'off':
+                case 'disable':
+                    Elasticsearch::stop();
+
+                    break;
                 case 'uninstall':
                     Elasticsearch::uninstall();
+
                     break;
             }
 
@@ -539,8 +553,8 @@ if (is_dir(VALET_HOME_PATH)) {
         })
         ->descriptions('Enable/disable/switch Elasticsearch')
         ->setAliases(['es'])
-        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable', 'use']))
-        ->addArgument('targetVersion', InputArgument::OPTIONAL, "Version to use", null);
+        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'use', 'on', 'enable', 'off', 'disable', 'uninstall']))
+        ->addArgument('targetVersion', InputArgument::OPTIONAL, "Version to use, supported versions: " . implode(', ', $esVersions), null);
 
 
     /**
