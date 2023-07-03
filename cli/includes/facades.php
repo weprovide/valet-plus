@@ -58,3 +58,7 @@ class Xdebug extends ValetPlusFacade
 class Binary extends ValetPlusFacade
 {
 }
+
+class Driver extends ValetPlusFacade
+{
+}

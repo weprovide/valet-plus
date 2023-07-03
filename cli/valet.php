@@ -639,6 +639,13 @@ if (is_dir(VALET_HOME_PATH)) {
 
         table(['Site', 'URL'], $rewrites->all());
     })->descriptions('Display all of the registered Valet rewrites');
+
+    /**
+     * Configuring framework command.
+     */
+    $app->command('configure', function () {
+        Driver::configure();
+    })->descriptions('Configure application with know framework settings');
 }
 
 /**
