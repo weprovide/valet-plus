@@ -12,6 +12,10 @@ Container::getInstance()->singleton(
     \WeProvide\ValetPlus\Extended\Valet::class
 );
 Container::getInstance()->singleton(
+    \Valet\Configuration::class,
+    \WeProvide\ValetPlus\Extended\Configuration::class
+);
+Container::getInstance()->singleton(
     \Valet\Nginx::class,
     \WeProvide\ValetPlus\Extended\Nginx::class
 );

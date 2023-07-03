@@ -14,8 +14,8 @@ class Valet extends ValetValet
      */
     public function symlinkToUsersBin(): void
     {
-        $this->unlinkFromUsersBin();
-
-        $this->cli->runAsUser('ln -s "' . realpath(__DIR__ . '/../../../valet') . '" ' . $this->valetBin);
+//        $this->unlinkFromUsersBin();
+//
+//        $this->cli->runAsUser('ln -s "' . realpath(__DIR__ . '/../../../valet') . '" ' . $this->valetBin);
     }
 }

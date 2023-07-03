@@ -60,7 +60,7 @@ class Driver
             );
 
             return $driver->configure();
-        } catch (Throwable $throwable) {
+        } catch (\Throwable $throwable) {
 
         }
 
