@@ -11,7 +11,6 @@ then
 else
     DIR="$( cd "$( dirname "$SOURCE" )" && pwd )"
 fi
-#echo $DIR
 
 # If we are in the global Composer "bin" directory, we need to bump our
 # current directory up two, so that we will correctly proxy into the
@@ -29,8 +28,6 @@ LARAVEL_DIR="$DIR/vendor/laravel/valet"
 if [ ! -d "$LARAVEL_DIR" ]; then
     LARAVEL_DIR=$(php -r "echo realpath('$DIR/../../laravel/valet');")
 fi
-#echo $LARAVEL_DIR
-
 
 # Get a command-line executable we can use for php that's 8+; if this
 # is the inside loop (Valet runs itself 2x in some settings), skip
@@ -51,9 +48,7 @@ then
 else
     PHP=$PHP_EXECUTABLE
 fi
-#echo $PHP
 
-#TODO: check
 # If the command is the "share" command we will need to resolve out any
 # symbolic links for the site. Before starting Ngrok, we will fire a
 # process to retrieve the live Ngrok tunnel URL in the background.
@@ -162,7 +157,6 @@ then
         exit
     fi
 
-#TODO: check
 # Proxy PHP commands to the "php" executable on the isolated site
 elif [[ "$1" = "php" ]]
 then
@@ -175,7 +169,6 @@ then
 
     exit
 
-#TODO: check
 # Proxy Composer commands with the "php" executable on the isolated site
 elif [[ "$1" = "composer" ]]
 then

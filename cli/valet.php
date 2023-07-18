@@ -72,7 +72,7 @@ $app
         'with-binary',
         'b',
         InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
-        "Install with binary, default no binaries are installed\n" .
+        "Install with binary, by default all binaries are installed\n" .
         "Supported binaries: " . implode(', ', Binary::getSupported()) . "\n"
     );
 

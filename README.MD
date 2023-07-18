@@ -32,9 +32,7 @@ Here are a few key differences compared to the original Valet:
 - ~~Ioncube~~
 - Rewrite/unrewrite public domain to local environment
 - ~~DevTools~~
-- Binaries (magerun, magerun2, drush)
-- ~~ngrok~~
-- ~~composer commands~~
+- Binaries (magerun, magerun2, drush, wp-cli)
 
 ### Changes vs Valet+ 2
 
