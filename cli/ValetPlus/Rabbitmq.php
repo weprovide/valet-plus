@@ -39,6 +39,7 @@ class Rabbitmq extends AbstractService
         }
 
         $this->brew->stopService(static::SERVICE_NAME);
+        $this->cli->quietlyAsUser('brew services stop ' . static::SERVICE_NAME);
     }
 
     /**
@@ -52,7 +53,9 @@ class Rabbitmq extends AbstractService
             return;
         }
 
-        $this->brew->restartService(static::SERVICE_NAME);
+        $this->brew->stopService(static::SERVICE_NAME);
+        info("Starting " . static::SERVICE_NAME . "...");
+        $this->cli->quietlyAsUser('brew services restart ' . static::SERVICE_NAME);
     }
 
     /**

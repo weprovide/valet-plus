@@ -6,6 +6,7 @@ namespace WeProvide\ValetPlus;
 
 use JsonException;
 use Valet\Brew;
+use Valet\CommandLine;
 use Valet\Configuration;
 use Valet\Filesystem;
 
@@ -22,6 +23,8 @@ abstract class AbstractService
     protected $configClassName;
     /** @var Brew */
     protected $brew;
+    /** @var CommandLine */
+    protected $cli;
     /** @var Filesystem */
     protected $files;
 
@@ -29,15 +32,18 @@ abstract class AbstractService
      * @param Configuration $configuration
      * @param Brew $brew
      * @param Filesystem $files
+     * @param CommandLine $cli
      */
     public function __construct(
         Configuration $configuration,
         Brew          $brew,
-        Filesystem    $files
+        Filesystem    $files,
+        CommandLine   $cli
     ) {
         $this->configuration = $configuration;
         $this->brew          = $brew;
         $this->files         = $files;
+        $this->cli           = $cli;
     }
 
     /**

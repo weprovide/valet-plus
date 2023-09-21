@@ -25,8 +25,6 @@ class Mailhog extends AbstractService
     /** @var string */
     const NGINX_CONFIGURATION_PATH = VALET_HOME_PATH . '/Nginx/mailhog.conf';
 
-    /** @var CommandLine */
-    protected $cli;
     /** @var EventDispatcher */
     protected $eventDispatcher;
 
@@ -42,11 +40,10 @@ class Mailhog extends AbstractService
         Filesystem    $files,
         CommandLine   $cli
     ) {
-        parent::__construct($configuration, $brew, $files);
+        parent::__construct($configuration, $brew, $files, $cli);
 
         $container             = Container::getInstance();
         $this->eventDispatcher = $container->get('event_dispatcher');
-        $this->cli             = $cli;
     }
 
     /**
