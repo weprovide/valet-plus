@@ -66,7 +66,7 @@ abstract class AbstractService
     }
 
     /**
-     * Returns wether the service is enabled or not.
+     * Returns whether the service is enabled or not.
      *
      * @return bool
      * @throws JsonException
@@ -84,7 +84,7 @@ abstract class AbstractService
     }
 
     /**
-     * Stores the active state in the configuration.
+     * Stores the enabled state of the service in the configuration.
      *
      * @param bool $state
      * @throws JsonException
@@ -97,6 +97,26 @@ abstract class AbstractService
             $config[$name] = [];
         }
         $config[$name]['enabled'] = $state;
+        $this->configuration->write($config);
+    }
+
+    /**
+     * Removes the enabled state of the service from the configuration.
+     *
+     * @return void
+     * @throws JsonException
+     */
+    public function removeEnabled(): void
+    {
+        $config = $this->configuration->read();
+        $name   = $this->getConfigClassName();
+        if (!isset($config[$name])) {
+            $config[$name] = [];
+        }
+        if (isset($config[$name]['enabled'])) {
+            unset($config[$name]['enabled']);
+        }
+        $config = array_filter($config);
         $this->configuration->write($config);
     }
 

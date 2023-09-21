@@ -64,10 +64,14 @@ class Rabbitmq extends AbstractService
     public function uninstall(): void
     {
         $this->stop();
+        $this->removeEnabled();
         $this->brew->uninstallFormula(static::SERVICE_NAME);
 
         if (file_exists(BREW_PREFIX . '/var/lib/rabbitmq')) {
             $this->files->rmDirAndContents(BREW_PREFIX . '/var/lib/rabbitmq');
+        }
+        if (file_exists(BREW_PREFIX . '/var/log/rabbitmq')) {
+            $this->files->rmDirAndContents(BREW_PREFIX . '/var/log/rabbitmq');
         }
     }
 }

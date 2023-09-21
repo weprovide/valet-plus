@@ -291,7 +291,7 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app
         ->command('varnish', function (OutputInterface $output, string $mode = null) {
-            $modes = ['install', 'on', 'enable', 'off', 'disable'];
+            $modes = ['install', 'on', 'enable', 'off', 'disable', 'uninstall'];
 
             if (!in_array($mode, $modes)) {
                 throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
@@ -301,28 +301,32 @@ if (is_dir(VALET_HOME_PATH)) {
                 case 'install':
                     Varnish::install();
 
-                    return;
+                    break;
                 case 'enable':
                 case 'on':
                     Varnish::enable();
 
-                    return;
+                    break;
                 case 'disable':
                 case 'off':
                     Varnish::disable();
 
-                    return;
+                    break;
+                case 'uninstall':
+                    Varnish::uninstall();
+
+                    break;
             }
         })
         ->descriptions('Enable/disable Varnish')
-        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable']));
+        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable', 'uninstall']));
 
     /**
      * Redis services.
      */
     $app
         ->command('redis', function (OutputInterface $output, string $mode = null) {
-            $modes = ['install', 'on', 'enable', 'off', 'disable'];
+            $modes = ['install', 'on', 'enable', 'off', 'disable', 'uninstall'];
 
             if (!in_array($mode, $modes)) {
                 throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
@@ -332,28 +336,32 @@ if (is_dir(VALET_HOME_PATH)) {
                 case 'install':
                     Redis::install();
 
-                    return;
+                    break;
                 case 'enable':
                 case 'on':
                     Redis::enable();
 
-                    return;
+                    break;
                 case 'disable':
                 case 'off':
                     Redis::disable();
 
-                    return;
+                    break;
+                case 'uninstall':
+                    Redis::uninstall();
+
+                    break;
             }
         })
         ->descriptions('Enable/disable Redis')
-        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable']));
+        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable', 'uninstall']));
 
     /**
      * Rabbitmq services.
      */
     $app
         ->command('rabbitmq', function (OutputInterface $output, string $mode = null) {
-            $modes = ['install', 'on', 'enable', 'off', 'disable'];
+            $modes = ['install', 'on', 'enable', 'off', 'disable', 'uninstall'];
 
             if (!in_array($mode, $modes)) {
                 throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
@@ -363,21 +371,25 @@ if (is_dir(VALET_HOME_PATH)) {
                 case 'install':
                     Rabbitmq::install();
 
-                    return;
+                    break;
                 case 'enable':
                 case 'on':
                     Rabbitmq::enable();
 
-                    return;
+                    break;
                 case 'disable':
                 case 'off':
                     Rabbitmq::disable();
 
-                    return;
+                    break;
+                case 'uninstall':
+                    Rabbitmq::uninstall();
+
+                    break;
             }
         })
         ->descriptions('Enable/disable Rabbitmq')
-        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable']));
+        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable', 'uninstall']));
 
     /**
      * Database services and commands.
