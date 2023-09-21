@@ -54,11 +54,11 @@ class Magento2ValetDriver extends DriverConfigurator
 
         if (!$envExists) {
             output("\tSetting base url...");
-            $this->cli->quietlyAsUser('magerun2 config:store:set web/unsecure/base_url ' . $url);
-            $this->cli->quietlyAsUser('magerun2 config:store:set web/secure/base_url ' . $url);
+            $this->cli->quietlyAsUser('magerun2 config:set --lock-env web/unsecure/base_url ' . $url);
+            $this->cli->quietlyAsUser('magerun2 config:set --lock-env web/secure/base_url ' . $url);
 
             output("\tEnabling URL rewrites...");
-            $this->cli->quietlyAsUser('magerun2 config:store:set web/seo/use_rewrites 1');
+            $this->cli->quietlyAsUser('magerun2 config:set web/seo/use_rewrites 1');
         }
 
         if (!$envExists || !$configExists) {
