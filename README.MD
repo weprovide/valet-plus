@@ -11,6 +11,12 @@ This project uses [laravel/valet](https://github.com/laravel/valet) as a depende
 instructions of Laravel's Valet.
 
 > Note: install php@8.0 first before installing Valet+.
+> You can do this with the following commands.
+> ```shell
+> brew install php@8.0
+> brew link php@8.0 --force
+> brew services restart php@8.0
+> ```
 
 
 ## Valet+ features
@@ -19,7 +25,7 @@ Here are a few key differences compared to the original Valet:
 
 - Nginx config optimization
 - PHP extensions (~~mcrypt~~, ~~intl~~, ~~opcache~~, yaml, apcu)
-- MySQL (mysql@5.7, mysql@8, mariadb)
+- MySQL (mysql@5.7, mysql@8.0, mysql@8.1, mariadb)
   - DB commands (list, create, drop, reset, (re)import, export, ~~open~~)
 - Mailhog (on/off mode)
 - Varnish (on/off mode)
@@ -36,7 +42,7 @@ Here are a few key differences compared to the original Valet:
 
 ### Changes vs Valet+ 2
 
-- Use command `valet-plus` instead of `valet`. (for now)
+- Use command `valet-plus` instead of `valet` (for now).
 - Rename `.env.valet` to `.valet-env.php`.
 - Use command `valet-plus elasticsearch|es use <version>` instead of `valet-plus use elasticsearch|es <version>`.
 - Use `127.0.0.1` as Redis host instead of `/tmp/redis.sock`.

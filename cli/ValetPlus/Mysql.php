@@ -24,7 +24,7 @@ class Mysql
     const MYSQL_DATA_DIR = 'var/mysql';
     const MYSQL_ROOT_PASSWORD = 'root';
     const MYSQL_DEFAULT_VERSION = 'mysql@5.7';
-    const MYSQL_SUPPORTED_VERSIONS = ['mysql@5.7', 'mysql', 'mariadb'];
+    const MYSQL_SUPPORTED_VERSIONS = ['mysql', 'mysql@8.0', 'mysql@5.7', 'mariadb'];
 
     /** @var Brew */
     protected $brew;
@@ -212,6 +212,7 @@ class Mysql
                 });
                 break;
 
+            case 'mysql@8.0':
             case 'mysql':
                 $retval = $this->query(
                     "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '" . $newPwd . "';",
@@ -440,6 +441,9 @@ class Mysql
     protected function query($query, $escape = true, $withoutRootPwd = false)
     {
         $link = $this->getConnection($withoutRootPwd);
+        if ($link === false) {
+            return false;
+        }
 
         $query = $escape ? $this->escape($query) : $query;
 

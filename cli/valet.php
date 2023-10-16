@@ -32,15 +32,18 @@ $app->setVersion('3.0.0');
  */
 $cmd = $app->get('install');
 $app
-    ->command('install', function (InputInterface $input, OutputInterface $output, $withMariadb, $withMysql8, $withBinary) use ($cmd) {
-        if ($withMariadb && $withMysql8) {
-            throw new Exception('Cannot install Valet+ with both MariaDB and Mysql8, please pick one.');
+    ->command('install', function (InputInterface $input, OutputInterface $output, $withMariadb, $withMysql80, $withMysql81, $withBinary) use ($cmd) {
+        $types = $withMariadb + $withMysql80 + $withMysql81;
+        if ($types > 1) {
+            throw new Exception('Cannot install Valet+ with multiple DBMS, please pick one.');
         }
         $mySqlVersion = $withMariadb ? 'mariadb' : 'mysql@5.7';
-        $mySqlVersion = $withMysql8 ? 'mysql' : $mySqlVersion;
+        $mySqlVersion = $withMysql81 ? 'mysql' : $mySqlVersion;
+        $mySqlVersion = $withMysql80 ? 'mysql@8.0' : $mySqlVersion;
 
         // Add custom options to original command to fake 'm.
-        $cmd->addOption('with-mysql-8', null, InputOption::VALUE_NONE)
+        $cmd->addOption('with-mysql80', null, InputOption::VALUE_NONE)
+            ->addOption('with-mysql81', null, InputOption::VALUE_NONE)
             ->addOption('with-mariadb', null, InputOption::VALUE_NONE)
             ->addOption('with-binary', 'b', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL);
         // Run original command.
@@ -66,13 +69,15 @@ $app
         info("\nValet+ installed successfully!");
     })
     ->descriptions('Install the Valet services')
-    ->addOption('with-mysql-8', null, InputOption::VALUE_NONE, "Install with MySQL 8")
+    ->addOption('with-mysql80', null, InputOption::VALUE_NONE, "Install with MySQL 8.0")
+    ->addOption('with-mysql81', null, InputOption::VALUE_NONE, "Install with MySQL 8.1")
     ->addOption('with-mariadb', null, InputOption::VALUE_NONE, "Install with MariaDB")
     ->addOption(
         'with-binary',
         'b',
         InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
         "Install with binary, by default all binaries are installed\n" .
+        "Use `-b [binary] -b [binary]` to install multiple binaries you wish\n" .
         "Supported binaries: " . implode(', ', Binary::getSupported()) . "\n"
     );
 
