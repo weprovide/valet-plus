@@ -112,6 +112,8 @@ class Mailhog extends AbstractService
         $this->removeEnabled();
         $this->brew->uninstallFormula(static::SERVICE_NAME);
         $this->files->unlink(BREW_PREFIX . '/var/log/mailhog.log');
+        // Remove nginx domain listen file.
+        $this->files->unlink(static::NGINX_CONFIGURATION_PATH);
     }
 
     /**

@@ -192,6 +192,9 @@ class Elasticsearch
      */
     public function uninstall()
     {
+        // Remove nginx domain listen file.
+        $this->files->unlink(static::NGINX_CONFIGURATION_PATH);
+
         foreach ($this->getSupportedVersions() as $version) {
             $this->stop($version);
             $this->brew->uninstallFormula($version);
