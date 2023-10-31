@@ -68,7 +68,7 @@ $app
 
         info("\nValet+ installed successfully!");
     })
-    ->descriptions('Install the Valet services')
+    ->descriptions('Install the Valet+ services, with MySQL 5.7 as default DBMS.')
     ->addOption('with-mysql80', null, InputOption::VALUE_NONE, "Install with MySQL 8.0")
     ->addOption('with-mysql81', null, InputOption::VALUE_NONE, "Install with MySQL 8.1")
     ->addOption('with-mariadb', null, InputOption::VALUE_NONE, "Install with MariaDB")

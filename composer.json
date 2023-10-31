@@ -16,6 +16,9 @@
             "WeProvide\\ValetPlus\\": "cli/ValetPlus/"
         }
     },
+    "config": {
+        "platform-check": false
+    },
     "require": {
         "php": ">=7.1 <8.3",
         "laravel/valet": "^4.1"
