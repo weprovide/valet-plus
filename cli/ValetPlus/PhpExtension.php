@@ -23,18 +23,20 @@ class PhpExtension
     public const MEMCACHE_EXTENSION = 'memcached';
     /** @var string */
     public const YAML_EXTENSION = 'yaml';
+    /** @var string */
+    public const DATASTRUCTURE_EXTENSION = 'ds';
 
     const PHP_EXTENSIONS = [
-        self::XDEBUG_EXTENSION   => [
+        self::XDEBUG_EXTENSION        => [
             'default'   => false,
             'ini_files' => [
                 '20-xdebug'
             ]
         ],
-        self::APCU_EXTENSION     => [
+        self::APCU_EXTENSION          => [
             'default' => true
         ],
-        self::MEMCACHE_EXTENSION => [
+        self::MEMCACHE_EXTENSION      => [
             'default'         => false,
             'brew_dependency' => 'libmemcached',
             'ini_files'       => [
@@ -43,13 +45,16 @@ class PhpExtension
                 '30-memcached'
             ]
         ],
-        self::YAML_EXTENSION     => [
+        self::YAML_EXTENSION          => [
             'default'         => true,
             'brew_dependency' => 'libyaml',
             'ini_files'       => [
                 '20-apcu'
             ]
-        ]
+        ],
+        self::DATASTRUCTURE_EXTENSION => [
+            'default' => true
+        ],
     ];
 
     /** @var Brew */
