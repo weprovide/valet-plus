@@ -55,6 +55,7 @@ abstract class AbstractService
     {
         if (!$this->configClassName) {
             try {
+                // We store the service's name in a property to prevent a lot of reflection (which is slow).
                 $this->configClassName = strtolower((new \ReflectionClass($this))->getShortName());
             } catch (\ReflectionException $reflectionException) {
                 echo 'Ohoh reflection exception';

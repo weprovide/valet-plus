@@ -62,3 +62,6 @@ class Binary extends ValetPlusFacade
 class DriverConfigurator extends ValetPlusFacade
 {
 }
+class Docker extends ValetPlusFacade
+{
+}

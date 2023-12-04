@@ -56,7 +56,7 @@ Here are a few key differences compared to the original Valet:
 - Rabbitmq (on/off mode)
 - Xdebug (on/off mode)
 - Memcache (on/off mode)
-- Elasticsearch v6, ~~v7~~, ~~v8~~ (on/off mode) 
+- Elasticsearch v6, v7, ~~v8~~ (on/off mode) using Docker 
 - Opensearch (on/off mode)
 - ~~Ioncube~~
 - Rewrite/unrewrite public domain to local environment
@@ -70,6 +70,7 @@ Here are a few key differences compared to the original Valet:
 - Use command `valet-plus elasticsearch|es use <version>` instead of `valet-plus use elasticsearch|es <version>`.
 - Use `127.0.0.1` as Redis host instead of `/tmp/redis.sock`.
 - Choose which binaries to install (default all) and self-update on `valet-plus install` command.
+- Adds dependency on Docker for Elasticsearch, see https://docs.docker.com/desktop/install/mac-install/
 
 
 

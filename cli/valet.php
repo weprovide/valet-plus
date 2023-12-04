@@ -534,10 +534,12 @@ if (is_dir(VALET_HOME_PATH)) {
      * Elasticsearch/opensearch services.
      */
     $esVersions = Elasticsearch::getSupportedVersions();
+    $esDockerVersions = Elasticsearch::getDockerVersions();
+    $esCurrentVersion = Elasticsearch::getCurrentVersion();
     $app
         ->command('elasticsearch', function (InputInterface $input, OutputInterface $output, $mode, $targetVersion = null) {
             $modes         = ['install', 'use', 'on', 'enable', 'off', 'disable', 'uninstall'];
-            $targetVersion = $targetVersion ?? 'opensearch';
+            $targetVersion = $targetVersion ?? 'opensearch'; //@todo only when we don't have any installed versions, if we do pick the first installed?
 
             if (!in_array($mode, $modes)) {
                 throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
@@ -568,7 +570,11 @@ if (is_dir(VALET_HOME_PATH)) {
             PhpFpm::restart();
             Nginx::restart();
         })
-        ->descriptions('Enable/disable/switch Elasticsearch')
+        ->descriptions(
+                'Enable/disable/switch Elasticsearch. ' .
+                'The versions [' . implode(', ', $esDockerVersions) . '] require Docker. ' .
+                ($esCurrentVersion !== null ? "\n  " . 'Current running version: ' . $esCurrentVersion : '')
+        )
         ->setAliases(['es'])
         ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'use', 'on', 'enable', 'off', 'disable', 'uninstall']))
         ->addArgument('targetVersion', InputArgument::OPTIONAL, "Version to use, supported versions: " . implode(', ', $esVersions), null);

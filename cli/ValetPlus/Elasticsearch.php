@@ -10,38 +10,38 @@ use Valet\CommandLine;
 use Valet\Filesystem;
 use function Valet\info;
 
-class Elasticsearch
+class Elasticsearch extends AbstractDockerService
 {
     /** @var string */
-    const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/elasticsearch.conf';
+    const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/elasticsearch/elasticsearch.conf';
     /** @var string */
     const NGINX_CONFIGURATION_PATH = VALET_HOME_PATH . '/Nginx/elasticsearch.conf';
 
     /** @var string */
-    protected const ES_DEFAULT_VERSION = 'opensearch';
+    protected const ES_DEFAULT_VERSION = 'opensearch'; // which is v2 in Brew, @todo; maybe support v1.2 using docker?
     /** @var string[] */
-    protected const ES_SUPPORTED_VERSIONS = ['opensearch', 'elasticsearch@6'];
+    protected const ES_SUPPORTED_VERSIONS = ['opensearch', 'elasticsearch6', 'elasticsearch7'];
+    /** @var string[] */
+    protected const ES_DOCKER_VERSIONS = ['elasticsearch6', 'elasticsearch7'];
+    /** @var string[] */
+    protected const ES_EOL_VERSIONS = ['elasticsearch@6'];
 
     /** @var Brew */
     protected $brew;
-    /** @var CommandLine */
-    protected $cli;
-    /** @var Filesystem */
-    protected $files;
 
     /**
-     * @param Brew $brew
      * @param CommandLine $cli
      * @param Filesystem $files
+     * @param Brew $brew
      */
     public function __construct(
-        Brew        $brew,
         CommandLine $cli,
-        Filesystem  $files
+        Filesystem  $files,
+        Brew        $brew
     ) {
-        $this->brew  = $brew;
-        $this->cli   = $cli;
-        $this->files = $files;
+        parent::__construct($cli, $files);
+
+        $this->brew = $brew;
     }
 
     /**
@@ -55,14 +55,45 @@ class Elasticsearch
     }
 
     /**
+     * Returns supported elasticsearch versions running in Docker.
+     *
+     * @return string[]
+     */
+    public function getDockerVersions()
+    {
+        return static::ES_DOCKER_VERSIONS;
+    }
+
+    /**
+     * Returns end-of-life elasticsearch versions.
+     *
+     * @return string[]
+     */
+    public function getEolVersions()
+    {
+        return static::ES_EOL_VERSIONS;
+    }
+
+    /**
      * Returns if provided version is supported.
      *
      * @param $version
      * @return bool
      */
-    public function isSupportedVersion($version)
+    public function isSupportedVersion($version): bool
     {
-        return in_array($version, static::ES_SUPPORTED_VERSIONS);
+        return in_array($version, $this->getSupportedVersions());
+    }
+
+    /**
+     * Returns is provided version is running as Docker container. If not, it's running natively (installed with Brew).
+     *
+     * @param $version
+     * @return bool
+     */
+    public function isDockerVersion($version): bool
+    {
+        return in_array($version, $this->getDockerVersions());
     }
 
     /**
@@ -70,11 +101,13 @@ class Elasticsearch
      *
      * @return string|null
      */
-    public function getCurrentVersion()
+    public function getCurrentVersion(): ?string
     {
-        $runningServices = $this->brew->getAllRunningServices()->filter(function ($service) {
-            return $this->isSupportedVersion($service);
-        });
+        $runningServices = $this->brew->getAllRunningServices()
+            ->merge($this->getAllRunningContainers())
+            ->filter(function ($service) {
+                return $this->isSupportedVersion($service);
+            });
 
         return $runningServices->first();
     }
@@ -120,6 +153,12 @@ class Elasticsearch
         if (!$version) {
             return;
         }
+
+        if ($this->isDockerVersion($version)) {
+            $this->stopContainer($version);
+            return;
+        }
+
         if (!$this->brew->installed($version)) {
             return;
         }
@@ -139,6 +178,13 @@ class Elasticsearch
         if (!$version) {
             return;
         }
+
+        if ($this->isDockerVersion($version)) {
+            $this->stopContainer($version);
+            $this->upContainer($version);
+            return;
+        }
+
         if (!$this->brew->installed($version)) {
             return;
         }
@@ -157,31 +203,38 @@ class Elasticsearch
     {
         if (!$this->isSupportedVersion($version)) {
             throw new DomainException(
-                sprintf('Invalid Elasticsearch version given. Available versions: %s', implode(', ', static::ES_SUPPORTED_VERSIONS))
+                sprintf(
+                    'Invalid Elasticsearch version given. Available versions: %s',
+                    implode(', ', static::ES_SUPPORTED_VERSIONS)
+                )
             );
         }
 
-        // todo; install java dependency? and remove other java deps? seems like there can be only one running.
-        // opensearch requires openjdk (installed automatically)
-        // elasticsearch@6 requires openjdk@17 (installed automatically)
-        //      seems like there can be only one openjdk when installing. after installing it doesn't matter.
-        //      if this dependency is installed we need to launch es with this java version, see https://github.com/Homebrew/homebrew-core/issues/100260
+        if (!$this->isDockerVersion($version)) {
+            // For Docker versions we don't need to anything here.
 
-        $this->brew->ensureInstalled($version);
+            // todo; install java dependency? and remove other java deps? seems like there can be only one running.
+            // opensearch requires openjdk (installed automatically)
+            // elasticsearch@6 requires openjdk@17 (installed automatically)
+            //      seems like there can be only one openjdk when installing. after installing it doesn't matter.
+            //      if this dependency is installed we need to launch es with this java version, see https://github.com/Homebrew/homebrew-core/issues/100260
 
-        // todo: switch config still needed? > not between opensearch and elasticsearch@6
-        // ==> opensearch
-        //Data:    /usr/local/var/lib/opensearch/
-        //Logs:    /usr/local/var/log/opensearch/*.log
-        //Plugins: /usr/local/var/opensearch/plugins/
-        //Config:  /usr/local/etc/opensearch/
-        // ==> elasticsearch@6
-        //Data:    /usr/local/var/lib/elasticsearch/
-        //Logs:    /usr/local/var/log/elasticsearch/*.log
-        //Plugins: /usr/local/var/elasticsearch/plugins/
-        //Config:  /usr/local/etc/elasticsearch/
+            $this->brew->ensureInstalled($version);
 
-        // todo; add support for adding plugins like 'analysis-icu' and 'analysis-phonetic'?
+            // todo: switch config still needed? > not between opensearch and elasticsearch@6
+            // ==> opensearch
+            //Data:    /usr/local/var/lib/opensearch/
+            //Logs:    /usr/local/var/log/opensearch/*.log
+            //Plugins: /usr/local/var/opensearch/plugins/
+            //Config:  /usr/local/etc/opensearch/
+            // ==> elasticsearch@6
+            //Data:    /usr/local/var/lib/elasticsearch/
+            //Logs:    /usr/local/var/log/elasticsearch/*.log
+            //Plugins: /usr/local/var/elasticsearch/plugins/
+            //Config:  /usr/local/etc/elasticsearch/
+
+            // todo; add support for adding plugins like 'analysis-icu' and 'analysis-phonetic'?
+        }
 
         $this->restart($version);
         $this->updateDomain($tld);
@@ -195,12 +248,17 @@ class Elasticsearch
         // Remove nginx domain listen file.
         $this->files->unlink(static::NGINX_CONFIGURATION_PATH);
 
-        foreach ($this->getSupportedVersions() as $version) {
+        $versions = array_merge($this->getSupportedVersions(), $this->getEolVersions());
+        foreach ($versions as $version) {
             $this->stop($version);
-            $this->brew->uninstallFormula($version);
+            if ($this->isDockerVersion($version)) {
+                $this->downContainer($version);
+            } else {
+                $this->brew->uninstallFormula($version);
+            }
         }
 
-        // Elasticsearch files
+        // Legacy elasticsearch files
         if (file_exists(BREW_PREFIX . '/var/elasticsearch')) {
             $this->files->rmDirAndContents(BREW_PREFIX . '/var/elasticsearch');
         }
