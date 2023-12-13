@@ -46,7 +46,7 @@ class Pecl extends AbstractPecl
      */
     const EXTENSIONS = [
         self::XDEBUG_EXTENSION => [
-            '8.3' => '3.1.5',
+            '8.3' => '3.3.0',
             '8.2' => '3.1.5',
             '8.1' => '3.1.5',
             '8.0' => '3.1.5',
