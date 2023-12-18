@@ -4,6 +4,11 @@ All notable changes to valet-plus will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.2]
+### Fixed
+- [#627] Add support for PHP 8.3
+- [#478] Fix not working elasticsearch.test domain
+
 ## [2.4.1]
 ### Fixed
 - [#621] Fixed ngrok script
