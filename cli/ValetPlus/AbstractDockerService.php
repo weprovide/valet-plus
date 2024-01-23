@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 use Valet\CommandLine;
 use Valet\Filesystem;
 use function Valet\info;
-use function Valet\output;
+use function Valet\warning;
 
 /**
  * Docker container service. Please note that container names are restricted to the following characters [a-zA-Z0-9][a-zA-Z0-9_.-].
@@ -50,9 +50,7 @@ abstract class AbstractDockerService
     {
         $command = 'docker ps --format=\'{{.Names}}\'';
         $onError = function ($exitCode, $errorOutput) {
-            output($errorOutput);
-
-            throw new DomainException('Docker was unable to check which containers are running.');
+            warning($errorOutput);
         };
 
         return collect(array_filter(explode(PHP_EOL, $this->cli->runAsUser($command, $onError))));
@@ -67,9 +65,13 @@ abstract class AbstractDockerService
      */
     public function runCommand($command, $dir)
     {
+        $onError = function ($exitCode, $errorOutput) {
+            warning($errorOutput);
+        };
+
         $cwd = getcwd();
         @chdir($dir);
-        $this->cli->runAsUser($command);
+        $this->cli->runAsUser($command, $onError);
         @chdir($cwd);
 
         return $this;
