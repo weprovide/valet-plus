@@ -20,9 +20,9 @@ class Elasticsearch extends AbstractDockerService
     /** @var string */
     protected const ES_DEFAULT_VERSION = 'opensearch'; // which is v2 in Brew, @todo; maybe support v1.2 using docker?
     /** @var string[] */
-    protected const ES_SUPPORTED_VERSIONS = ['opensearch', 'elasticsearch6', 'elasticsearch7'];
+    protected const ES_SUPPORTED_VERSIONS = ['opensearch', 'elasticsearch6', 'elasticsearch7', 'elasticsearch8'];
     /** @var string[] */
-    protected const ES_DOCKER_VERSIONS = ['elasticsearch6', 'elasticsearch7'];
+    protected const ES_DOCKER_VERSIONS = ['elasticsearch6', 'elasticsearch7', 'elasticsearch8'];
     /** @var string[] */
     protected const ES_EOL_VERSIONS = ['elasticsearch@6'];
 

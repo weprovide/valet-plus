@@ -56,7 +56,7 @@ Here are a few key differences compared to the original Valet:
 - Rabbitmq (on/off mode)
 - Xdebug (on/off mode)
 - Memcache (on/off mode)
-- Elasticsearch v6, v7, ~~v8~~ (on/off mode) using Docker 
+- Elasticsearch v6, v7, v8 (on/off mode) using Docker 
 - Opensearch (on/off mode)
 - ~~Ioncube~~
 - Rewrite/unrewrite public domain to local environment
