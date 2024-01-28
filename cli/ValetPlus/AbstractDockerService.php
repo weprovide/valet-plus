@@ -42,12 +42,29 @@ abstract class AbstractDockerService
     }
 
     /**
-     * Returns a collection of names of the running docker containers.
+     * Checks if Docker is available on the system.
+     *
+     * @return bool Returns true if Docker is available, false otherwise.
+     */
+    protected function isDockerAvailable(): bool
+    {
+        $command = 'command -v docker';
+        $output = $this->cli->runAsUser($command);
+
+        return !empty($output);
+    }
+
+    /**
+     * Returns a collection of names of all running Docker containers.
      *
      * @return Collection
      */
     public function getAllRunningContainers(): Collection
     {
+        if (!$this->isDockerAvailable()) {
+            return collect([]);
+        }
+
         $command = 'docker ps --format=\'{{.Names}}\'';
         $onError = function ($exitCode, $errorOutput) {
             warning($errorOutput);
@@ -57,14 +74,18 @@ abstract class AbstractDockerService
     }
 
     /**
-     * Runs a docker command from the path where the docker-compose.yml is located.
+     * Runs a Docker command from the path where the docker-compose.yml is located.
      *
      * @param $command
      * @param $dir
      * @return $this
      */
-    public function runCommand($command, $dir)
+    public function runCommand($command, $dir): self
     {
+        if (!$this->isDockerAvailable()) {
+            return $this;
+        }
+
         $onError = function ($exitCode, $errorOutput) {
             warning($errorOutput);
         };
@@ -78,13 +99,17 @@ abstract class AbstractDockerService
     }
 
     /**
-     * Starts the docker container by the service's name. Creates the container first, if it doesn't exist yet.
+     * Starts the Docker container by the service's name. Creates the container first, if it doesn't exist yet.
      *
      * @param $name
      * @return $this
      */
-    public function upContainer($name)
+    public function upContainer($name): self
     {
+        if (!$this->isDockerAvailable()) {
+            return $this;
+        }
+
         info("Docker up version {$name}...");
         $installPath = $this->getComposeInstallPath($name);
         $installDir  = $this->getComposeInstallDir($name);
@@ -108,13 +133,17 @@ abstract class AbstractDockerService
     }
 
     /**
-     * Stops the docker container by the service's name.
+     * Stops the Docker container by the service's name.
      *
      * @param $name
      * @return $this
      */
-    public function stopContainer($name)
+    public function stopContainer($name): self
     {
+        if (!$this->isDockerAvailable()) {
+            return $this;
+        }
+
         info("Docker stop version {$name}...");
         $this->runCommand(
             'docker compose stop',
@@ -130,8 +159,12 @@ abstract class AbstractDockerService
      * @param $name
      * @return $this
      */
-    public function downContainer($name)
+    public function downContainer($name): self
     {
+        if (!$this->isDockerAvailable()) {
+            return $this;
+        }
+
         info("Docker down version {$name}...");
         $this->runCommand(
             'docker compose down --volumes --rmi all',
