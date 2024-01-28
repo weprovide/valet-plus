@@ -8,6 +8,7 @@ use Valet\Brew;
 use Valet\CommandLine;
 use Valet\Filesystem;
 use Valet\PhpFpm;
+
 use function Valet\warning;
 
 class Xdebug extends AbstractPhpExtension
@@ -28,11 +29,11 @@ class Xdebug extends AbstractPhpExtension
      * @param Filesystem $files
      */
     public function __construct(
-        Brew         $brew,
-        PhpFpm       $phpFpm,
+        Brew $brew,
+        PhpFpm $phpFpm,
         PhpExtension $phpExtension,
-        CommandLine  $cli,
-        Filesystem   $files
+        CommandLine $cli,
+        Filesystem $files
     ) {
         parent::__construct($brew, $phpFpm, $phpExtension);
 

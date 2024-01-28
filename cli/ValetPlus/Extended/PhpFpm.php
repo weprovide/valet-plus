@@ -33,13 +33,13 @@ class PhpFpm extends ValetPhpFpm
      * @param PhpExtension $phpExtension
      */
     public function __construct(
-        Brew          $brew,
-        CommandLine   $cli,
-        Filesystem    $files,
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
         Configuration $config,
-        Site          $site,
-        Nginx         $nginx,
-        PhpExtension  $phpExtension
+        Site $site,
+        Nginx $nginx,
+        PhpExtension $phpExtension
     ) {
         parent::__construct($brew, $cli, $files, $config, $site, $nginx);
 
@@ -117,7 +117,7 @@ class PhpFpm extends ValetPhpFpm
         $event = new DataEvent();
         $event->set('php_version', $phpVersion);
         $event->set('php_dir', $destDir);
-
-        $this->eventDispatcher->dispatch($event, 'after_create_php_config'); //@todo; dispatch event when config should be removed?
+        //@todo; dispatch event when config should be removed?
+        $this->eventDispatcher->dispatch($event, 'after_create_php_config');
     }
 }

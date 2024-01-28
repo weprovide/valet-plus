@@ -9,7 +9,7 @@ use function Valet\info;
 class Redis extends AbstractService
 {
     /** @var string */
-    const SERVICE_NAME = 'redis';
+    protected const SERVICE_NAME = 'redis';
 
     /**
      * @inheritdoc

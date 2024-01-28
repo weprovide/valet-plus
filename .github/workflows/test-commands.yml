@@ -1,4 +1,4 @@
-name: Valet+ tests
+name: Test commands
 
 on:
   push:

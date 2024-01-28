@@ -11,6 +11,7 @@ use Valet\CommandLine;
 use Valet\Configuration;
 use Valet\Filesystem;
 use Valet\Site;
+
 use function Valet\info;
 use function Valet\table;
 use function Valet\tap;
@@ -18,13 +19,13 @@ use function Valet\warning;
 
 class Mysql
 {
-    const MYSQL_CONF_DIR = 'etc';
-    const MYSQL_CONF = 'etc/my.cnf';
-    const MAX_FILES_CONF = '/Library/LaunchDaemons/limit.maxfiles.plist';
-    const MYSQL_DATA_DIR = 'var/mysql';
-    const MYSQL_ROOT_PASSWORD = 'root';
-    const MYSQL_DEFAULT_VERSION = 'mysql@5.7';
-    const MYSQL_SUPPORTED_VERSIONS = ['mysql', 'mysql@8.0', 'mysql@5.7', 'mariadb'];
+    private const MYSQL_CONF_DIR = 'etc';
+    private const MYSQL_CONF = 'etc/my.cnf';
+    private const MAX_FILES_CONF = '/Library/LaunchDaemons/limit.maxfiles.plist';
+    private const MYSQL_DATA_DIR = 'var/mysql';
+    private const MYSQL_ROOT_PASSWORD = 'root';
+    private const MYSQL_DEFAULT_VERSION = 'mysql@5.7';
+    private const MYSQL_SUPPORTED_VERSIONS = ['mysql', 'mysql@8.0', 'mysql@5.7', 'mariadb'];
 
     /** @var Brew */
     protected $brew;
@@ -50,11 +51,11 @@ class Mysql
      * @param Site $site
      */
     public function __construct(
-        Brew          $brew,
-        CommandLine   $cli,
-        Filesystem    $files,
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
         Configuration $configuration,
-        Site          $site
+        Site $site
     ) {
         $this->brew          = $brew;
         $this->cli           = $cli;
@@ -199,17 +200,23 @@ class Mysql
 
         switch ($version) {
             case 'mariadb':
-                $this->cli->run("mysqladmin -u root --password='" . $oldPwd . "' password " . $newPwd, function () use (&$success) {
-                    warning('Setting mysql password for root user failed. ');
-                    $success = false;
-                });
+                $this->cli->run(
+                    "mysqladmin -u root --password='" . $oldPwd . "' password " . $newPwd,
+                    function () use (&$success) {
+                        warning('Setting mysql password for root user failed. ');
+                        $success = false;
+                    }
+                );
                 break;
 
             case 'mysql@5.7':
-                $this->cli->runAsUser("mysqladmin -u root --password='" . $oldPwd . "' password " . $newPwd, function () use (&$success) {
-                    warning('Setting mysql password for root user failed. ');
-                    $success = false;
-                });
+                $this->cli->runAsUser(
+                    "mysqladmin -u root --password='" . $oldPwd . "' password " . $newPwd,
+                    function () use (&$success) {
+                        warning('Setting mysql password for root user failed. ');
+                        $success = false;
+                    }
+                );
                 break;
 
             case 'mysql@8.0':
@@ -372,8 +379,8 @@ class Mysql
     public function isDatabaseExists($name)
     {
         $name = $this->getDatabaseName($name);
-
-        $query = $this->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" . $this->escape($name) . "'", false);
+        $sql = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" . $this->escape($name) . "'";
+        $query = $this->query($sql, false);
 
         return (bool)$query->num_rows;
     }
@@ -401,7 +408,10 @@ class Mysql
             $filename = $filename . '.gz';
         }
 
-        $this->cli->passthru('mysqldump ' . \escapeshellarg($database) . ' | gzip > ' . \escapeshellarg($filename ?: $database));
+        $this->cli->passthru(
+            'mysqldump ' . \escapeshellarg($database) . ' | ' .
+            'gzip > ' . \escapeshellarg($filename ?: $database)
+        );
 
         return [
             'database' => $database,

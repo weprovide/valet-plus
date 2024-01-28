@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WeProvide\ValetPlus\DriverConfigs;
 
 use WeProvide\ValetPlus\DriverConfigurator;
+
 use function Valet\info;
 use function Valet\output;
 

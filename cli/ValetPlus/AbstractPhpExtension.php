@@ -6,6 +6,7 @@ namespace WeProvide\ValetPlus;
 
 use Valet\Brew;
 use Valet\PhpFpm;
+
 use function Valet\info;
 use function Valet\output;
 use function Valet\warning;
@@ -33,8 +34,8 @@ abstract class AbstractPhpExtension
      * @param PhpExtension $phpExtension
      */
     public function __construct(
-        Brew         $brew,
-        PhpFpm       $phpFpm,
+        Brew $brew,
+        PhpFpm $phpFpm,
         PhpExtension $phpExtension
     ) {
         $this->brew         = $brew;

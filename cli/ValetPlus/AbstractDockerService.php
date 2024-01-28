@@ -8,19 +8,21 @@ use DomainException;
 use Illuminate\Support\Collection;
 use Valet\CommandLine;
 use Valet\Filesystem;
+
 use function Valet\info;
 use function Valet\warning;
 
 /**
- * Docker container service. Please note that container names are restricted to the following characters [a-zA-Z0-9][a-zA-Z0-9_.-].
+ * Docker container service.
+ * Please note that container names are restricted to the following characters [a-zA-Z0-9][a-zA-Z0-9_.-].
  * Obviously this has a dependency on the installation of Docker. For convenience install Docker Desktop.
  */
 abstract class AbstractDockerService
 {
     /** @var string */
-    const DOCKER_COMPOSE_STUB = __DIR__ . '/../stubs/%s/%s/docker-compose.yml';
+    protected const DOCKER_COMPOSE_STUB = __DIR__ . '/../stubs/%s/%s/docker-compose.yml';
     /** @var string */
-    const DOCKER_COMPOSE_PATH = VALET_HOME_PATH . '/Docker/%s/%s/docker-compose.yml';
+    protected const DOCKER_COMPOSE_PATH = VALET_HOME_PATH . '/Docker/%s/%s/docker-compose.yml';
 
     /** @var CommandLine */
     protected $cli;
@@ -35,7 +37,7 @@ abstract class AbstractDockerService
      */
     public function __construct(
         CommandLine $cli,
-        Filesystem  $files
+        Filesystem $files
     ) {
         $this->cli   = $cli;
         $this->files = $files;

@@ -17,7 +17,7 @@ class PimcoreValetDriver extends ValetDriver
      */
     public function serves(string $sitePath, string $siteName, string $uri): bool
     {
-        if (file_exists($sitePath.'/pimcore')) {
+        if (file_exists($sitePath . '/pimcore')) {
              return true;
         }
 
@@ -38,9 +38,12 @@ class PimcoreValetDriver extends ValetDriver
         if (strpos($uri, '/cache-buster') === 0) {
             // https://stackoverflow.com/questions/25543974/how-to-get-string-after-second-slash-in-url-using-php
             $last = explode("/", $uri, 3);
-            $uri = '/'.$last[2];
+            $uri = '/' . $last[2];
         }
-        if (file_exists($staticFilePath = $sitePath.'/var/assets'.$uri) || file_exists($staticFilePath = $sitePath.$uri)) {
+        if (
+            file_exists($staticFilePath = $sitePath . '/var/assets' . $uri) ||
+            file_exists($staticFilePath = $sitePath . $uri)
+        ) {
             return $staticFilePath;
         }
 
@@ -60,9 +63,9 @@ class PimcoreValetDriver extends ValetDriver
         $this->loadServerEnvironmentVariables($sitePath, $siteName);
 
         if (strpos($uri, '/install') === 0) {
-            return $sitePath.'/install.php';
+            return $sitePath . '/install.php';
         }
 
-        return $sitePath.'/app.php';
+        return $sitePath . '/app.php';
     }
 }

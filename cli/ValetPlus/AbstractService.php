@@ -36,9 +36,9 @@ abstract class AbstractService
      */
     public function __construct(
         Configuration $configuration,
-        Brew          $brew,
-        Filesystem    $files,
-        CommandLine   $cli
+        Brew $brew,
+        Filesystem $files,
+        CommandLine $cli
     ) {
         $this->configuration = $configuration;
         $this->brew          = $brew;

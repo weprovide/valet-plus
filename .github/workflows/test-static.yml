@@ -1,0 +1,28 @@
+name: Static analysis
+
+on:
+  push:
+    branches: [ 3.x ]
+  pull_request:
+    branches: [ 3.x ]
+
+jobs:
+  test:
+    runs-on: macos-12
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: '[INSTALL] Install PHP 8.0'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          extensions: dom, curl, libxml, mbstring, zip, fileinfo
+          ini-values: error_reporting=E_ALL, max_execution_time=-1, memory_limit=512M
+          tools: composer:v2
+          coverage: none
+      - name: '[INSTALL] Composer install'
+        run: composer install --no-interaction --prefer-dist
+
+      - name: '[TEST] Phpcs'
+        run: ./vendor/bin/phpcs

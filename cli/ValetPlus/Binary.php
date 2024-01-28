@@ -8,6 +8,7 @@ use DomainException;
 use Valet\Brew;
 use Valet\CommandLine;
 use Valet\Filesystem;
+
 use function Valet\info;
 use function Valet\warning;
 
@@ -68,9 +69,9 @@ class Binary
      * @param Filesystem $files
      */
     public function __construct(
-        Brew        $brew,
+        Brew $brew,
         CommandLine $cli,
-        Filesystem  $files
+        Filesystem $files
     ) {
         $this->brew  = $brew;
         $this->cli   = $cli;
@@ -150,7 +151,10 @@ class Binary
             // Check the checksum of downloaded file.
             if (!$this->checkShasum($binary, $fileName)) {
                 $this->cli->runAsUser("rm /tmp/$fileName");
-                warning("Binary $binary could not be installed, $fileName checksum does not match: " . $this->getShasum($binary));
+                warning(
+                    "Binary $binary could not be installed, $fileName checksum does not match: " .
+                    $this->getShasum($binary)
+                );
 
                 return;
             }
@@ -195,7 +199,9 @@ class Binary
             $binaryLocation = $this->getBinLocation($binary);
             $this->cli->runAsUser('rm ' . $binaryLocation);
             if ($this->files->exists($binaryLocation)) {
-                throw new DomainException('Could not remove binary! Please remove manually using: rm ' . $binaryLocation);
+                throw new DomainException(
+                    'Could not remove binary! Please remove manually using: rm ' . $binaryLocation
+                );
             }
             info("Binary $binary successfully uninstalled!");
         }

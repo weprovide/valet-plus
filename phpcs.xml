@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<ruleset>
+    <file>cli/ValetPlus</file>
+    <file>cli/stubs/drivers</file>
+
+    <arg name="extensions" value="php"/>
+    <arg name="cache"/>
+
+    <rule ref="PSR12"/>
+</ruleset>

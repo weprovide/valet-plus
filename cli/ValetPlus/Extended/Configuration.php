@@ -75,6 +75,6 @@ class Configuration extends ValetConfiguration
             $contents
         );
 
-        //@todo; Set up log rotation for BREW_PREFIX . '/var/log/' to rotate elasticsearch logs 
+        //@todo; Set up log rotation for BREW_PREFIX . '/var/log/' to rotate elasticsearch logs
     }
 }

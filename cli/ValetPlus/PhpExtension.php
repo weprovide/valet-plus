@@ -7,13 +7,14 @@ namespace WeProvide\ValetPlus;
 use Valet\Brew;
 use Valet\CommandLine;
 use Valet\Filesystem;
+
 use function Valet\info;
 use function Valet\output;
 
 class PhpExtension
 {
     /** @var string */
-    const PHP_EXTENSIONS_BREW_TAP = 'shivammathur/extensions';
+    protected const PHP_EXTENSIONS_BREW_TAP = 'shivammathur/extensions';
 
     /** @var string */
     public const XDEBUG_EXTENSION = 'xdebug';
@@ -26,7 +27,7 @@ class PhpExtension
     /** @var string */
     public const DATASTRUCTURE_EXTENSION = 'ds';
 
-    const PHP_EXTENSIONS = [
+    protected const PHP_EXTENSIONS = [
         self::XDEBUG_EXTENSION        => [
             'default'   => false,
             'ini_files' => [
@@ -70,9 +71,9 @@ class PhpExtension
      * @param Filesystem $files
      */
     public function __construct(
-        Brew        $brew,
+        Brew $brew,
         CommandLine $cli,
-        Filesystem  $files
+        Filesystem $files
     ) {
         $this->brew  = $brew;
         $this->cli   = $cli;
@@ -92,7 +93,6 @@ class PhpExtension
             }
 
             if ($this->installExtension($extension, $phpVersion)) {
-
             }
         }
     }
@@ -125,7 +125,6 @@ class PhpExtension
         info("Uninstalling extensions for PHP " . $phpVersion);
         foreach (static::PHP_EXTENSIONS as $extension => $settings) {
             if ($this->uninstallExtension($extension, $phpVersion, $phpIniConfigPath)) {
-
             }
         }
     }
@@ -239,8 +238,10 @@ class PhpExtension
      */
     protected function isDefaultExtension($extension)
     {
-        if (array_key_exists('default', static::PHP_EXTENSIONS[$extension]) &&
-            static::PHP_EXTENSIONS[$extension]['default'] === true) {
+        if (
+            array_key_exists('default', static::PHP_EXTENSIONS[$extension]) &&
+            static::PHP_EXTENSIONS[$extension]['default'] === true
+        ) {
             return true;
         } elseif (array_key_exists('default', static::PHP_EXTENSIONS[$extension]) === false) {
             return true;

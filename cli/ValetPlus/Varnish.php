@@ -9,7 +9,7 @@ use function Valet\info;
 class Varnish extends AbstractService
 {
     /** @var string */
-    const SERVICE_NAME = 'varnish';
+    protected const SERVICE_NAME = 'varnish';
 
     /**
      * @inheritdoc

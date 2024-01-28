@@ -41,14 +41,14 @@ class Status extends ValetStatus
      */
     public function __construct(
         Configuration $config,
-        Brew          $brew,
-        CommandLine   $cli,
-        Filesystem    $files,
-        Mysql         $mysql,
-        Mailhog       $mailhog,
-        Varnish       $varnish,
-        Redis         $redis,
-        Rabbitmq      $rabbitmq
+        Brew $brew,
+        CommandLine $cli,
+        Filesystem $files,
+        Mysql $mysql,
+        Mailhog $mailhog,
+        Varnish $varnish,
+        Redis $redis,
+        Rabbitmq $rabbitmq
     ) {
         parent::__construct($config, $brew, $cli, $files);
 

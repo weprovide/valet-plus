@@ -8,14 +8,15 @@ use DomainException;
 use Valet\Brew;
 use Valet\CommandLine;
 use Valet\Filesystem;
+
 use function Valet\info;
 
 class Elasticsearch extends AbstractDockerService
 {
     /** @var string */
-    const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/elasticsearch/elasticsearch.conf';
+    protected const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/elasticsearch/elasticsearch.conf';
     /** @var string */
-    const NGINX_CONFIGURATION_PATH = VALET_HOME_PATH . '/Nginx/elasticsearch.conf';
+    protected const NGINX_CONFIGURATION_PATH = VALET_HOME_PATH . '/Nginx/elasticsearch.conf';
 
     /** @var string */
     protected const ES_DEFAULT_VERSION = 'opensearch'; // which is v2 in Brew, @todo; maybe support v1.2 using docker?
@@ -36,8 +37,8 @@ class Elasticsearch extends AbstractDockerService
      */
     public function __construct(
         CommandLine $cli,
-        Filesystem  $files,
-        Brew        $brew
+        Filesystem $files,
+        Brew $brew
     ) {
         parent::__construct($cli, $files);
 
@@ -122,7 +123,10 @@ class Elasticsearch extends AbstractDockerService
     {
         if (!$this->isSupportedVersion($version)) {
             throw new DomainException(
-                sprintf('Invalid Elasticsearch version given. Available versions: %s', implode(', ', static::ES_SUPPORTED_VERSIONS))
+                sprintf(
+                    'Invalid Elasticsearch version given. Available versions: %s',
+                    implode(', ', static::ES_SUPPORTED_VERSIONS)
+                )
             );
         }
 
@@ -217,7 +221,8 @@ class Elasticsearch extends AbstractDockerService
             // opensearch requires openjdk (installed automatically)
             // elasticsearch@6 requires openjdk@17 (installed automatically)
             //      seems like there can be only one openjdk when installing. after installing it doesn't matter.
-            //      if this dependency is installed we need to launch es with this java version, see https://github.com/Homebrew/homebrew-core/issues/100260
+            //      if this dependency is installed we need to launch es with this java version,
+            //      see https://github.com/Homebrew/homebrew-core/issues/100260
 
             $this->brew->ensureInstalled($version);
 

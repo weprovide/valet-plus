@@ -9,7 +9,7 @@ use function Valet\info;
 class Rabbitmq extends AbstractService
 {
     /** @var string */
-    const SERVICE_NAME = 'rabbitmq';
+    protected const SERVICE_NAME = 'rabbitmq';
 
     /**
      * @inheritdoc

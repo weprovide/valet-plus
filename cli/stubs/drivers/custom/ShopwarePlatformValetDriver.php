@@ -16,9 +16,9 @@ class ShopwarePlatformValetDriver extends ValetDriver
     */
     public function serves(string $sitePath, string $siteName, string $uri): bool
     {
-        $corePath = realpath($sitePath.'/vendor/shopware/core');
-        $platformPath = realpath($sitePath.'/vendor/shopware/platform');
-        
+        $corePath = realpath($sitePath . '/vendor/shopware/core');
+        $platformPath = realpath($sitePath . '/vendor/shopware/platform');
+
         if (($corePath !== false && is_dir($corePath)) || ($platformPath !== false && is_dir($platformPath))) {
             return true;
         }
@@ -34,9 +34,9 @@ class ShopwarePlatformValetDriver extends ValetDriver
     */
     public function isStaticFile(string $sitePath, string $siteName, string $uri)
     {
-        if (file_exists($staticFilePath = $sitePath.'/public'.$uri)) {
+        if (file_exists($staticFilePath = $sitePath . '/public' . $uri)) {
             return $staticFilePath;
-        } elseif ($this->isActualFile($staticFilePath = $sitePath.$uri)) {
+        } elseif ($this->isActualFile($staticFilePath = $sitePath . $uri)) {
             return $staticFilePath;
         }
         return false;
@@ -56,7 +56,7 @@ class ShopwarePlatformValetDriver extends ValetDriver
         if ($this->isInstallPath($sitePath, $uri)) {
             $installPath = $this->buildInstallPath($sitePath, $uri);
             $_SERVER['SCRIPT_FILENAME'] = $installPath;
-            $_SERVER['SCRIPT_NAME'] = str_replace($sitePath.'/public', '', $installPath);
+            $_SERVER['SCRIPT_NAME'] = str_replace($sitePath . '/public', '', $installPath);
             $_SERVER['DOCUMENT_ROOT'] = $sitePath;
             return $installPath;
         }
@@ -64,12 +64,12 @@ class ShopwarePlatformValetDriver extends ValetDriver
         if ($this->isUpdatePath($sitePath, $uri)) {
             $updatePath = $this->buildUpdatePath($sitePath, $uri);
             $_SERVER['SCRIPT_FILENAME'] = $updatePath;
-            $_SERVER['SCRIPT_NAME'] = str_replace($sitePath.'/public', '', $updatePath);
+            $_SERVER['SCRIPT_NAME'] = str_replace($sitePath . '/public', '', $updatePath);
             $_SERVER['DOCUMENT_ROOT'] = $sitePath;
             return $updatePath;
         }
 
-        return $sitePath.'/public/index.php';
+        return $sitePath . '/public/index.php';
     }
     /**
      * check if uri contains shopware install path

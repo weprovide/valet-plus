@@ -11,19 +11,20 @@ use Valet\CommandLine;
 use Valet\Configuration;
 use Valet\Filesystem;
 use WeProvide\ValetPlus\Event\DataEvent;
+
 use function Valet\info;
 
 class Mailhog extends AbstractService
 {
     /** @var string */
-    const SERVICE_NAME = 'mailhog';
+    protected const SERVICE_NAME = 'mailhog';
 
     /** @var string */
-    const PHP_CONFIGURATION_STUB = __DIR__ . '/../stubs/mailhog.ini';
+    protected const PHP_CONFIGURATION_STUB = __DIR__ . '/../stubs/mailhog.ini';
     /** @var string */
-    const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/mailhog.conf';
+    protected const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/mailhog.conf';
     /** @var string */
-    const NGINX_CONFIGURATION_PATH = VALET_HOME_PATH . '/Nginx/mailhog.conf';
+    protected const NGINX_CONFIGURATION_PATH = VALET_HOME_PATH . '/Nginx/mailhog.conf';
 
     /** @var EventDispatcher */
     protected $eventDispatcher;
@@ -36,9 +37,9 @@ class Mailhog extends AbstractService
      */
     public function __construct(
         Configuration $configuration,
-        Brew          $brew,
-        Filesystem    $files,
-        CommandLine   $cli
+        Brew $brew,
+        Filesystem $files,
+        CommandLine $cli
     ) {
         parent::__construct($configuration, $brew, $files, $cli);
 

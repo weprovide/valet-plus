@@ -8,6 +8,7 @@ use Valet\CommandLine;
 use Valet\Drivers\ValetDriver;
 use Valet\Filesystem;
 use Valet\Site;
+
 use function Valet\info;
 
 class DriverConfigurator
@@ -29,9 +30,9 @@ class DriverConfigurator
      */
     public function __construct(
         CommandLine $cli,
-        Filesystem  $files,
-        Site        $site,
-        Redis       $redis
+        Filesystem $files,
+        Site $site,
+        Redis $redis
     ) {
         $this->cli   = $cli;
         $this->files = $files;
@@ -61,7 +62,6 @@ class DriverConfigurator
 
             return $driver->configure();
         } catch (\Throwable $throwable) {
-
         }
 
         info('No configuration settings found.');
