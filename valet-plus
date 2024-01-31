@@ -29,12 +29,12 @@ if [ ! -d "$LARAVEL_DIR" ]; then
     LARAVEL_DIR=$(php -r "echo realpath('$DIR/../../laravel/valet');")
 fi
 
-# Get a command-line executable we can use for php that's 8+; if this
+# Get a command-line executable we can use for the required php version; if this
 # is the inside loop (Valet runs itself 2x in some settings), skip
 # checking and pulling again by reading the exported env var
 if [[ $PHP_EXECUTABLE = "" ]]
 then
-    PHP=$(php $LARAVEL_DIR/find-usable-php.php)
+    PHP=$(php $DIR/cli/includes/find-usable-php.php)
 
     # Validate output before running it on the CLI
     if [[ ! -f $PHP ]]; then
@@ -48,6 +48,7 @@ then
 else
     PHP=$PHP_EXECUTABLE
 fi
+
 
 # If the command is the "share" command we will need to resolve out any
 # symbolic links for the site. Before starting Ngrok, we will fire a

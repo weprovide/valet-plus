@@ -13,7 +13,7 @@ Valet+ is a development environment for macOS. No Vagrant, no Docker, no `/etc/h
 
 > :warning: Valet+ requires [Composer](https://getcomposer.org/) to be installed. 
 
-To get started, you first need to ensure that Homebrew is up to date using the update command:
+To get started, you first need to ensure that Homebrew is up-to-date using the update command:
 ```shell
 brew update
 ```
