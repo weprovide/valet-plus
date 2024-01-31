@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+
 use function Valet\info;
 use function Valet\table;
 use function Valet\warning;
@@ -265,7 +266,7 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $app
         ->command('mailhog', function (OutputInterface $output, string $mode = null) {
-            $modes = ['install', 'on', 'enable', 'off', 'disable'];
+            $modes = ['install', 'on', 'enable', 'off', 'disable', 'uninstall'];
 
             if (!in_array($mode, $modes)) {
                 throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
@@ -286,10 +287,17 @@ if (is_dir(VALET_HOME_PATH)) {
                     Mailhog::disable();
 
                     return;
+                case 'uninstall':
+                    Mailhog::uninstall();
+
+                    return;
             }
+
+            PhpFpm::restart();
+            Nginx::restart();
         })
         ->descriptions('Enable/disable Mailhog')
-        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable']));
+        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'on', 'enable', 'off', 'disable', 'uninstall']));
 
     /**
      * Varnish services.

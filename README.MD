@@ -18,11 +18,12 @@ To get started, you first need to ensure that Homebrew is up to date using the u
 brew update
 ```
 
-Next, you should use Homebrew to install PHP 8.0:
+Next, you should use Homebrew to install PHP 8.1 (using `shivammathur/php`):
 ```shell
-brew install php@8.0
-brew link php@8.0 --force
-brew services restart php@8.0
+brew tap shivammathur/php
+brew install shivammathur/php/php@8.1
+brew link php@8.1 --force
+brew services restart php@8.1
 ```
 
 Install Valet+ 3.x-dev with composer:

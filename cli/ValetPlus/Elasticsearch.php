@@ -8,13 +8,12 @@ use DomainException;
 use Valet\Brew;
 use Valet\CommandLine;
 use Valet\Filesystem;
+use WeProvide\ValetPlus\Extended\Site;
 
 use function Valet\info;
 
 class Elasticsearch extends AbstractDockerService
 {
-    /** @var string */
-    protected const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/elasticsearch/elasticsearch.conf';
     /** @var string */
     protected const NGINX_CONFIGURATION_PATH = VALET_HOME_PATH . '/Nginx/elasticsearch.conf';
 
@@ -29,20 +28,25 @@ class Elasticsearch extends AbstractDockerService
 
     /** @var Brew */
     protected $brew;
+    /** @var Site */
+    protected $site;
 
     /**
      * @param CommandLine $cli
      * @param Filesystem $files
      * @param Brew $brew
+     * @param Site $site
      */
     public function __construct(
         CommandLine $cli,
         Filesystem $files,
-        Brew $brew
+        Brew $brew,
+        Site $site
     ) {
         parent::__construct($cli, $files);
 
         $this->brew = $brew;
+        $this->site = $site;
     }
 
     /**
@@ -242,7 +246,7 @@ class Elasticsearch extends AbstractDockerService
         }
 
         $this->restart($version);
-        $this->updateDomain($tld);
+        $this->site->proxyCreate('elasticsearch', 'http://127.0.0.1:9200');
     }
 
     /**
@@ -250,6 +254,8 @@ class Elasticsearch extends AbstractDockerService
      */
     public function uninstall()
     {
+        $this->site->proxyDelete('elasticsearch');
+
         // Remove nginx domain listen file.
         $this->files->unlink(static::NGINX_CONFIGURATION_PATH);
 
@@ -291,27 +297,6 @@ class Elasticsearch extends AbstractDockerService
         }
         if (file_exists(BREW_PREFIX . '/etc/opensearch')) {
             $this->files->rmDirAndContents(BREW_PREFIX . '/etc/opensearch');
-        }
-    }
-
-    /**
-     * Set the domain (TLD) to use.
-     *
-     * @param $domain
-     */
-    public function updateDomain($domain)
-    {
-        $currentVersion = $this->getCurrentVersion();
-        if ($currentVersion) {
-            info('Updating elasticsearch domain...');
-            $this->files->putAsUser(
-                static::NGINX_CONFIGURATION_PATH,
-                str_replace(
-                    ['VALET_DOMAIN'],
-                    [$domain],
-                    $this->files->get(static::NGINX_CONFIGURATION_STUB)
-                )
-            );
         }
     }
 }

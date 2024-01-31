@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace WeProvide\ValetPlus;
 
 use Illuminate\Container\Container;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Valet\Brew;
 use Valet\CommandLine;
 use Valet\Configuration;
 use Valet\Filesystem;
 use WeProvide\ValetPlus\Event\DataEvent;
+use WeProvide\ValetPlus\Extended\Site;
 
 use function Valet\info;
 
@@ -22,29 +25,34 @@ class Mailhog extends AbstractService
     /** @var string */
     protected const PHP_CONFIGURATION_STUB = __DIR__ . '/../stubs/mailhog.ini';
     /** @var string */
-    protected const NGINX_CONFIGURATION_STUB = __DIR__ . '/../stubs/mailhog.conf';
-    /** @var string */
     protected const NGINX_CONFIGURATION_PATH = VALET_HOME_PATH . '/Nginx/mailhog.conf';
 
     /** @var EventDispatcher */
     protected $eventDispatcher;
+    /** @var Site */
+    protected $site;
 
     /**
      * @param Configuration $configuration
      * @param Brew $brew
      * @param Filesystem $files
      * @param CommandLine $cli
+     * @param Site $site
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function __construct(
         Configuration $configuration,
         Brew $brew,
         Filesystem $files,
-        CommandLine $cli
+        CommandLine $cli,
+        Site $site
     ) {
         parent::__construct($configuration, $brew, $files, $cli);
 
         $container             = Container::getInstance();
         $this->eventDispatcher = $container->get('event_dispatcher');
+        $this->site            = $site;
     }
 
     /**
@@ -64,7 +72,7 @@ class Mailhog extends AbstractService
     public function install(string $tld = 'test'): void
     {
         $this->brew->ensureInstalled(static::SERVICE_NAME);
-        $this->updateDomain($tld);
+        $this->site->proxyCreate('mailhog', 'http://127.0.0.1:8025');
         $this->setEnabled(static::STATE_ENABLED);
         $this->restart();
     }
@@ -111,30 +119,11 @@ class Mailhog extends AbstractService
     {
         $this->stop();
         $this->removeEnabled();
+        $this->site->proxyDelete('mailhog');
         $this->brew->uninstallFormula(static::SERVICE_NAME);
         $this->files->unlink(BREW_PREFIX . '/var/log/mailhog.log');
         // Remove nginx domain listen file.
         $this->files->unlink(static::NGINX_CONFIGURATION_PATH);
-    }
-
-    /**
-     * Set the domain (TLD) to use.
-     *
-     * @param $domain
-     */
-    public function updateDomain($domain)
-    {
-        if ($this->installed()) {
-            info('Updating mailhog domain...');
-            $this->files->putAsUser(
-                static::NGINX_CONFIGURATION_PATH,
-                str_replace(
-                    ['VALET_DOMAIN'],
-                    [$domain],
-                    $this->files->get(static::NGINX_CONFIGURATION_STUB)
-                )
-            );
-        }
     }
 
     /**

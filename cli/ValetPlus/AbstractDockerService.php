@@ -112,7 +112,7 @@ abstract class AbstractDockerService
             return $this;
         }
 
-        info("Docker up version {$name}...");
+        info("Docker up version {$name} (this might take a while)...");
         $installPath = $this->getComposeInstallPath($name);
         $installDir  = $this->getComposeInstallDir($name);
 

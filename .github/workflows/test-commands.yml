@@ -13,7 +13,7 @@ jobs:
       matrix:
         os: [macos-12]
 #        php: ['8.3', '8.2', '8.1', '8.0', '7.4', '7.3', '7.2', '7.1']
-        php: ['8.1']
+        php: ['8.2']
     runs-on: ${{matrix.os}}
     name: ${{matrix.os}} with ${{matrix.php}}
 
@@ -21,10 +21,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: '[INSTALL] Install PHP 8.0'
+      - name: '[INSTALL] Install PHP 8.1'
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.0'
+          php-version: '8.1'
           extensions: dom, curl, libxml, mbstring, zip, fileinfo
           ini-values: error_reporting=E_ALL, max_execution_time=-1, memory_limit=512M
           tools: composer:v2
@@ -32,7 +32,7 @@ jobs:
       - name: '[INSTALL] Brew'
         run: brew cleanup
       - name: '[INSTALL] Composer install'
-        run: composer install --no-interaction --prefer-dist
+        run: composer install --no-dev --no-interaction --prefer-dist
       - name: '[INSTALL] Valet install'
         run: ./valet-plus install
 

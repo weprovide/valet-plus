@@ -17,7 +17,10 @@
         }
     },
     "config": {
-        "platform-check": false
+        "platform-check": false,
+        "allow-plugins": {
+            "phpro/grumphp-shim": true
+        }
     },
     "bin": [
         "valet-plus"
@@ -27,6 +30,7 @@
         "laravel/valet": "^4.5"
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "^3.8"
+        "squizlabs/php_codesniffer": "^3.8",
+        "phpro/grumphp-shim": "^2.4"
     }
 }

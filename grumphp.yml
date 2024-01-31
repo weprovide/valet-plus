@@ -1,0 +1,12 @@
+grumphp:
+  ascii:
+    failed: ~
+    succeeded: ~
+  tasks:
+    phpcs:
+      standard: phpcs.xml
+      triggered_by:
+        - php
+      whitelist_patterns:
+        - /^cli\/ValetPlus\/(.*)/
+        - /^cli\/stubs\/drivers\/(.*)/
