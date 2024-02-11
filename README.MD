@@ -48,7 +48,7 @@ should see this domain responding on `127.0.0.1`.
 Here are a few key differences compared to the original Valet:
 
 - Nginx config optimization
-- PHP extensions (~~mcrypt~~, ~~intl~~, ~~opcache~~, yaml, apcu)
+- PHP extensions (~~mcrypt~~, ~~intl~~, ~~opcache~~, yaml, apcu, imagick)
 - MySQL (mysql@5.7, mysql@8.0, mysql@8.1, mariadb)
   - DB commands (list, create, drop, reset, (re)import, export, ~~open~~)
 - Mailhog (on/off mode)

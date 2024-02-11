@@ -26,6 +26,8 @@ class PhpExtension
     public const YAML_EXTENSION = 'yaml';
     /** @var string */
     public const DATASTRUCTURE_EXTENSION = 'ds';
+    /** @var string */
+    public const IMAGICK_EXTENSION = 'imagick';
 
     protected const PHP_EXTENSIONS = [
         self::XDEBUG_EXTENSION        => [
@@ -35,7 +37,10 @@ class PhpExtension
             ]
         ],
         self::APCU_EXTENSION          => [
-            'default' => true
+            'default'   => true,
+            'ini_files' => [
+                '20-apcu'
+            ]
         ],
         self::MEMCACHE_EXTENSION      => [
             'default'         => false,
@@ -50,11 +55,20 @@ class PhpExtension
             'default'         => true,
             'brew_dependency' => 'libyaml',
             'ini_files'       => [
-                '20-apcu'
+                '20-yaml'
             ]
         ],
         self::DATASTRUCTURE_EXTENSION => [
-            'default' => true
+            'default'   => true,
+            'ini_files' => [
+                '20-ds.ini'
+            ]
+        ],
+        self::IMAGICK_EXTENSION       => [
+            'default'   => true,
+            'ini_files' => [
+                '20-imagick.ini'
+            ]
         ],
     ];
 
