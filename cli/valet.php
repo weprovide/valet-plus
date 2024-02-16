@@ -8,6 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 use function Valet\info;
+use function Valet\output;
 use function Valet\table;
 use function Valet\warning;
 
@@ -408,7 +409,7 @@ if (is_dir(VALET_HOME_PATH)) {
      * Database services and commands.
      */
     $app
-        ->command('db [run] [name] [optional] [-y|--yes]', function ($input, $output, $run, $name, $optional) {
+        ->command('db [run] [name] [optional] [-y|--yes] [-s|--show]', function ($input, $output, $run, $name, $optional) {
             $helper   = $this->getHelperSet()->get('question');
             $defaults = $input->getOptions();
 
@@ -524,7 +525,17 @@ if (is_dir(VALET_HOME_PATH)) {
             }
 
             if ($run === 'pwd' || $run === 'password') {
-                if (!$name || !$optional) {
+                if ($defaults['show']) {
+                    $question = new ConfirmationQuestion('Are you sure you want to show the configured root password? [y/N] ', false);
+                    if ($defaults['yes'] || $helper->ask($input, $output, $question)) {
+                        info('Current configured password for root user: ' . Mysql::getConfigRootPassword());
+                        output('<fg=yellow>Please note this is the password as configured in Valet+!</>');
+                    }
+
+                    return;
+                }
+
+                if ($name === null || $optional === null) {
                     throw new Exception('Missing arguments to change root user password. Use: "valet db pwd <old> <new>"');
                 }
 
