@@ -600,12 +600,12 @@ if (is_dir(VALET_HOME_PATH)) {
 
         $restart = false;
         switch ($mode) {
+            case 'enable':
             case 'on':
-            case 'install':
                 $restart = Xdebug::install();
                 break;
+            case 'disable':
             case 'off':
-            case 'uninstall':
                 $restart = Xdebug::uninstall();
                 break;
         }
@@ -626,12 +626,12 @@ if (is_dir(VALET_HOME_PATH)) {
 
         $restart = false;
         switch ($mode) {
+            case 'enable':
             case 'on':
-            case 'install':
                 $restart = Memcache::install();
                 break;
+            case 'disable':
             case 'off':
-            case 'uninstall':
                 $restart = Memcache::uninstall();
                 break;
         }
