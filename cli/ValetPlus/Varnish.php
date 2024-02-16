@@ -47,8 +47,6 @@ class Varnish extends AbstractService
     public function restart(): void
     {
         if (!$this->installed() || !$this->isEnabled()) {
-            info("Varnish not installed or not enabled");
-
             return;
         }
 

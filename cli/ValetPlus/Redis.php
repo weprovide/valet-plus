@@ -47,8 +47,6 @@ class Redis extends AbstractService
     public function restart(): void
     {
         if (!$this->installed() || !$this->isEnabled()) {
-            info("Redis not installed or not enabled");
-
             return;
         }
 
