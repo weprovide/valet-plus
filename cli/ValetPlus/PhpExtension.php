@@ -152,8 +152,6 @@ class PhpExtension
     public function uninstallExtension($extension, $phpVersion, $phpIniConfigPath)
     {
         if (!$this->isInstalled($extension, $phpVersion)) {
-            output("\t$extension is already uninstalled, skipping...");
-
             return false;
         }
 
