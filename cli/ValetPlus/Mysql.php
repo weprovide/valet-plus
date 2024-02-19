@@ -13,6 +13,7 @@ use Valet\Filesystem;
 use Valet\Site;
 
 use function Valet\info;
+use function Valet\output;
 use function Valet\table;
 use function Valet\tap;
 use function Valet\warning;
@@ -200,20 +201,10 @@ class Mysql
 
         switch ($version) {
             case 'mariadb':
-                $this->cli->run(
-                    "mysqladmin -u root --password='" . $oldPwd . "' password " . $newPwd,
-                    function () use (&$success) {
-                        warning('Setting mysql password for root user failed. ');
-                        $success = false;
-                    }
-                );
-                break;
-
             case 'mysql@5.7':
                 $this->cli->runAsUser(
                     "mysqladmin -u root --password='" . $oldPwd . "' password " . $newPwd,
                     function () use (&$success) {
-                        warning('Setting mysql password for root user failed. ');
                         $success = false;
                     }
                 );
@@ -227,12 +218,25 @@ class Mysql
                     true
                 );
                 if (!$retval) {
-                    warning('Setting mysql password for root user failed. ');
                     $success = false;
                 }
                 break;
         }
 
+        if ($success === false) {
+            warning(
+                "\n" .
+                'Setting mysql password for root user failed.'
+            );
+            output(
+                "\n" .
+                'You can show the current configured password with the following command:' . "\n" .
+                '  <fg=yellow>valet-plus db password --show</>' . "\n" .
+                "\n" .
+                'And try to set the root password manually with the following command:' . "\n" .
+                '  <fg=yellow>valet-plus db password <old> <new></>' . "\n"
+            );
+        }
         if ($success !== false) {
             $this->setConfigRootPassword($newPwd);
         }
@@ -510,7 +514,7 @@ class Mysql
     /**
      * Returns the stored password from the config. If not configured returns the default root password.
      */
-    protected function getConfigRootPassword()
+    public function getConfigRootPassword()
     {
         $config = $this->configuration->read();
         if (isset($config['mysql']) && isset($config['mysql']['password'])) {
