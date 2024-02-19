@@ -120,7 +120,7 @@ if (is_dir(VALET_HOME_PATH)) {
                 Mysql::restart();
                 Mailhog::restart();
                 Varnish::restart();
-                Redis::restart();
+                RedisService::restart();
                 Rabbitmq::restart();
                 break;
             case 'mysql':
@@ -136,7 +136,7 @@ if (is_dir(VALET_HOME_PATH)) {
 
                 return info('Varnish has been started.');
             case 'redis':
-                Redis::restart();
+                RedisService::restart();
 
                 return info('Redis has been started.');
             case 'rabbitmq':
@@ -158,7 +158,7 @@ if (is_dir(VALET_HOME_PATH)) {
                 Mysql::restart();
                 Mailhog::restart();
                 Varnish::restart();
-                Redis::restart();
+                RedisService::restart();
                 Rabbitmq::restart();
                 break;
             case 'mysql':
@@ -174,7 +174,7 @@ if (is_dir(VALET_HOME_PATH)) {
 
                 return info('Varnish has been restarted.');
             case 'redis':
-                Redis::restart();
+                RedisService::restart();
 
                 return info('Redis has been restarted.');
             case 'rabbitmq':
@@ -196,7 +196,7 @@ if (is_dir(VALET_HOME_PATH)) {
                 Mysql::stop();
                 Mailhog::stop();
                 Varnish::stop();
-                Redis::stop();
+                RedisService::stop();
                 Rabbitmq::stop();
                 break;
             case 'mysql':
@@ -212,7 +212,7 @@ if (is_dir(VALET_HOME_PATH)) {
 
                 return info('Varnish has been stopped.');
             case 'redis':
-                Redis::stop();
+                RedisService::stop();
 
                 return info('Redis has been stopped.');
             case 'rabbitmq':
@@ -247,7 +247,7 @@ if (is_dir(VALET_HOME_PATH)) {
             info('Removing varnish...');
             Varnish::uninstall();
             info('Removing redis...');
-            Redis::uninstall();
+            RedisService::uninstall();
             info('Removing rabbitmq...');
             Rabbitmq::uninstall();
             info('Removing elasticsearch...');
@@ -348,21 +348,21 @@ if (is_dir(VALET_HOME_PATH)) {
 
             switch ($mode) {
                 case 'install':
-                    Redis::install();
+                    RedisService::install();
 
                     break;
                 case 'enable':
                 case 'on':
-                    Redis::enable();
+                    RedisService::enable();
 
                     break;
                 case 'disable':
                 case 'off':
-                    Redis::disable();
+                    RedisService::disable();
 
                     break;
                 case 'uninstall':
-                    Redis::uninstall();
+                    RedisService::uninstall();
 
                     break;
             }
