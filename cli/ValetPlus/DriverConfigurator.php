@@ -19,20 +19,20 @@ class DriverConfigurator
     protected $files;
     /** @var Site */
     protected $site;
-    /** @var Redis */
+    /** @var RedisService */
     protected $redis;
 
     /**
      * @param CommandLine $cli
      * @param Filesystem $files
      * @param Site $site
-     * @param Redis $redis
+     * @param RedisService $redis
      */
     public function __construct(
         CommandLine $cli,
         Filesystem $files,
         Site $site,
-        Redis $redis
+        RedisService $redis
     ) {
         $this->cli   = $cli;
         $this->files = $files;

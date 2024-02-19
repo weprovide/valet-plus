@@ -41,7 +41,7 @@ class Elasticsearch extends ValetPlusFacade
 class Varnish extends ValetPlusFacade
 {
 }
-class Redis extends ValetPlusFacade
+class RedisService extends ValetPlusFacade
 {
 }
 class Rabbitmq extends ValetPlusFacade

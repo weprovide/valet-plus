@@ -12,7 +12,7 @@ use Valet\Status as ValetStatus;
 use WeProvide\ValetPlus\Mailhog;
 use WeProvide\ValetPlus\Mysql;
 use WeProvide\ValetPlus\Rabbitmq;
-use WeProvide\ValetPlus\Redis;
+use WeProvide\ValetPlus\RedisService;
 use WeProvide\ValetPlus\Varnish;
 
 class Status extends ValetStatus
@@ -23,7 +23,7 @@ class Status extends ValetStatus
     protected $mailhog;
     /** @var Varnish */
     protected $varnish;
-    /** @var Redis */
+    /** @var RedisService */
     protected $redis;
     /** @var Rabbitmq */
     protected $rabbitmq;
@@ -36,7 +36,7 @@ class Status extends ValetStatus
      * @param Mysql $mysql
      * @param Mailhog $mailhog
      * @param Varnish $varnish
-     * @param Redis $redis
+     * @param RedisService $redis
      * @param Rabbitmq $rabbitmq
      */
     public function __construct(
@@ -47,7 +47,7 @@ class Status extends ValetStatus
         Mysql $mysql,
         Mailhog $mailhog,
         Varnish $varnish,
-        Redis $redis,
+        RedisService $redis,
         Rabbitmq $rabbitmq
     ) {
         parent::__construct($config, $brew, $cli, $files);

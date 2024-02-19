@@ -6,7 +6,10 @@ namespace WeProvide\ValetPlus;
 
 use function Valet\info;
 
-class Redis extends AbstractService
+/**
+ * We name this class RedisService to avoid class collision when `shivammathur/extensions/redis@8.1` is installed.
+ */
+class RedisService extends AbstractService
 {
     /** @var string */
     protected const SERVICE_NAME = 'redis';
