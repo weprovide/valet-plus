@@ -26,7 +26,7 @@ require_once __DIR__ . '/includes/events.php';
 
 // Change name and version.
 $app->setName('Valet+');
-$app->setVersion('3.0.0');
+$app->setVersion('3.0.1');
 
 
 /**

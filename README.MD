@@ -84,7 +84,6 @@ Here are a few key differences compared to the original Valet:
 ## Valet+ Contributors
 
 - Lou van der Laarse ([@Neodork](https://github.com/Neodork))
-- Sander Pott (@Sander Valet+ slack channel)
 
 
 
