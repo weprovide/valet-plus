@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace WeProvide\ValetPlus;
 
+use Valet\Brew;
+use Valet\CommandLine;
+use Valet\Configuration;
+use Valet\Filesystem;
+
 use function Valet\info;
 
 /**
@@ -13,6 +18,20 @@ class RedisService extends AbstractService
 {
     /** @var string */
     protected const SERVICE_NAME = 'redis';
+
+    /** @var RedisPhpExtension */
+    protected $redisPhpExtension;
+
+    public function __construct(
+        Configuration $configuration,
+        Brew $brew,
+        Filesystem $files,
+        CommandLine $cli,
+        RedisPhpExtension $redisPhpExtension
+    ) {
+        parent::__construct($configuration, $brew, $files, $cli);
+        $this->redisPhpExtension = $redisPhpExtension;
+    }
 
     /**
      * @inheritdoc
@@ -41,6 +60,7 @@ class RedisService extends AbstractService
             return;
         }
 
+        $this->redisPhpExtension->uninstall();
         $this->brew->stopService(static::SERVICE_NAME);
     }
 
@@ -53,6 +73,7 @@ class RedisService extends AbstractService
             return;
         }
 
+        $this->redisPhpExtension->install();
         $this->brew->restartService(static::SERVICE_NAME);
     }
 
