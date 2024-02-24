@@ -48,7 +48,7 @@ should see this domain responding on `127.0.0.1`.
 Here are a few key differences compared to the original Valet:
 
 - Nginx config optimization
-- PHP extensions (~~mcrypt~~, ~~intl~~, ~~opcache~~, yaml, apcu, imagick)
+- PHP extensions (~~mcrypt~~, ~~intl~~, ~~opcache~~, yaml, apcu, ds, imagick)
 - MySQL (mysql@5.7, mysql@8.0, mysql@8.1, mariadb)
   - DB commands (list, create, drop, reset, (re)import, export, ~~open~~)
 - Mailhog (on/off mode)
@@ -66,7 +66,7 @@ Here are a few key differences compared to the original Valet:
 
 ### Changes vs Valet+ 2
 
-- Use command `valet-plus` instead of `valet` (for now).
+- Use command `valet-plus` instead of `valet`.
 - Rename `.env.valet` to `.valet-env.php`.
 - Use command `valet-plus elasticsearch|es use <version>` instead of `valet-plus use elasticsearch|es <version>`.
 - Use `127.0.0.1` as Redis host instead of `/tmp/redis.sock`.
