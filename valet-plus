@@ -182,6 +182,20 @@ then
 
     exit
 
+# Proxy Drush commands with the "php" executable on the isolated site
+elif [[ "$1" = "drush" ]]
+then
+    if [[ $2 == *"--site="* ]]; then
+        SITE=${2#*=}
+        $(php "$DIR/cli/valet.php" which-php $SITE) $(which drush) "${@:3}"
+    elif [[ $2 == "uli" ]]; then
+        $(php "$DIR/cli/valet.php" which-php) $(which drush) uli --uri=$(php "$DIR/cli/valet.php" which-uri) "${@:3}"
+    else
+        $(php "$DIR/cli/valet.php" which-php)  $(which drush) "${@:2}"
+    fi
+
+    exit
+
 # Finally, for every other command we will just proxy into the PHP tool
 # and let it handle the request. These are commands which can be run
 # without sudo and don't require taking over terminals like Ngrok.
