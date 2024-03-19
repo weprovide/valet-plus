@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 
+use Silly\Application;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -25,9 +26,14 @@ require_once __DIR__ . '/includes/events.php';
 
 
 // Change name and version.
-$app->setName('Valet+');
-$app->setVersion('3.0.1');
+/** @var Application $app */
+$laravelValetName = $app->getName();
+$laravelValetVersion = $app->getVersion();
+$valetPlusName = 'Valet+';
+$valetPlusVersion = '3.0.1';
 
+$app->setVersion($laravelValetName . ' ' . $laravelValetVersion);
+$app->setName(' ' . $valetPlusName . ' ' . $valetPlusVersion . "\n");
 
 /**
  * Extend the 'install' command.
@@ -88,6 +94,23 @@ $app
  * Most commands are available only if Valet+ is installed.
  */
 if (is_dir(VALET_HOME_PATH)) {
+    /**
+     * Extend the 'on-latest-version' command.
+     */
+    $cmd = $app->get('on-latest-version');
+    $app->command('on-latest-version', function (InputInterface $input, OutputInterface $output) use ($cmd, $valetPlusVersion) {
+        output('On latest Valet+ version?');
+        if (Valet::onLatestPlusVersion($valetPlusVersion)) {
+            output('Yes');
+        } else {
+            output(sprintf('Your version of Valet+ (%s) is not the latest version available.', $valetPlusVersion));
+        }
+
+        output('');
+        output('On latest Laravel Valet version?');
+        $cmd->run($input, $output);
+    }, ['latest'])->descriptions('Determine if this is the latest version of Valet+ and Laravel Valet');
+
     /**
      * Extend the 'tld' command.
      */

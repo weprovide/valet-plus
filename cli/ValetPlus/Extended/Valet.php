@@ -4,18 +4,23 @@ declare(strict_types=1);
 
 namespace WeProvide\ValetPlus\Extended;
 
+use GuzzleHttp\Client;
 use Valet\Valet as ValetValet;
 
 class Valet extends ValetValet
 {
     /**
-     * @todo: check if this is needed
-     * Symlink the Valet Bash script into the user's local bin.
+     * Determine if this is the latest version of Valet+.
+     *
+     * @param string $currentVersion
+     * @return bool
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function symlinkToUsersBin(): void
+    public function onLatestPlusVersion(string $currentVersion): bool
     {
-//        $this->unlinkFromUsersBin();
-//
-//        $this->cli->runAsUser('ln -s "' . realpath(__DIR__ . '/../../../valet') . '" ' . $this->valetBin);
+        $url = 'https://api.github.com/repos/weprovide/valet-plus/releases/latest';
+        $response = json_decode((string) (new Client())->get($url)->getBody());
+
+        return version_compare($currentVersion, trim($response->tag_name, 'v'), '>=');
     }
 }
