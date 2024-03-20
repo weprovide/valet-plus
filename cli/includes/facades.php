@@ -48,6 +48,9 @@ class Rabbitmq extends ValetPlusFacade
 {
 }
 
+class RedisPhpExtension extends ValetPlusFacade
+{
+}
 class Memcache extends ValetPlusFacade
 {
 }

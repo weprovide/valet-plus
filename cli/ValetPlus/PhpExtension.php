@@ -28,6 +28,8 @@ class PhpExtension
     public const DATASTRUCTURE_EXTENSION = 'ds';
     /** @var string */
     public const IMAGICK_EXTENSION = 'imagick';
+    /** @var string */
+    public const REDIS_EXTENSION = 'redis';
 
     protected const PHP_EXTENSIONS = [
         self::XDEBUG_EXTENSION        => [
@@ -46,6 +48,7 @@ class PhpExtension
             'default'         => false,
             'brew_dependency' => 'libmemcached',
             'ini_files'       => [
+                // also installed with redis, might be an issue when both are used and one is uninstalled
                 '20-igbinary',
                 '20-msgpack',
                 '30-memcached'
@@ -68,6 +71,17 @@ class PhpExtension
             'default'   => true,
             'ini_files' => [
                 '20-imagick.ini'
+            ]
+        ],
+        self::REDIS_EXTENSION         => [
+            'default'        => false,
+            'php_extensions' => [
+                'igbinary'
+            ],
+            'ini_files'      => [
+                // also installed with memcache, might be an issue when both are used and one is uninstalled
+                '20-igbinary',
+                '20-redis'
             ]
         ],
     ];
@@ -203,18 +217,32 @@ class PhpExtension
             $installed = true;
         }
 
+        if ($this->hasExtraPhpExtensions($extension)) {
+            $phpExtensions = $this->getExtraPhpExtensions($extension);
+            foreach ($phpExtensions as $phpExtension) {
+                $this->installExtension($phpExtension, $phpVersion);
+            }
+        }
+
         return $installed;
     }
 
     /**
      * @param $extension
      * @param $phpVersion
-     * @param $phpIniPath
+     * @param $phpIniConfigPath
      * @return bool
      */
     protected function uninstall($extension, $phpVersion, $phpIniConfigPath)
     {
         $uninstalled = false;
+
+        if ($this->hasExtraPhpExtensions($extension)) {
+            $phpExtensions = $this->getExtraPhpExtensions($extension);
+            foreach ($phpExtensions as $phpExtension) {
+                $this->uninstallExtension($phpExtension, $phpVersion, $phpIniConfigPath);
+            }
+        }
 
         if ($this->brew->installed($this->getExtensionFormula($extension, $phpVersion))) {
             $this->removeIniDefinition($extension, $phpIniConfigPath);
@@ -281,18 +309,22 @@ class PhpExtension
     }
 
     /**
-     * Check if the extension has any brew dependency
+     * Check if the extension has a brew dependency.
      *
      * @param mixed $extension
      * @return bool
      */
     protected function hasBrewDependency($extension)
     {
-        return array_key_exists("brew_dependency", static::PHP_EXTENSIONS[$extension]);
+        if (array_key_exists($extension, static::PHP_EXTENSIONS)) {
+            return array_key_exists("brew_dependency", static::PHP_EXTENSIONS[$extension]);
+        }
+
+        return false;
     }
 
     /**
-     * Get the brew dependency
+     * Get the brew dependency.
      *
      * @param mixed $extension
      * @return mixed
@@ -300,6 +332,32 @@ class PhpExtension
     protected function getBrewDependency($extension)
     {
         return static::PHP_EXTENSIONS[$extension]["brew_dependency"];
+    }
+
+    /**
+     * Check if the extension has any extra php extension dependencies.
+     *
+     * @param $extension
+     * @return bool
+     */
+    protected function hasExtraPhpExtensions($extension)
+    {
+        if (array_key_exists($extension, static::PHP_EXTENSIONS)) {
+            return array_key_exists("php_extensions", static::PHP_EXTENSIONS[$extension]);
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the extra php extensions.
+     *
+     * @param mixed $extension
+     * @return mixed
+     */
+    protected function getExtraPhpExtensions($extension)
+    {
+        return static::PHP_EXTENSIONS[$extension]["php_extensions"];
     }
 
     /**
@@ -321,6 +379,10 @@ class PhpExtension
      */
     protected function getIniFiles($extension)
     {
+        if (!array_key_exists($extension, static::PHP_EXTENSIONS)) {
+            return [];
+        }
+
         if (array_key_exists("ini_files", static::PHP_EXTENSIONS[$extension])) {
             return static::PHP_EXTENSIONS[$extension]['ini_files'];
         }
