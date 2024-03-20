@@ -2,6 +2,7 @@
 <?php
 
 use Silly\Application;
+use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -43,7 +44,7 @@ $app
     ->command('install', function (InputInterface $input, OutputInterface $output, $withMariadb, $withMysql80, $withMysql81, $withBinary) use ($cmd) {
         $types = $withMariadb + $withMysql80 + $withMysql81;
         if ($types > 1) {
-            throw new Exception('Cannot install Valet+ with multiple DBMS, please pick one.');
+            throw new RuntimeException('Cannot install Valet+ with multiple DBMS, please pick one.');
         }
         $mySqlVersion = $withMariadb ? 'mariadb' : 'mysql@5.7';
         $mySqlVersion = $withMysql81 ? 'mysql' : $mySqlVersion;
@@ -293,7 +294,7 @@ if (is_dir(VALET_HOME_PATH)) {
             $modes = ['install', 'on', 'enable', 'off', 'disable', 'uninstall'];
 
             if (!in_array($mode, $modes)) {
-                throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+                throw new RuntimeException(sprintf('Not enough arguments (missing: "mode"). Available modes: %s', implode(', ', $modes)));
             }
 
             switch ($mode) {
@@ -331,7 +332,7 @@ if (is_dir(VALET_HOME_PATH)) {
             $modes = ['install', 'on', 'enable', 'off', 'disable', 'uninstall'];
 
             if (!in_array($mode, $modes)) {
-                throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+                throw new RuntimeException(sprintf('Not enough arguments (missing: "mode"). Available modes: %s', implode(', ', $modes)));
             }
 
             switch ($mode) {
@@ -366,7 +367,7 @@ if (is_dir(VALET_HOME_PATH)) {
             $modes = ['install', 'on', 'enable', 'off', 'disable', 'uninstall'];
 
             if (!in_array($mode, $modes)) {
-                throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+                throw new RuntimeException(sprintf('Not enough arguments (missing: "mode"). Available modes: %s', implode(', ', $modes)));
             }
 
             switch ($mode) {
@@ -401,7 +402,7 @@ if (is_dir(VALET_HOME_PATH)) {
             $modes = ['install', 'on', 'enable', 'off', 'disable', 'uninstall'];
 
             if (!in_array($mode, $modes)) {
-                throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+                throw new RuntimeException(sprintf('Not enough arguments (missing: "mode"). Available modes: %s', implode(', ', $modes)));
             }
 
             switch ($mode) {
@@ -505,7 +506,7 @@ if (is_dir(VALET_HOME_PATH)) {
             if ($run === 'import') {
                 info('Importing database...');
                 if (!$name) {
-                    throw new Exception('Please provide a dump file');
+                    throw new RuntimeException('Please provide a dump file');
                 }
 
                 // check if database already exists.
@@ -532,7 +533,7 @@ if (is_dir(VALET_HOME_PATH)) {
                 }
                 info('Resetting database, importing database...');
                 if (!$name) {
-                    throw new Exception('Please provide a dump file');
+                    throw new RuntimeException('Please provide a dump file');
                 }
                 Mysql::reimportDatabase($name, $optional);
 
@@ -559,7 +560,7 @@ if (is_dir(VALET_HOME_PATH)) {
                 }
 
                 if ($name === null || $optional === null) {
-                    throw new Exception('Missing arguments to change root user password. Use: "valet db pwd <old> <new>"');
+                    throw new RuntimeException('Missing arguments to change root user password. Use: "valet db pwd <old> <new>"');
                 }
 
                 info('Setting password for root user...');
@@ -568,7 +569,7 @@ if (is_dir(VALET_HOME_PATH)) {
                 return;
             }
 
-            throw new Exception('Command not found');
+            throw new RuntimeException('Command not found');
         })
         ->descriptions('Database commands (list/ls, create, drop, reset, import, reimport, export/dump, pwd/password)');
 
@@ -577,14 +578,20 @@ if (is_dir(VALET_HOME_PATH)) {
      */
     $esVersions = Elasticsearch::getSupportedVersions();
     $esDockerVersions = Elasticsearch::getDockerVersions();
-    $esCurrentVersion = Elasticsearch::getCurrentVersion();
     $app
-        ->command('elasticsearch', function (InputInterface $input, OutputInterface $output, $mode, $targetVersion = null) {
+        ->command('elasticsearch', function (InputInterface $input, OutputInterface $output, $mode, $targetVersion = null, $current = false) {
             $modes         = ['install', 'use', 'on', 'enable', 'off', 'disable', 'uninstall'];
             $targetVersion = $targetVersion ?? 'opensearch'; //@todo only when we don't have any installed versions, if we do pick the first installed?
 
+            if ($current) {
+                // Show current running version information.
+                $esCurrentVersion = Elasticsearch::getCurrentVersion();
+                output(sprintf('Current running version: <fg=green>%s</>', ($esCurrentVersion ?: 'none')));
+                return;
+            }
+
             if (!in_array($mode, $modes)) {
-                throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+                throw new RuntimeException(sprintf('Not enough arguments (missing: "mode"). Available modes: %s', implode(', ', $modes)));
             }
 
             switch ($mode) {
@@ -614,12 +621,17 @@ if (is_dir(VALET_HOME_PATH)) {
         })
         ->descriptions(
                 'Enable/disable/switch Elasticsearch. ' .
-                'The versions [' . implode(', ', $esDockerVersions) . '] require Docker. ' .
-                ($esCurrentVersion !== null ? "\n  " . 'Current running version: ' . $esCurrentVersion : '')
+                'The versions [' . implode(', ', $esDockerVersions) . '] require Docker.'
         )
         ->setAliases(['es'])
-        ->addArgument('mode', InputArgument::REQUIRED, 'Available modes: ' . implode(', ', ['install', 'use', 'on', 'enable', 'off', 'disable', 'uninstall']))
-        ->addArgument('targetVersion', InputArgument::OPTIONAL, "Version to use, supported versions: " . implode(', ', $esVersions), null);
+        ->addArgument('mode', InputArgument::OPTIONAL, 'Available modes: ' . implode(', ', ['install', 'use', 'on', 'enable', 'off', 'disable', 'uninstall']))
+        ->addArgument('targetVersion', InputArgument::OPTIONAL, "Version to use, supported versions: " . implode(', ', $esVersions), null)
+        ->addOption(
+            'current',
+            'c',
+            null,
+            'Displays the current running version of Elasticsearch.'
+        );
 
 
     /**
@@ -629,7 +641,7 @@ if (is_dir(VALET_HOME_PATH)) {
         $modes = ['on', 'enable', 'off', 'disable'];
 
         if (!in_array($mode, $modes)) {
-            throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+            throw new RuntimeException(sprintf('Not enough arguments (missing: "mode"). Available modes: %s', implode(', ', $modes)));
         }
 
         $restart = false;
@@ -655,7 +667,7 @@ if (is_dir(VALET_HOME_PATH)) {
         $modes = ['on', 'enable', 'off', 'disable'];
 
         if (!in_array($mode, $modes)) {
-            throw new Exception('Mode not found. Available modes: ' . implode(', ', $modes));
+            throw new RuntimeException(sprintf('Not enough arguments (missing: "mode"). Available modes: %s', implode(', ', $modes)));
         }
 
         $restart = false;
