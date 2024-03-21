@@ -22,6 +22,8 @@ class Binary
     protected const DRUSH_LAUNCHER = 'drush';
     /** @var string */
     protected const WP_CLI = 'wp';
+    /** @var string */
+    protected const SHOPWARE_CLI = 'shopware-cli';
 
     /**
      * Supported binaries for the binary manager. Example:
@@ -53,6 +55,10 @@ class Binary
         ],
         self::WP_CLI         => [
             'brew_formula' => 'wp-cli'
+        ],
+        self::SHOPWARE_CLI   => [
+            'brew_formula' => 'shopware-cli',
+            'brew_tap'     => 'friendsofshopware/tap'
         ]
     ];
 
@@ -171,7 +177,12 @@ class Binary
         // Install brew formula.
         if (isset(static::SUPPORTED_BINARIES[$binary]['brew_formula'])) {
             $formula = static::SUPPORTED_BINARIES[$binary]['brew_formula'];
-            $this->brew->ensureInstalled($formula);
+            $tap     = (
+            isset(static::SUPPORTED_BINARIES[$binary]['brew_tap']) ?
+                [static::SUPPORTED_BINARIES[$binary]['brew_tap']] :
+                []
+            );
+            $this->brew->ensureInstalled($formula, [], $tap);
         }
     }
 
@@ -218,10 +229,22 @@ class Binary
      */
     protected function update($binary)
     {
+        // Update downloaded binary.
         if (isset(static::SUPPORTED_BINARIES[$binary]['bin_location'])) {
             info("Binary $binary updating...");
             $binLocation = $this->getBinLocation($binary);
             $this->cli->run("sudo $binLocation self-update");
+        }
+
+        // Update brew formula.
+        if (isset(static::SUPPORTED_BINARIES[$binary]['brew_formula'])) {
+            $formula = static::SUPPORTED_BINARIES[$binary]['brew_formula'];
+            $tap     = (
+            isset(static::SUPPORTED_BINARIES[$binary]['brew_tap']) ?
+                [static::SUPPORTED_BINARIES[$binary]['brew_tap']] :
+                []
+            );
+            $this->brew->installOrFail($formula, [], $tap);
         }
     }
 
