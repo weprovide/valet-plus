@@ -62,7 +62,7 @@ Here are a few key differences compared to the original Valet:
 - ~~Ioncube~~
 - Rewrite/unrewrite public domain to local environment
 - ~~DevTools~~
-- Binaries (magerun, magerun2, drush, wp-cli)
+- Binaries (magerun, magerun2, drush, wp-cli, shopware-cli)
 
 ### Changes vs Valet+ 2
 
@@ -72,18 +72,6 @@ Here are a few key differences compared to the original Valet:
 - Use `127.0.0.1` as Redis host instead of `/tmp/redis.sock`.
 - Choose which binaries to install (default all) and self-update on `valet-plus install` command.
 - Adds dependency on Docker for Elasticsearch, see https://docs.docker.com/desktop/install/mac-install/
-
-
-
-## Valet+ Authors
-
-- Mischa Braam ([@mischabraam](https://github.com/mischabraam))
-- Tim Neutkens ([@timneutkens](https://github.com/timneutkens))
-- Sam Granger ([@samgranger](https://github.com/samgranger))
-
-## Valet+ Contributors
-
-- Lou van der Laarse ([@Neodork](https://github.com/Neodork))
 
 
 
