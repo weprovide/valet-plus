@@ -737,6 +737,13 @@ if (is_dir(VALET_HOME_PATH)) {
     $app->command('configure', function () {
         DriverConfigurator::configure();
     })->descriptions('Configure application with know framework settings');
+
+    /**
+     * Which-uri command which outputs the URL of the current site.
+     */
+    $app->command('which-uri', function () {
+        output(Site::domain(null));
+    })->descriptions('Displays the URL of the current site');
 }
 
 /**
