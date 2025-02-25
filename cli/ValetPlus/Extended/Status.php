@@ -9,6 +9,7 @@ use Valet\CommandLine;
 use Valet\Configuration;
 use Valet\Filesystem;
 use Valet\Status as ValetStatus;
+use WeProvide\ValetPlus\Binary;
 use WeProvide\ValetPlus\Mailhog;
 use WeProvide\ValetPlus\Mysql;
 use WeProvide\ValetPlus\Rabbitmq;
@@ -27,6 +28,8 @@ class Status extends ValetStatus
     protected $redis;
     /** @var Rabbitmq */
     protected $rabbitmq;
+    /** @var Binary */
+    protected $binary;
 
     /**
      * @param Configuration $config
@@ -48,7 +51,8 @@ class Status extends ValetStatus
         Mailhog $mailhog,
         Varnish $varnish,
         RedisService $redis,
-        Rabbitmq $rabbitmq
+        Rabbitmq $rabbitmq,
+        Binary $binary
     ) {
         parent::__construct($config, $brew, $cli, $files);
 
@@ -57,6 +61,7 @@ class Status extends ValetStatus
         $this->varnish  = $varnish;
         $this->redis    = $redis;
         $this->rabbitmq = $rabbitmq;
+        $this->binary   = $binary;
     }
 
     /**
@@ -114,6 +119,17 @@ class Status extends ValetStatus
                 'debug'       => 'Rabbitmq is installed but not enabled, you might run `valet-plus rabbitmq on`.'
             ];
             //todo; actually test something?
+        }
+
+        $supportedBinaries = $this->binary->getSupported();
+        foreach ($supportedBinaries as $binary) {
+            $checks[] = [
+                'description' => '[Valet+] Is ' . $binary . ' installed?',
+                'check'       => function () use ($binary) {
+                    return $this->binary->installed($binary);
+                },
+                'debug'       => ''
+            ];
         }
 
         return $checks;
