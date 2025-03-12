@@ -29,12 +29,14 @@ brew link php@8.1 --force
 brew services restart php@8.1
 ```
 
-Install Valet+ 3.x-dev with composer:
+Make sure your sure the `$HOME/.composer/vendor/bin` directory is in your system's "PATH".
+
+Install Valet+ 3.x with composer:
 ```shell
-composer global require weprovide/valet-plus:3.x-dev
+composer global require weprovide/valet-plus
 ```
 
-Finally, you may execute the Valet+ `install` command. This will configure and install Valet+, Nginx, DnsMasq and other
+Finally, you may execute the Valet+ `install` command. This will install and configure Valet+, Nginx, DnsMasq and other
 services. In addition, use `--help` to see all installation options. 
 ```shell
 valet-plus install
